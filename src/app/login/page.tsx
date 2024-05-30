@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label"
 import { FormEventHandler } from "react"
 import { getUser } from "@/db/users"
 import bcrypt from "bcryptjs"
+import { redirect } from "next/navigation"
+import { login } from "@/lib/auth"
 
 
 interface User {
@@ -24,16 +26,24 @@ export default function Page(){
 
     async function submit(formData : FormData){
         "use server"
+        let success = false
         console.log(formData.get('email'))
         const user = await getUser(formData.get('email') as string)
+        console.log(user)
         if(user != null){
-            const success = await bcrypt.compare(formData.get('password') as string, user.password)
+            success = await bcrypt.compare(formData.get('password') as string, user.password)
             console.log(success)
+            if(success)
+                console.log(user.name)
+                await login(user.name)
         } else {
             console.log('fail log in; user null')
         }
 
-
+        if(success)
+            redirect('/')
+        else
+            redirect('fail')
 
     }
 
