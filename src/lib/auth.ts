@@ -1,6 +1,7 @@
-import { setToken } from "@/db/users"
+import { getToken, setToken } from "@/db/users"
 import { UUID } from "mongodb"
 import { cookies } from 'next/headers'
+import { redirect } from "next/navigation"
 
 interface UserCookie {
     _id : UUID,
@@ -41,3 +42,4 @@ export async function login(user : string){
     
 
 }
+

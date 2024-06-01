@@ -25,3 +25,19 @@ export const setToken = async(name: string, token : string, expires: Date) => {
     return null
 
 }
+
+interface UserSession {
+    name : string,
+    role : string,
+}
+
+export const getToken = async(token : string) => {
+    const find = await users.findOne({token: token})
+    if(find != null){
+        const result : UserSession = {name : find.name, role : find.role}
+        return result
+    }
+
+    return null
+
+}

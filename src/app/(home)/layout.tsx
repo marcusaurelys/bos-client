@@ -16,7 +16,6 @@ export default function RootLayout({
 }>) {
   return (
     <div>
-      <h1> hi guys </h1>
         {children}
     </div>
   );
