@@ -1,9 +1,11 @@
 import React from 'react'
 import DropArea from './DropArea'
+import {motion} from 'framer-motion'
+import { TagIcon } from '@heroicons/react/16/solid'
 
 interface TicketProps {
     ticket: Ticket
-    handleDragStart: (e: React.DragEvent, ticket: Ticket) => void
+    handleDragStart: (e: React.DragEvent<HTMLDivElement>, ticket: Ticket) => void
 }
 
 function Ticket({ticket, handleDragStart}: TicketProps) {
@@ -22,7 +24,7 @@ function Ticket({ticket, handleDragStart}: TicketProps) {
   return ( <>
 
     <DropArea id={ticket.id} status={ticket.status}/>
-    <div onDragStart={(e) => handleDragStart(e, ticket)} className='flex flex-col bg-card rounded-sm p-3 text-sm  h-36 gap-1 cursor-grab active:cursor-grabbing' draggable="true" >
+    <motion.div layout layoutId={ticket.id.toString()} onDragStart={(e) => {handleDragStart(e as unknown as React.DragEvent<HTMLDivElement>, ticket)}} className='flex flex-col bg-card rounded-sm p-3 text-sm  h-36 gap-1 cursor-grab active:cursor-grabbing' draggable="true" >
 
         {/* ticket tags */}
         <div className="flex flex-row gap-2">
@@ -32,6 +34,7 @@ function Ticket({ticket, handleDragStart}: TicketProps) {
             {
                 ticket.tags.map((tag, index) => {
                     return <div key={index} className="flex flex-row rounded-md w-fit text-xs border py-1 px-2 items-center gap-2 mb-1">
+                        <TagIcon className="h-4 fill-none stroke-black/40"/>
                         <h1>{tag.charAt(0).toUpperCase() + tag.slice(1)}</h1>
                     </div>
                 })
@@ -56,7 +59,7 @@ function Ticket({ticket, handleDragStart}: TicketProps) {
         </div>
 
 
-    </div>
+    </motion.div>
 
     
 
