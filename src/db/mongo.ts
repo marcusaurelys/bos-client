@@ -13,6 +13,7 @@ async function run() {
     } finally {
       // Ensures that the client will close when you finish/error
       await client.close();
+      console.log("successfully closed connection")
     }
-  }
+}
 export default client
