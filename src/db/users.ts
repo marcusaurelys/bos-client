@@ -65,7 +65,16 @@ export const hasToken = async(user : string) => {
 
 export const createUser = async(name : string, email: string, password: string, role : string) => {
 
-    const result = await users.insertOne({name : name, email : email, password : password, role : role})
+    const emailTaken = await users.findOne({email : email})
+
+    if(emailTaken){
+        return null
+    }
+
+
+    const passHash = await bcrypt.hash(password, 10)
+
+    const result = await users.insertOne({name : name, email : email, password : passHash, role : role})
     return result
 }
 

@@ -5,29 +5,15 @@ import Hi from '@/components/Hi'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { getToken } from '@/db/users'
+import { validateUser } from "@/lib/auth";
 
+export default async function Home() {
 
-export async function verifyUser(role : string){
-  'use server'
-  const userToken = cookies().get('session')?.value
-  console.log('i am running')
+  const user = await validateUser(['admin', 'member'])
 
-  if(userToken){
-      const data = await getToken(userToken)
-      if(data && role == data.role){
-          return true
-      }
+  if(!user){
+    redirect('/login')
   }
-  else {
-      redirect('/login?noAccess')
-  }
-
-}
-
-
-export default function Home() {
-
-  const userToken = cookies().get('session')?.value
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
