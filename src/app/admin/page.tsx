@@ -49,6 +49,7 @@ import {
     TableHeader,
     TableRow,
   } from "@/components/ui/table"
+import AddUserForm from '@/components/AddUserForm'
 
 
 async function register(formData : FormData){
@@ -73,7 +74,7 @@ async function register(formData : FormData){
     }
 
     //pls change so that no reload needed
-    redirect('?success')
+    revalidatePath('/admin')
     
     
 }
@@ -124,96 +125,8 @@ export default async function Page(){
                 </Table>
                 
 
-                <div className="flex items-center justify-center py-5 px-11">
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button variant="default">Add User</Button>
-                        </DialogTrigger>
-
-                        <DialogContent>
-                        <form action={register}>
-                            <DialogHeader>
-                                <DialogTitle className="text-2xl">
-                                    Add a User
-                                </DialogTitle>
-                                <DialogDescription className="text-xs">
-                                    Click Save to add.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="name" className="text-right">
-                                    Name
-                                    </Label>
-                                    <Input
-                                    name="name"
-                                    placeholder="Boris Victoria"
-                                    className="col-span-3"
-                                    required
-                                    />
-                                </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="email" className="text-right">
-                                    Email
-                                    </Label>
-                                    <Input
-                                    name="email"
-                                    placeholder="boris_victoria@dlsu.edu.ph"
-                                    className="col-span-3"
-                                    required
-                                    />
-                                </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="password" className="text-right">
-                                    Password
-                                    </Label>
-                                    <Input
-                                    name="password"
-                                    placeholder="******"
-                                    className="col-span-3"
-                                    type="password"
-                                    required
-                                    />
-                                </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="confirm-pass" className="text-right">
-                                    Confirm Password
-                                    </Label>
-                                    <Input
-                                    name="confirm-pass"
-                                    placeholder="******"
-                                    className="col-span-3"
-                                    type="password"
-                                    required
-                                    />
-                                </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="role" className="text-right">
-                                    Role
-                                    </Label>
-                                    <Select name="role">
-                                        <SelectTrigger className="w-[180px]">
-                                            <SelectValue placeholder="Select a role" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                            <SelectLabel>Role</SelectLabel>
-                                            <SelectItem value="admin">Admin</SelectItem>
-                                            <SelectItem value="member">Member</SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                
-                                </div>
-                            </div>
-                        
-                            <DialogFooter>
-                                <Button type="submit">Add User</Button>
-                            </DialogFooter>
-                        </form>
-                        </DialogContent>
-
-                    </Dialog>
+                <div className="flex items-center justify-center py-5    px-11">
+                    <AddUserForm register={register}/>
                 </div>
             </div>
         )
