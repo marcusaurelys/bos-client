@@ -8,6 +8,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
+    DialogClose
   } from "@/components/ui/dialog"
 
 
@@ -36,9 +37,9 @@ export default function AddUserForm( { register } : Props ){
     const [isOpen, setOpen] = useState(false)
 
     return(
-    <Dialog open={isOpen}>
+    <Dialog open={isOpen} onOpenChange={setOpen}>
     <DialogTrigger asChild>
-        <Button variant="default" onClick={(e) => setOpen(true)}>Add User</Button>
+        <Button variant="default">Add User</Button>
     </DialogTrigger>
 
     <DialogContent>
