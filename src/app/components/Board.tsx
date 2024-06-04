@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import Column from './Column'
 import Filter from './Filter';
 import { WithId } from 'mongodb';
+import Ticket from './Ticket';
 
 interface BoardProps {
   ticketsData: Ticket[]

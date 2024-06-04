@@ -18,13 +18,12 @@ export default async function Home() {
   if(!user){
     redirect('/login')
   }
-  else {
-      redirect('/login?noAccess')
-  }
 
   async function handleChangeStatus(id: string, status: string) {
     await changeStatus(id, status)
   }
+
+  const tickets = await getTickets()
 
 
   return (
