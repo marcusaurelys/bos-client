@@ -34,7 +34,7 @@ export async function login(user : string){
 
     //create cookie
     if(token == null){
-        console.log(token)
+        //console.log(token)
         console.log('no existing token, creating new one')
         token = crypto.randomUUID()
     }

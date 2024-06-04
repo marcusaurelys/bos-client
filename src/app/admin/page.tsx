@@ -87,7 +87,7 @@ export default async function Page(){
     const users = await getAllUsers()
     const userList = await users.toArray()
 
-    console.log(userList)
+    //console.log(userList)
 
 
     if(!user){

@@ -29,7 +29,7 @@ export default async function RootLayout({
   if(sessionToken != null){
     session = await getToken(sessionToken)
   }
-  console.log(session)
+  //console.log(session)
   
 
   return (

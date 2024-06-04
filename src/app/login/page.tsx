@@ -27,12 +27,12 @@ export default function Page(){
     async function submit(formData : FormData){
         "use server"
         let success = false
-        console.log(formData.get('email'))
+        //console.log(formData.get('email'))
         const user = await getUser(formData.get('email') as string)
-        console.log(user)
+        //console.log(user)
         if(user != null){
             success = await bcrypt.compare(formData.get('password') as string, user.password)
-            console.log(success)
+            //console.log(success)
             if(success)
                 console.log(user.name)
                 await login(user.name)
