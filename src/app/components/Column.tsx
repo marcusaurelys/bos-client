@@ -1,19 +1,43 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Ticket from './Ticket'
 import DropArea from './DropArea'
 import {motion} from 'framer-motion'
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 
 interface ColumnProps {
     title: string,
     status: string,
     tickets: Ticket[],
-    setTickets: any
+    setTickets: any,
+    filters: Set<string>
 }
 
-function Column({title, status, tickets, setTickets}: ColumnProps) {
+
+
+// allTickets -> not filtered
+// tickets -> filtered by priority
+// filteredTickets -> filtered by column
+
+function Column({title, status, tickets, setTickets, filters}: ColumnProps) {
     const [active, setActive] = useState(false)
-    const filteredTickets = tickets.filter((t) => t.status === status)
+    const [filteredTickets, setFilteredTickets] = useState<Ticket[]>([])
+
+
+    useEffect(() => {
+        let temp = tickets.filter((t) => t.status === status)
+        if(filters.size > 0) {
+            temp = Array.from(filters).map((f) => {
+                let x = temp.filter((t) => t.priority === f)
+                return x
+            }).flat()
+        }
+
+        setFilteredTickets(f => temp)
+    }, [tickets, filters])
+
+    
+    
 
     const handleDragStart = (e: React.DragEvent<HTMLElement>, ticket: Ticket) => {
         e.dataTransfer.setData("ticketId", ticket.id)
@@ -43,6 +67,7 @@ function Column({title, status, tickets, setTickets}: ColumnProps) {
 
 
         if(before !== ticketId) {
+            
             let copy = [...tickets]
 
             let ticketToTransfer = copy.find((c) => c.id == ticketId)
@@ -66,6 +91,7 @@ function Column({title, status, tickets, setTickets}: ColumnProps) {
                 copy.splice(insertAtIndex, 0, ticketToTransfer)
             }
 
+            console.log(copy)
             setTickets(copy)
         }
 
@@ -116,7 +142,7 @@ function Column({title, status, tickets, setTickets}: ColumnProps) {
     }
 
   return (
-    <motion.div layout onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} className={`flex flex-col bg-muted w-96 rounded-md h-fit p-3 ${active ? "ring-2 ring-cyan-400" : ""}`}>
+    <motion.div layout onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} className={`z-0 relative shadow-sm flex flex-col bg-muted w-96 rounded-md h-fit p-3 ${active ? "ring-2 ring-cyan-400" : ""}`}>
         {/* column header*/}
         <motion.div layout className="flex flex-row gap-2 items-center my-1 h-7">
             <h1 className="font-semibold">{title}</h1>
@@ -124,7 +150,8 @@ function Column({title, status, tickets, setTickets}: ColumnProps) {
         </motion.div>
 
         {/* column body */}
-        <div className=" flex-auto"> 
+        <ScrollArea>
+        <div className="h-[500px] flex-auto"> 
             
             {
                 filteredTickets.map((ticket, index) => {
@@ -134,7 +161,7 @@ function Column({title, status, tickets, setTickets}: ColumnProps) {
             <DropArea id={"-1"} status={status}/>
             
         </div>
-        
+        </ScrollArea>
 
     </motion.div>
   )

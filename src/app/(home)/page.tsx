@@ -1,3 +1,5 @@
+'use server'
+
 import { SessionContext } from "@/components/SessionContext";
 import Image from "next/image";
 import { useContext } from "react";
@@ -6,6 +8,7 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { getToken } from '@/db/users'
 import Board from "../components/Board";
+import { changeStatus, getTickets } from "@/db/tickets";
 
 
 export async function verifyUser(role : string){
@@ -26,13 +29,23 @@ export async function verifyUser(role : string){
 }
 
 
-export default function Home() {
+export default async function Home() {
 
   const userToken = cookies().get('session')?.value
+  const tickets = await getTickets() || []
+
+
+  async function handleChangeStatus(id: string, status: string) {
+    await changeStatus(id, status)
+  }
+
 
   return (
-   <main className="h-screen w-full p-10">
-      <Board />
+   <main className="h-screen w-full p-10 flex justify-center">
+      <div className="">
+        <Board ticketsData={tickets}/>
+      </div>
+      
    </main>
   );
 }
