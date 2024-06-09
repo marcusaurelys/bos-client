@@ -97,7 +97,6 @@ export default async function Page(){
     if(user != null){
         return (
             <div className='h-screen w-screen'>
-                hi {user.name}, you are an {user.role}
 
 
                 <h1 className="text-3xl font-bold text-center pb-3">Your Current team</h1>
