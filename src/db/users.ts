@@ -1,9 +1,10 @@
-import client from "@/db/mongo"
+import { useDB } from "@/db/mongo"
 import { UUID } from "crypto"
 import bcrypt from "bcryptjs"
 import { UserSession } from '@/types'
 
-export const users = client.db('business-os').collection('users')
+const db = await useDB()
+export const users = db.collection('users')
 
 
 export const getUser = async(email : string) => {
