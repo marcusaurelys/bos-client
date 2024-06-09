@@ -11,13 +11,13 @@ function NavBar() {
         <span className="text-lg font-semibold">businessOS</span>
       </Link>
       <nav className="hidden md:flex items-center gap-4">
-        <Link href="#" className="text-sm font-medium hover:underline" prefetch={false}>
+        <Link href="/" className="text-sm font-medium hover:underline" prefetch={false}>
           KanbanBoard
         </Link>
-        <Link href="#" className="text-sm font-medium hover:underline" prefetch={false}>
+        <Link href="/admin" className="text-sm font-medium hover:underline" prefetch={false}>
           Team
         </Link>
-        <Link href="#" className="text-sm font-medium hover:underline" prefetch={false}>
+        <Link href="/login" className="text-sm font-medium hover:underline" prefetch={false}>
           Login
         </Link>
       </nav>
