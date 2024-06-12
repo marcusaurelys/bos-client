@@ -3,11 +3,12 @@ import { UUID } from "crypto"
 import { ObjectId } from "mongodb"
 import { Ticket } from '@/types'
 
+
 const db = await useDB()
 export const tickets = db.collection('tickets')
 
 export const getTickets = async () => {
-    let ticketsData: Ticket[] = []
+    let ticketsData: ITicket[] = []
 
     const result = await tickets.find({}).toArray()
     

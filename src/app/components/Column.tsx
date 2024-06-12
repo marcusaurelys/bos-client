@@ -3,12 +3,13 @@ import Ticket from './Ticket'
 import DropArea from './DropArea'
 import {motion} from 'framer-motion'
 import { ScrollArea } from "@/components/ui/scroll-area"
+import {ITicket} from '../../types'
 
 
 interface ColumnProps {
     title: string,
     status: string,
-    tickets: Ticket[],
+    tickets: ITicket[],
     setTickets: any,
     filters: Set<string>
 }
@@ -21,7 +22,7 @@ interface ColumnProps {
 
 function Column({title, status, tickets, setTickets, filters}: ColumnProps) {
     const [active, setActive] = useState(false)
-    const [filteredTickets, setFilteredTickets] = useState<Ticket[]>([])
+    const [filteredTickets, setFilteredTickets] = useState<ITicket[]>([])
 
 
     useEffect(() => {
@@ -39,7 +40,7 @@ function Column({title, status, tickets, setTickets, filters}: ColumnProps) {
     
     
 
-    const handleDragStart = (e: React.DragEvent<HTMLElement>, ticket: Ticket) => {
+    const handleDragStart = (e: React.DragEvent<HTMLElement>, ticket: ITicket) => {
         e.dataTransfer.setData("ticketId", ticket.id)
     }
 
@@ -81,7 +82,7 @@ function Column({title, status, tickets, setTickets, filters}: ColumnProps) {
             const moveToBack = before === "-1"
 
             if(moveToBack) {
-                copy.push(ticketToTransfer)
+                copy.unshift(ticketToTransfer)
 
             } else {
                 const insertAtIndex = copy.findIndex((el) => el.id === before)
@@ -151,14 +152,14 @@ function Column({title, status, tickets, setTickets, filters}: ColumnProps) {
 
         {/* column body */}
         <ScrollArea>
-        <div className="h-[500px] flex-auto"> 
-            
+        <div className="h-[500px] flex-auto gap-2 flex flex-col"> 
+            <DropArea id={"-1"} status={status}/>
             {
                 filteredTickets.map((ticket, index) => {
                     return <Ticket key={ticket.id} ticket={ticket} handleDragStart={handleDragStart}/> 
                 })
             }
-            <DropArea id={"-1"} status={status}/>
+            
             
         </div>
         </ScrollArea>
