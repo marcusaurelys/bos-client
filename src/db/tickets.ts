@@ -1,12 +1,13 @@
 import client from "@/db/mongo"
 import { UUID } from "crypto"
 import { ObjectId } from "mongodb"
+import {ITicket} from "../types"
 
 
 export const tickets = client.db('business-os').collection('tickets')
 
 export const getTickets = async () => {
-    let ticketsData: Ticket[] = []
+    let ticketsData: ITicket[] = []
 
     const result = await tickets.find({}).toArray()
     
