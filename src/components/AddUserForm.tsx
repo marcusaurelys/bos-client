@@ -76,6 +76,17 @@ export default function AddUserForm( { register } : Props ){
                 />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="discord" className="text-right">
+                Discord Username
+                </Label>
+                <Input
+                name="discord"
+                placeholder="discord"
+                className="col-span-3"
+                required
+                />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="password" className="text-right">
                 Password
                 </Label>
