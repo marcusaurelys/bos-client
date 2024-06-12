@@ -1,9 +1,10 @@
-import client from "@/db/mongo"
+import { useDB } from "@/db/mongo"
 import { UUID } from "crypto"
 import bcrypt from "bcryptjs"
 import { UserSession } from '@/types'
 
-export const users = client.db('business-os').collection('users')
+const db = await useDB()
+export const users = db.collection('users')
 
 
 export const getUser = async(email : string) => {
@@ -63,7 +64,7 @@ export const hasToken = async(user : string) => {
     return null
 }
 
-export const createUser = async(name : string, email: string, password: string, role : string) => {
+export const createUser = async(name : string, email: string, password: string, role : string, discord : string) => {
 
     const emailTaken = await users.findOne({email : email})
 
@@ -74,7 +75,7 @@ export const createUser = async(name : string, email: string, password: string, 
 
     const passHash = await bcrypt.hash(password, 10)
 
-    const result = await users.insertOne({name : name, email : email, password : passHash, role : role})
+    const result = await users.insertOne({name : name, email : email, password : passHash, role : role, discord : discord})
     return result
 }
 
