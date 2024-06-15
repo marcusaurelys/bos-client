@@ -11,7 +11,8 @@ interface ColumnProps {
     status: string,
     tickets: ITicket[],
     setTickets: any,
-    filters: Set<string>
+    filters: Set<string>,
+    changeStatus: (id: string, status: string) => void
 }
 
 
@@ -20,7 +21,7 @@ interface ColumnProps {
 // tickets -> filtered by priority
 // filteredTickets -> filtered by column
 
-function Column({title, status, tickets, setTickets, filters}: ColumnProps) {
+function Column({title, status, tickets, setTickets, filters, changeStatus}: ColumnProps) {
     const [active, setActive] = useState(false)
     const [filteredTickets, setFilteredTickets] = useState<ITicket[]>([])
 
@@ -94,6 +95,7 @@ function Column({title, status, tickets, setTickets, filters}: ColumnProps) {
 
             console.log(copy)
             setTickets(copy)
+            changeStatus(ticketId, status)
         }
 
     }

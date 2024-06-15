@@ -5,12 +5,14 @@ import Column from './Column'
 import Filter from './Filter';
 import { WithId } from 'mongodb';
 import Ticket from './Ticket';
+import {ITicket} from '../../types'
 
 interface BoardProps {
-  ticketsData: Ticket[]
+  ticketsData: ITicket[]
+  changeStatus: (id: string, status: string) => void
 }
 
-function Board({ticketsData}: BoardProps) {
+function Board({ticketsData, changeStatus}: BoardProps) {
     const [tickets, setTickets] = useState(ticketsData)
     const [filters, setFilters] = useState(new Set<string>())
     // const [filteredTickets, setFilteredTickets] = useState(tickets)
@@ -31,7 +33,7 @@ function Board({ticketsData}: BoardProps) {
     //   setFilteredTickets(t => filtered)
     // }, [filters])
 
-    const handleSetTickets = (tickets: Ticket[]) => {
+    const handleSetTickets = (tickets: ITicket[]) => {
         setTickets(tickets)
     }
 
@@ -61,9 +63,9 @@ function Board({ticketsData}: BoardProps) {
         <Filter selected={filters} addFilter={addFilter} removeFilter={removeFilter} clearFilters={clearFilters}/>
       </div>
       <div className="flex gap-4 w-full h-full flex-wrap"> 
-        <Column title="Pending" status="pending" tickets={tickets} filters={filters} setTickets={handleSetTickets}/>
-        <Column title="Open" status="open" tickets={tickets} filters={filters} setTickets={handleSetTickets}/>
-        <Column title="Closed" status="closed" tickets={tickets} filters={filters} setTickets={handleSetTickets}/>
+        <Column title="Pending" status="pending" tickets={tickets} filters={filters} setTickets={handleSetTickets} changeStatus={changeStatus}/>
+        <Column title="Open" status="open" tickets={tickets} filters={filters} setTickets={handleSetTickets} changeStatus={changeStatus}/>
+        <Column title="Closed" status="closed" tickets={tickets} filters={filters} setTickets={handleSetTickets} changeStatus={changeStatus}/>
       </div>
     </>
     

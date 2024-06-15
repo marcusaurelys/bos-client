@@ -1,7 +1,7 @@
 import { useDB } from "@/db/mongo"
 import { UUID } from "crypto"
 import { ObjectId } from "mongodb"
-import { Ticket } from '@/types'
+import { ITicket } from '@/types'
 
 
 const db = await useDB()

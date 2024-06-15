@@ -20,6 +20,7 @@ export default async function Home() {
   }
 
   async function handleChangeStatus(id: string, status: string) {
+    'use server'
     await changeStatus(id, status)
   }
 
@@ -27,9 +28,9 @@ export default async function Home() {
 
 
   return (
-   <main className="h-screen w-full p-10 flex justify-center">
+   <main className=" w-full  flex justify-center">
       <div className="">
-        <Board ticketsData={tickets}/>
+        <Board ticketsData={tickets} changeStatus={handleChangeStatus}/>
       </div>
       
    </main>
