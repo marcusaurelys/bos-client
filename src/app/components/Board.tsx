@@ -58,16 +58,19 @@ function Board({ticketsData, changeStatus}: BoardProps) {
 
 
   return (
-    <>
-      <div className="z-10 relative my-3" >
-        <Filter selected={filters} addFilter={addFilter} removeFilter={removeFilter} clearFilters={clearFilters}/>
+    <div className="flex justify-center items-start w-full h-full">
+      <div className="flex flex-col w-fit justify-center">
+        <div className="z-10 relative my-3" >
+          <Filter selected={filters} addFilter={addFilter} removeFilter={removeFilter} clearFilters={clearFilters}/>
+        </div>
+        <div className="flex gap-12 flex-wrap"> 
+          <Column title="Pending" status="pending" tickets={tickets} filters={filters} setTickets={handleSetTickets} changeStatus={changeStatus}/>
+          <Column title="Open" status="open" tickets={tickets} filters={filters} setTickets={handleSetTickets} changeStatus={changeStatus}/>
+          <Column title="Closed" status="closed" tickets={tickets} filters={filters} setTickets={handleSetTickets} changeStatus={changeStatus}/>
+        </div>
       </div>
-      <div className="flex gap-4 w-full h-full flex-wrap"> 
-        <Column title="Pending" status="pending" tickets={tickets} filters={filters} setTickets={handleSetTickets} changeStatus={changeStatus}/>
-        <Column title="Open" status="open" tickets={tickets} filters={filters} setTickets={handleSetTickets} changeStatus={changeStatus}/>
-        <Column title="Closed" status="closed" tickets={tickets} filters={filters} setTickets={handleSetTickets} changeStatus={changeStatus}/>
-      </div>
-    </>
+      
+    </div>
     
   )
 }
