@@ -10,7 +10,7 @@ export interface UserSession {
     role : string,
 }
 
-export interface Ticket {
+export interface ITicket {
     id: string,
     title: string,
     description: string,

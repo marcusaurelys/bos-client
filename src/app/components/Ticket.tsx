@@ -2,10 +2,11 @@ import React from 'react'
 import DropArea from './DropArea'
 import {motion} from 'framer-motion'
 import { TagIcon } from '@heroicons/react/16/solid'
+import {ITicket} from "../../types"
 
 interface TicketProps {
-    ticket: Ticket
-    handleDragStart: (e: React.DragEvent<HTMLDivElement>, ticket: Ticket) => void
+    ticket: ITicket
+    handleDragStart: (e: React.DragEvent<HTMLDivElement>, ticket: ITicket) => void
 }
 
 function Ticket({ticket, handleDragStart}: TicketProps) {
@@ -23,7 +24,6 @@ function Ticket({ticket, handleDragStart}: TicketProps) {
 
   return ( <>
 
-    <DropArea id={ticket.id} status={ticket.status}/>
     <motion.div layout layoutId={ticket.id.toString()} onDragStart={(e) => {handleDragStart(e as unknown as React.DragEvent<HTMLDivElement>, ticket)}} className='flex flex-col bg-card rounded-sm p-3 text-sm h-fit gap-1 cursor-grab active:cursor-grabbing' draggable="true" >
 
         {/* ticket tags */}
