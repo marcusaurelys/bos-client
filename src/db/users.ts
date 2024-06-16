@@ -1,12 +1,14 @@
-import client from "@/db/mongo"
+import { useDB } from "@/db/mongo"
 import { UUID } from "crypto"
+import bcrypt from "bcryptjs"
+import { UserSession } from '@/types'
 
-export const users = client.db('business-os').collection('users')
+const db = await useDB()
+export const users = db.collection('users')
 
 
 export const getUser = async(email : string) => {
     const result = await users.findOne({email : email})
-    console.log(result)
     return result
 }
 
@@ -26,13 +28,17 @@ export const setToken = async(name: string, token : string, expires: Date) => {
 
 }
 
-interface UserSession {
-    name : string,
-    role : string,
-}
 
-export const getToken = async(token : string) => {
+
+//get user info from token
+export const getToken = async(token : string | null) => {
+
+    if(token == null){
+        return null
+    }
+
     const find = await users.findOne({token: token})
+    
     if(find != null){
         const result : UserSession = {name : find.name, role : find.role}
         return result
@@ -40,4 +46,41 @@ export const getToken = async(token : string) => {
 
     return null
 
+}
+
+
+//return token if exists
+export const hasToken = async(user : string) => {
+    const find = await users.findOne({name : user})
+
+    if(find != null){
+
+        if(find.token){
+            return find.token
+        }
+        return null
+    }
+
+    return null
+}
+
+export const createUser = async(name : string, email: string, password: string, role : string, discord : string) => {
+
+    const emailTaken = await users.findOne({email : email})
+
+    if(emailTaken){
+        return null
+    }
+
+
+    const passHash = await bcrypt.hash(password, 10)
+
+    const result = await users.insertOne({name : name, email : email, password : passHash, role : role, discord : discord})
+    return result
+}
+
+export const  getAllUsers = async() => {
+    const result = await users.find({})
+    return result
+    
 }
