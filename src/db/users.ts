@@ -31,7 +31,7 @@ export const setToken = async(name: string, token : string, expires: Date) => {
 
 
 //get user info from token
-export const getToken = async(token : string | null) => {
+export const getToken = async(token : string | undefined) => {
 
     if(token == null){
         return null
@@ -40,7 +40,7 @@ export const getToken = async(token : string | null) => {
     const find = await users.findOne({token: token})
     
     if(find != null){
-        const result : UserSession = {name : find.name, role : find.role}
+        const result : UserSession = {name : find.name, email : find.email, role : find.role}
         return result
     }
 

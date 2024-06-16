@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import NavBar from "../components/NavBar";
 import { validateUser } from "@/lib/auth";
+import { cookies } from "next/headers";
+import { getToken } from "@/db/users";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +19,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  const user = await validateUser(['admin', 'member'])
+  const cookieStore = cookies()
+  const token = cookieStore.get("session")
+  const user = await getToken(token?.value)
   
 
   return ( <>
