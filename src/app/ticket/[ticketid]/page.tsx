@@ -13,12 +13,6 @@ import {
     TabsTrigger,
   } from "@/components/ui/tabs"
   import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
-  import {
     Select,
     SelectContent,
     SelectItem,
@@ -28,6 +22,7 @@ import {
   
   import { getTickets } from "@/db/tickets";
 import { Button } from "@/components/ui/button"
+import { Key } from "react"
   
   
 
@@ -107,28 +102,18 @@ export default async function ticket({params}:{params:{ticketid:string}}) {
                             <h1>{ticket_info.priority.charAt(0).toUpperCase() + ticket_info.priority.slice(1)}</h1>
                         </div>
                         {
-                            ticket_info.tags.map((tag, index) => {
-                                return <div key={index} className="flex flex-row rounded-md w-fit text-xs border py-1 px-2 items-center gap-2 mb-1">
+                            ticket_info.tags.map((tag: string, index: Key | null | undefined) => (
+                                <div key={index} className="flex flex-row rounded-md w-fit text-xs border py-1 px-2 items-center gap-2 mb-1">
                                     <TagIcon className="h-4 fill-none stroke-primary/40"/>
                                     <h1>{tag.charAt(0).toUpperCase() + tag.slice(1)}</h1>
                                 </div>
-                            })
+                            ))
                         }
                     </div>
                     <CardContent>
                         {ticket_info.description}
                     </CardContent>
                     <CardFooter>
-                        {/* <DropdownMenu>
-                        <DropdownMenuTrigger className="w-full">
-                            <div className="w-full border">{ticket_info.status}</div>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuItem>Pending</DropdownMenuItem>
-                            <DropdownMenuItem>Open</DropdownMenuItem>
-                            <DropdownMenuItem>Closed</DropdownMenuItem>
-                        </DropdownMenuContent>
-                        </DropdownMenu> */}
                         <div className="flex flex-row w-full gap-2">
                             <Select>
                             <SelectTrigger className="w-2/3">
@@ -142,7 +127,6 @@ export default async function ticket({params}:{params:{ticketid:string}}) {
                             </Select>
                             <Button className="w-1/3">Update</Button>
                         </div>
-
                     </CardFooter>
                 </Card> 
             </div>
