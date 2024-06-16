@@ -22,11 +22,17 @@ export default async function RootLayout({
   const cookieStore = cookies()
   const token = cookieStore.get("session")
   const user = await getToken(token?.value)
+
+  async function handleLogout () {
+    "use server"
+    cookies().delete("session")
+
+  }
   
 
   return ( <>
 
-  <NavBar user={user}/>
+  <NavBar user={user} handleLogout={handleLogout}/>
     <div>
         {children}
     </div>

@@ -14,11 +14,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 
 interface NavBarProps {
   user: UserSession | null
+  handleLogout: () => void
 }
 
-function NavBar({user}: NavBarProps) {
+function NavBar({user, handleLogout}: NavBarProps) {
   const pathName = usePathname()
-  console.log(user)
+  
+
 
   return (
     <header className="flex items-center justify-between px-16 h-12 text-primary border-b ">
@@ -30,9 +32,15 @@ function NavBar({user}: NavBarProps) {
         <Link href="/" className={`text-sm font-medium hover:underline ${pathName == "/" ? "text-sky-600": ""}`} prefetch={false}>
           Board
         </Link>
-        <Link href="/admin" className={`text-sm font-medium hover:underline ${pathName.startsWith("/admin") ? "text-sky-600": ""}`} prefetch={false}>
+        {
+          user?.role === "admin" 
+          ?
+          <Link href="/admin" className={`text-sm font-medium hover:underline ${pathName.startsWith("/admin") ? "text-sky-600": ""}`} prefetch={false}>
           Team
         </Link>
+          :
+          <></>
+        }
         <Separator className="h-4" orientation="vertical" />
         {
           user 
@@ -52,13 +60,13 @@ function NavBar({user}: NavBarProps) {
                     <p className="text-md text-primary/50">{user?.email}</p>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                {/* <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <Link href="/profile"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
                   <Link href="/settings"><DropdownMenuItem>Settings</DropdownMenuItem></Link>
-                </DropdownMenuGroup>
+                </DropdownMenuGroup> */}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600">Log out</DropdownMenuItem>
+                <DropdownMenuItem className="text-red-600" onClick={() => handleLogout()}>Log out</DropdownMenuItem>
 
 
 
