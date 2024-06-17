@@ -119,10 +119,6 @@ export default function EmployeeTable({ticket, tickets}: EmployeeTableProps) {
         fetchUsers();
     }, []);
 
-    useEffect(() => {
-        updateUserIDs();
-    }, []);
-
     if (loading) {
         return <div>Loading...</div>;
     }
