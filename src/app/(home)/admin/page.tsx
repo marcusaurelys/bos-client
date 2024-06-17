@@ -62,12 +62,13 @@ async function register(formData : FormData){
     const password = formData.get('password') as string
     const confirm = formData.get('confirm-pass') as string
     const role = formData.get('role') as string
+    const discord = formData.get('discord') as string
 
     if(password !== confirm){
         redirect('?failRegister')
     }
 
-    const res = await createUser(name, email, password, role)
+    const res = await createUser(name, email, password, role, discord)
 
     if(!res){
         redirect('?failregister')
@@ -96,18 +97,17 @@ export default async function Page(){
 
     if(user != null){
         return (
-            <div className='h-screen w-screen'>
-                hi {user.name}, you are an {user.role}
+            <div className='h-screen w-screen pt-3'>
 
 
                 <h1 className="text-3xl font-bold text-center pb-3">Your Current team</h1>
                 
                 <Table className="bg-white b-black">
-                    <TableCaption>Your current team</TableCaption>
                     <TableHeader>
                         <TableRow>
                         <TableHead>Name</TableHead>
                         <TableHead>Email</TableHead>
+                        <TableHead> Discord Username </TableHead>
                         <TableHead>Role</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -117,6 +117,7 @@ export default async function Page(){
                         <TableRow key={user._id.toString()}> 
                         <TableCell>{user.name}</TableCell>
                         <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.discord}</TableCell>
                         <TableCell>{user.role} </TableCell>
                         </TableRow>
                         

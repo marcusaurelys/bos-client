@@ -10,6 +10,7 @@ import { getToken } from '@/db/users'
 import { validateUser } from "@/lib/auth";
 import Board from "../components/Board";
 import { changeStatus, getTickets } from "@/db/tickets";
+import NavBar from "../components/NavBar";
 
 export default async function Home() {
 
@@ -20,19 +21,24 @@ export default async function Home() {
   }
 
   async function handleChangeStatus(id: string, status: string) {
+    'use server'
     await changeStatus(id, status)
   }
 
   const tickets = await getTickets()
 
 
-  return (
-   <main className="h-screen w-full p-10 flex justify-center">
-      <div className="">
-        <Board ticketsData={tickets}/>
+  return ( <>
+    
+    <main className=" w-full h-[calc(100vh-3rem)] flex justify-center">
+      <div className="w-full flex flex-row">
+        <Board ticketsData={tickets} changeStatus={handleChangeStatus}/>
       </div>
       
    </main>
+
+  </>
+   
   );
 }
 

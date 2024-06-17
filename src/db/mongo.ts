@@ -1,9 +1,26 @@
-import {MongoClient} from 'mongodb'
+import {Db, MongoClient} from 'mongodb'
 
 
 
-const client = new MongoClient(process.env.MONGO_URI || '')
+const client = new MongoClient(process.env.MONGO_URI || '', {maxIdleTimeMS: 2000})
+let cache : Db | null = null
 
+
+//okay this works kinda lets goo
+export async function useDB() {
+  
+  if(cache){
+    console.log('db cached!')
+    return cache
+  }
+
+  console.log('no db cached, making new client')
+  const db = client.db('business-os')
+  cache = db
+  return db
+}
+
+/*
 async function run() {
     try {
       // Connect the client to the server	(optional starting in v4.7)
@@ -17,4 +34,4 @@ async function run() {
       console.log("successfully closed connection")
     }
 }
-export default client
+*/

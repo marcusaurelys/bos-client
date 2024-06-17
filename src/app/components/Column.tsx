@@ -11,7 +11,8 @@ interface ColumnProps {
     status: string,
     tickets: ITicket[],
     setTickets: any,
-    filters: Set<string>
+    filters: Set<string>,
+    changeStatus: (id: string, status: string) => void
 }
 
 
@@ -20,7 +21,7 @@ interface ColumnProps {
 // tickets -> filtered by priority
 // filteredTickets -> filtered by column
 
-function Column({title, status, tickets, setTickets, filters}: ColumnProps) {
+function Column({title, status, tickets, setTickets, filters, changeStatus}: ColumnProps) {
     const [active, setActive] = useState(false)
     const [filteredTickets, setFilteredTickets] = useState<ITicket[]>([])
 
@@ -94,6 +95,7 @@ function Column({title, status, tickets, setTickets, filters}: ColumnProps) {
 
             console.log(copy)
             setTickets(copy)
+            changeStatus(ticketId, status)
         }
 
     }
@@ -143,7 +145,7 @@ function Column({title, status, tickets, setTickets, filters}: ColumnProps) {
     }
 
   return (
-    <motion.div layout onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} className={`z-0 relative shadow-sm flex flex-col bg-muted w-96 rounded-md h-fit p-3 ${active ? "ring-2 ring-cyan-400" : ""}`}>
+    <motion.div layout onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} className={`z-0 relative shadow-sm flex flex-col h-[calc(100vh-12rem)] bg-muted w-96 rounded-md p-3 ${active ? "ring-2 ring-cyan-400" : ""}`}>
         {/* column header*/}
         <motion.div layout className="flex flex-row gap-2 items-center my-1 h-7">
             <h1 className="font-semibold">{title}</h1>
@@ -152,7 +154,7 @@ function Column({title, status, tickets, setTickets, filters}: ColumnProps) {
 
         {/* column body */}
         <ScrollArea>
-        <div className="h-[500px] flex-auto gap-2 flex flex-col"> 
+        <div className="h-full flex-auto gap-2 flex flex-col"> 
             <DropArea id={"-1"} status={status}/>
             {
                 filteredTickets.map((ticket, index) => {

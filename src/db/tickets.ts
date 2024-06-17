@@ -1,10 +1,11 @@
-import client from "@/db/mongo"
+import { useDB } from "@/db/mongo"
 import { UUID } from "crypto"
 import { ObjectId } from "mongodb"
-import {ITicket} from "../types"
+import { ITicket } from '@/types'
 
 
-export const tickets = client.db('business-os').collection('tickets')
+const db = await useDB()
+export const tickets = db.collection('tickets')
 
 export const getTickets = async () => {
     let ticketsData: ITicket[] = []
@@ -31,7 +32,7 @@ export const getTickets = async () => {
         
     })
 
-    console.log(ticketsData)
+    //console.log(ticketsData)
 
     return ticketsData
 }
