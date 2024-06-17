@@ -156,7 +156,7 @@ function Column({title, status, tickets, setTickets, filters}: ColumnProps) {
             <DropArea id={"-1"} status={status}/>
             {
                 filteredTickets.map((ticket, index) => {
-                    return <Ticket key={ticket.id} ticket={ticket} handleDragStart={handleDragStart}/> 
+                    return <Ticket key={ticket.id} ticket={ticket} tickets = {tickets} handleDragStart={handleDragStart}/> 
                 })
             }
             

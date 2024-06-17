@@ -19,6 +19,7 @@ export const getTickets = async () => {
                 description: t.description,
                 status: t.status,
                 priority: t['priority_score'],
+                userIDs: t.userIDs ?? [],
                 tags: t.tags,
                 dateCreated: t.date_created.toString()
             })
@@ -37,4 +38,13 @@ export const getTickets = async () => {
 
 export const changeStatus = async (id: string, status: string) => {
     await tickets.updateOne({_id: new ObjectId(id)}, {$set: {status: status}})
+}
+
+export const updateTicket = async (id: string, params: {}) => {
+    await tickets.updateOne(
+        {_id: new ObjectId(id)}, 
+        {$set: {
+            ...params
+        }}
+    );
 }

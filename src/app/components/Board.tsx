@@ -4,10 +4,10 @@ import React, { useEffect, useState } from 'react'
 import Column from './Column'
 import Filter from './Filter';
 import { WithId } from 'mongodb';
-import Ticket from './Ticket';
+import { ITicket } from '@/types';
 
 interface BoardProps {
-  ticketsData: Ticket[]
+  ticketsData: ITicket[]
 }
 
 function Board({ticketsData}: BoardProps) {
@@ -31,7 +31,7 @@ function Board({ticketsData}: BoardProps) {
     //   setFilteredTickets(t => filtered)
     // }, [filters])
 
-    const handleSetTickets = (tickets: Ticket[]) => {
+    const handleSetTickets = (tickets: ITicket[]) => {
         setTickets(tickets)
     }
 

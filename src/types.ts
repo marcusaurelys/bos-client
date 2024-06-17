@@ -1,4 +1,5 @@
 export interface User {
+    _id: string,
     email : string,
     role : string,
     name : string
@@ -10,12 +11,13 @@ export interface UserSession {
     role : string,
 }
 
-export interface Ticket {
+export interface ITicket {
     id: string,
     title: string,
     description: string,
     status: string,
     priority: string,
-    tags: string[]
+    tags: string[],
+    userIDs: string[],
     dateCreated: string
 }
