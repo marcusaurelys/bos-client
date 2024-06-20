@@ -1,11 +1,10 @@
 'use client'
-
-
+import React, { useState, useEffect } from 'react'
+import { useDataContext } from '@/contexts/DataContext'
 import Column from './Column'
 import Filter from './Filter'
 
 export default function Board() {
-    
   return (
     <div className="flex justify-center items-start w-full h-full">
       <div className="flex flex-col w-fit justify-center">
