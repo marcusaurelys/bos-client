@@ -1,11 +1,16 @@
+'use server'
+
 import { useDB } from "@/db/mongo"
 import { UUID } from "crypto"
 import bcrypt from "bcryptjs"
 import { UserSession } from '@/types'
 
 const db = await useDB()
-export const users = db.collection('users')
+const users = db.collection('users')
 
+export const fuckNextUsers = async() => {
+    
+}
 
 export const getUser = async(email : string) => {
     const result = await users.findOne({email : email})
@@ -27,8 +32,6 @@ export const setToken = async(name: string, token : string, expires: Date) => {
     return null
 
 }
-
-
 
 //get user info from token
 export const getToken = async(token : string | undefined) => {
@@ -65,7 +68,6 @@ export const hasToken = async(user : string) => {
 }
 
 export const createUser = async(name : string, email: string, password: string, role : string, discord : string) => {
-
     const emailTaken = await users.findOne({email : email})
 
     if(emailTaken){
@@ -79,8 +81,9 @@ export const createUser = async(name : string, email: string, password: string, 
     return result
 }
 
-export const  getAllUsers = async() => {
-    const result = await users.find({})
-    return result
+export const getAllUsers = async() => {
+
+    const result = await users.find({}).toArray()
+    return JSON.stringify(result)
     
 }

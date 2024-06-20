@@ -1,16 +1,9 @@
-'use server'
-
-import { SessionContext } from "@/components/SessionContext";
-import Image from "next/image";
-import { useContext } from "react";
-import Hi from '@/components/Hi'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
-import { getToken } from '@/db/users'
 import { validateUser } from "@/lib/auth";
 import Board from "../components/Board";
-import { changeStatus, getTickets } from "@/db/tickets";
-import NavBar from "../components/NavBar";
+import { fuckNextTickets } from '@/db/tickets'
+import { fuckNextUsers } from '@/db/users'
+import { fuckNextDB } from '@/db/mongo'
 
 export default async function Home() {
 
@@ -20,25 +13,20 @@ export default async function Home() {
     redirect('/login')
   }
 
-  async function handleChangeStatus(id: string, status: string) {
-    'use server'
-    await changeStatus(id, status)
-  }
+  fuckNextDB()
+  fuckNextUsers()
+  fuckNextTickets()
 
-  const tickets = await getTickets()
-
-
-  return ( <>
-    
+  return (
+   <>
     <main className=" w-full h-[calc(100vh-3rem)] flex justify-center">
       <div className="w-full flex flex-row">
-        <Board ticketsData={tickets} changeStatus={handleChangeStatus}/>
-      </div>
-      
+        <Board/>
+      </div>    
    </main>
-
-  </>
-   
+   </>
   );
+  
 }
+
 

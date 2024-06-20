@@ -1,25 +1,20 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useDataContext } from '@/contexts/DataContext'
 import Column from './Column'
 import Filter from './Filter';
 import { WithId } from 'mongodb';
 import { ITicket } from '@/types';
 
-interface BoardProps {
-  ticketsData: ITicket[]
-  changeStatus: (id: string, status: string) => void
-}
-
-function Board({ticketsData, changeStatus}: BoardProps) {
-    const [tickets, setTickets] = useState(ticketsData)
-    const [filters, setFilters] = useState(new Set<string>())
+export default function Board() {
+    const { tickets, setTickets } = useDataContext()
+    
     // const [filteredTickets, setFilteredTickets] = useState(tickets)
-
 
     // useEffect(() => {
     //   let filtered = [...tickets]
-
+    
     //   if(filters.size > 0) {
     //     let temps = Array.from(filters).map((filter => {
     //       let temp = tickets.filter((t) => t.priority === filter)
@@ -32,46 +27,19 @@ function Board({ticketsData, changeStatus}: BoardProps) {
     //   setFilteredTickets(t => filtered)
     // }, [filters])
 
-    const handleSetTickets = (tickets: ITicket[]) => {
-        setTickets(tickets)
-    }
-
-    const addFilter = (toAdd: string) => {
-      setFilters(f => new Set(f).add(toAdd))
-      
-    }
-
-    const removeFilter = (toRemove: string) => {
-      setFilters(f => {
-        const newSet = new Set(f);
-        newSet.delete(toRemove);
-        return newSet;
-      });
-    };
-
-    const clearFilters = () => {
-      setFilters(f => new Set<string>())
-    }
-
-    
-
-
   return (
     <div className="flex justify-center items-start w-full h-full">
       <div className="flex flex-col w-fit justify-center">
         <div className="z-10 relative my-3" >
-          <Filter selected={filters} addFilter={addFilter} removeFilter={removeFilter} clearFilters={clearFilters}/>
+          <Filter/>
         </div>
         <div className="flex gap-12 flex-wrap"> 
-          <Column title="Pending" status="pending" tickets={tickets} filters={filters} setTickets={handleSetTickets} changeStatus={changeStatus}/>
-          <Column title="Open" status="open" tickets={tickets} filters={filters} setTickets={handleSetTickets} changeStatus={changeStatus}/>
-          <Column title="Closed" status="closed" tickets={tickets} filters={filters} setTickets={handleSetTickets} changeStatus={changeStatus}/>
+          <Column title="Pending" status="pending"/>
+          <Column title="Open" status="open"/>
+          <Column title="Closed" status="closed"/>
         </div>
-      </div>
-      
+      </div>   
     </div>
     
   )
 }
-
-export default Board

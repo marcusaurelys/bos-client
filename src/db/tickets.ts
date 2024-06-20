@@ -1,33 +1,37 @@
+'use server'
+
 import { useDB } from "@/db/mongo"
-import { UUID } from "crypto"
 import { ObjectId } from "mongodb"
 import { ITicket } from '@/types'
 
-
 const db = await useDB()
-export const tickets = db.collection('tickets')
+const tickets = db.collection('tickets')
+
+export const fuckNextTickets = async() => {
+    
+    
+}
 
 export const getTickets = async () => {
     let ticketsData: ITicket[] = []
-
+    
     const result = await tickets.find({}).toArray()
     
-    result.forEach((t) => {
+    result.forEach((ticket) => {
         try {
             ticketsData.push({
-                id: t._id.toString(), 
-                title: t.name,
-                description: t.description,
-                status: t.status,
-                priority: t['priority_score'],
-                userIDs: t.userIDs ?? [],
-                tags: t.tags,
-                dateCreated: t.date_created.toString()
+                id: ticket._id.toString(), 
+                title: ticket.name,
+                description: ticket.description,
+                status: ticket.status,
+                priority: ticket.priority_score,
+                userIDs: ticket.userIDs ?? [],
+                tags: ticket.tags,
+                dateCreated: ticket.date_created.toString()
             })
-
         }
         catch(e) {
-            console.log("invalid ticket")
+            console.log("Invalid ticket")
         }
         
     })
@@ -41,7 +45,7 @@ export const changeStatus = async (id: string, status: string) => {
     await tickets.updateOne({_id: new ObjectId(id)}, {$set: {status: status}})
 }
 
-export const updateTicket = async (id: string, params: {}) => {
+export const refreshTicket = async (id: string, params: {}) => {
     await tickets.updateOne(
         {_id: new ObjectId(id)}, 
         {$set: {
