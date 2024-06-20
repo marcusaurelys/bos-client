@@ -1,6 +1,6 @@
 'use server'
 
-import { Base64 } from 'js-base64'
+import { Base64 } frm 'js-base64'
 
 const CRISP_WEBSITE_ID = process.env.CRISP_WEBSITE_ID
 const CRISP_API_ID = process.env.CRISP_API_ID
@@ -24,7 +24,7 @@ export const getConversations = async(page_number: int) => {
    return response
 }
 
-export const getMessages = async(session_id: string, page_number: int) => {
+export const getMessages = async(session_id: string) => {
   const auth = Base64.encode(`${CRISP_API_ID}:${CRISP_API_KEY}`);
   // console.log({ auth });
   const crispRes = await fetch(`https://api.crisp.chat/v1/website/${CRISP_WEBSITE_ID}/conversation/${session_id}/messages`, {
