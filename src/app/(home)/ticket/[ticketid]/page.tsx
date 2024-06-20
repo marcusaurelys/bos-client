@@ -29,7 +29,7 @@ export default async function ticket({params}:{params:{ticketid:string}}) {
 
     const tickets = await getTickets()
     const id = tickets.findIndex(x => x.id === params.ticketid)
-    const ticket_info = tickets.id
+    const ticket_info = tickets[id]
 
     const chat_history = {
         "messages": [

@@ -37,12 +37,20 @@ export default function DataContextProvider({ children }){
 
     // Fetch tickets on initial page load
     useEffect(() => {
+        let abort = false
+        
         const fetchTickets = async() => {
           const tickets = await getTickets()
-          setTickets(tickets)
+          if (!abort) {
+              setTickets(tickets)
+          }
         } 
-        
+
         fetchTickets()
+
+        return () => {
+            abort = true
+        }
         
     }, [ticketsTrigger])
     
