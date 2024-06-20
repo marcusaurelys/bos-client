@@ -107,7 +107,7 @@ export default async function Page(){
                         <TableRow>
                         <TableHead>Name</TableHead>
                         <TableHead>Email</TableHead>
-                        <TableHead> Discord Username </TableHead>
+                        <TableHead> Discord User ID </TableHead>
                         <TableHead>Role</TableHead>
                         </TableRow>
                     </TableHeader>
