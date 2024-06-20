@@ -51,6 +51,10 @@ import {
   } from "@/components/ui/table"
 import AddUserForm from '@/components/AddUserForm'
 
+import { fuckNextTickets } from '@/db/tickets'
+import { fuckNextUsers } from '@/db/users'
+import { fuckNextDB } from '@/db/mongo'
+
 
 async function register(formData : FormData){
     "use server"
@@ -85,15 +89,22 @@ export default async function Page(){
 
     //todo make this a function that you will call in layout
     const user = await validateUser(['admin'])
-    const users = await getAllUsers()
-    const userList = await users.toArray()
+    let users = await getAllUsers()
+    users = JSON.parse(users)
+    console.log(users)
+    //const userList = await users.toArray()
 
     //console.log(userList)
 
 
     if(!user){
         redirect('/')
+        
     }
+
+    fuckNextDB()
+    fuckNextUsers()
+    fuckNextTickets()
 
     if(user != null){
         return (
@@ -112,7 +123,7 @@ export default async function Page(){
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                    {userList.map((user) => (
+                    {users.map((user) => (
                         
                         <TableRow key={user._id.toString()}> 
                         <TableCell>{user.name}</TableCell>

@@ -6,6 +6,8 @@ import {
     getTickets,
 } from '@/db/tickets'
 
+import { ITicket } from '@/types'
+
 import {
     getAllUsers
 } from '@/db/users'

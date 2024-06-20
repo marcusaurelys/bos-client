@@ -29,7 +29,7 @@ export default function Page(){
         const user = await getUser(formData.get('email') as string)
         //console.log(user)
         if (user != null) {
-            success = true
+            success = await bcrypt.compare(formData.get('password') as string, user.password)
             //console.log(success)
             if (success)
                 console.log(user.name)

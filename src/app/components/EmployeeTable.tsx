@@ -54,7 +54,6 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
     const [ticketToUpdate, updateTicket] = useState(ticket);
     const { tickets, ticketsTrigger, setTicketsTrigger } = useDataContext()
     
-    console.log(ticketToUpdate)
     const fetchUsers = async () => {
         try {
             const response = await getAllUsers()
