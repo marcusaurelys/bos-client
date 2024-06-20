@@ -5,6 +5,7 @@ import { TagIcon } from '@heroicons/react/16/solid'
 import {User, ITicket} from "../../types"
 import EmployeeTable from './EmployeeTable'
 import { useDataContext } from '@/contexts/DataContext'
+import Link from 'next/link'
 
 interface TicketProps {
     ticket: ITicket
@@ -44,8 +45,8 @@ export default function Ticket({ticket, handleDragStart}: TicketProps) {
 
         </div>
         
-
-        {/* ticket description */}
+        <Link href={`ticket/${ticket.id}`}>
+            {/* ticket description */}
         <div className="font-semibold">
                 <h1>{ticket.title}</h1>
         </div>
@@ -54,6 +55,8 @@ export default function Ticket({ticket, handleDragStart}: TicketProps) {
         <div className="mb-4">
                 <h1>{ticket.description}</h1>
         </div>
+        </Link>
+        
 
         {/* ticket footer */}
         <div className="flex flex-row mt-auto">
