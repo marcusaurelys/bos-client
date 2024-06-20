@@ -23,7 +23,7 @@ export default function Filter() {
                 <PlusCircleIcon className="h-4 stroke-1"/>
                 <h1 className="">Priority</h1>
                 {
-                    selectedFilters.size > 0 && 
+                    selectedFilters.length > 0 && 
                     <div className="flex flex-row gap-2 items-center">
                         <Separator orientation="vertical" className="mx-2 h-4"/>
                         {
@@ -58,7 +58,7 @@ export default function Filter() {
                         }
                         
                         {
-                            selectedFilters.size > 0 && <>
+                            selectedFilters.length > 0 && <>
                                 <CommandSeparator />
                                 <CommandItem onSelect={clearFilters} className="justify-center flex">
                                     Clear All

@@ -23,11 +23,11 @@ export default function Column({title, status}: ColumnProps) {
     const [filteredTickets, setFilteredTickets] = useState<ITicket[]>([])
     
     useEffect(() => {
-        const filtered_tickets_by_status = tickets.filter((ticket) => ticket.status === status)
+        const filtered_tickets_by_status = tickets.filter((ticket) => ticket.status.toLowerCase() === status.toLowerCase())
         
-        if (filters.size > 0) {
+        if (filters.length > 0) {
              const filtered_tickets_by_priority = filters.map((filter) => {
-                  return filtered_tickets_by_status.filter((ticket) => ticket.priority === filter)
+                  return filtered_tickets_by_status.filter((ticket) => ticket.priority.toLowerCase() === filter.toLowerCase())
              }).flat()
 
              setFilteredTickets(filtered_tickets_by_priority)
