@@ -1,6 +1,6 @@
 'use server'
 
-import { Base64 } frm 'js-base64'
+import { Base64 } from 'js-base64'
 
 const CRISP_WEBSITE_ID = process.env.CRISP_WEBSITE_ID
 const CRISP_API_ID = process.env.CRISP_API_ID
