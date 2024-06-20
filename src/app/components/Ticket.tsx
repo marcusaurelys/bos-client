@@ -4,29 +4,25 @@ import {motion} from 'framer-motion'
 import { TagIcon } from '@heroicons/react/16/solid'
 import {User, ITicket} from "../../types"
 import EmployeeTable from './EmployeeTable'
+import { useDataContext } from '@/contexts/DataContext'
 
 interface TicketProps {
     ticket: ITicket
-    tickets: ITicket[]
     handleDragStart: (e: React.DragEvent<HTMLDivElement>, ticket: ITicket) => void
 }
 
-function Ticket({ticket, tickets, handleDragStart}: TicketProps) {
-
-    
+export default function Ticket({ticket, handleDragStart}: TicketProps) {
 
     let priorityColor
-    if(ticket.priority == "high") {
+    if(ticket.priority.toLowerCase() === "high") {
         priorityColor = "bg-red-500"
     }
-    if(ticket.priority == "medium") {
+    if(ticket.priority.toLowerCase() === "medium") {
         priorityColor = "bg-yellow-400"
     }
-    if(ticket.priority == "low") {
+    if(ticket.priority.toLowerCase() === "low") {
         priorityColor = "bg-green-500"
     }
-
-
 
   return ( <>
 
@@ -61,7 +57,7 @@ function Ticket({ticket, tickets, handleDragStart}: TicketProps) {
 
         {/* ticket footer */}
         <div className="flex flex-row mt-auto">
-            <EmployeeTable ticket = {ticket} tickets = {tickets}/>
+            <EmployeeTable ticket={ticket}/>
             <h1 className="text-xs text-primary/75 ml-auto">{ticket.dateCreated.slice(4,15)}</h1>
         </div>
 
@@ -76,5 +72,3 @@ function Ticket({ticket, tickets, handleDragStart}: TicketProps) {
     
   )
 }
-
-export default Ticket

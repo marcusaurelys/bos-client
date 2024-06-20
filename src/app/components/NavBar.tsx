@@ -17,7 +17,7 @@ interface NavBarProps {
   handleLogout: () => void
 }
 
-function NavBar({user, handleLogout}: NavBarProps) {
+export default function NavBar({user, handleLogout}: NavBarProps) {
   const pathName = usePathname()
   
 
@@ -84,5 +84,3 @@ function NavBar({user, handleLogout}: NavBarProps) {
     </header>
   )
 }
-
-export default NavBar

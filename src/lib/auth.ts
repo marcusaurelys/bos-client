@@ -13,8 +13,6 @@ interface UserCookie {
     name : string,
     tokenExpiry : Date 
     token : string
-
-
 }
 
 interface User {
@@ -23,7 +21,6 @@ interface User {
     password : string,
     role : 'admin' | 'user',
     name : string,
-    
 }
 
 

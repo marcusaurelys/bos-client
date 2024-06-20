@@ -5,48 +5,30 @@ import React from 'react'
 import { PlusCircleIcon, CheckIcon } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Separator } from '@/components/ui/separator'
+import { useDataContext } from '@/contexts/DataContext'
+
+const filterChoices =  ["High", "Medium", "Low"]
 
 
-const filters = [
-    {
-      value: "high",
-      label: "High",
-    },
-    {
-      value: "medium",
-      label: "Medium",
-    },
-    {
-      value: "low",
-      label: "Low",
-    }
-  ]
+export default function Filter() {
 
-interface FilterProps {
-    selected: Set<string>,
-    addFilter: (toAdd: string) => void,
-    removeFilter: (toRemove: string) => void
-    clearFilters: () => void
-}
-
-function FIlter({selected, addFilter, removeFilter, clearFilters}: FilterProps) {
-
-    const selectedValues = new Set(Array.from(selected))
+    const { filters, addFilter, removeFilter, clearFilters } = useDataContext()
+    const selectedFilters = [...filters]
 
   return (
-    <div>
+    <>
         <Popover>
             <PopoverTrigger>
                 <div className="h-8 border-dashed shadow-sm bg-background text-sm my-2 flex flex-row items-center border border-primary/25 rounded p-3">
                 <PlusCircleIcon className="h-4 stroke-1"/>
                 <h1 className="">Priority</h1>
                 {
-                    selectedValues.size > 0 && 
+                    selectedFilters.size > 0 && 
                     <div className="flex flex-row gap-2 items-center">
                         <Separator orientation="vertical" className="mx-2 h-4"/>
                         {
-                            Array.from(selectedValues).map((filter, index) => {
-                                return <h1 key={filter} className="bg-muted px-2 py-1 rounded text-xs">{filter.charAt(0).toUpperCase() + filter.slice(1)}</h1>
+                            selectedFilters.map((filter, index) => {
+                                return <h1 key={filter} className="bg-muted px-2 py-1 rounded text-xs">{filter.slice(0,2)}</h1>
                             })
                         }
                     </div>
@@ -57,44 +39,37 @@ function FIlter({selected, addFilter, removeFilter, clearFilters}: FilterProps) 
                 <Command>
                     <CommandList>   
                         {
-                            filters.map((f, index) => {
-                                const isSelected = selectedValues.has(f.value)
+                            filterChoices.map((filter, index) => {
+                                const isSelected = selectedFilters.includes(filter)
 
-                                return <CommandItem className="m-1" key={f.value} onSelect={() => {
-                                    if(isSelected) {
-                                        removeFilter(f.value)
-                                    }  
-                                    if(!isSelected) {
-                                        addFilter(f.value)
-                                    }
-                                }}>
-                                            <div className={cn("mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary", isSelected ? "bg-primary text-primary-foreground": "opacity-50 [&_svg]:invisible")}>
+                                return <CommandItem className="m-1" key={filter} onSelect={() => {
+                                                if (isSelected) {
+                                                    removeFilter(filter)
+                                                }  
+                                                if (!isSelected) {
+                                                    addFilter(filter)
+                                                }
+                                        }}>
+                                        <div className={cn("mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary", isSelected ? "bg-primary text-primary-foreground": "opacity-50 [&_svg]:invisible")}>
                                                 <CheckIcon className={cn("h-4 w-4")} />
                                             </div>
-                                            {f.label}
-                                        </CommandItem>
-                            })
+                                            {filter}
+                                        </CommandItem> })
                         }
                         
                         {
-                            selectedValues.size > 0 && <>
+                            selectedFilters.size > 0 && <>
                                 <CommandSeparator />
                                 <CommandItem onSelect={clearFilters} className="justify-center flex">
                                     Clear All
                                 </CommandItem>
                             </>
                             
-                        }
-                        
+                        }    
                     </CommandList>
-                    
-                    
                 </Command>
-            </PopoverContent>
-        
+            </PopoverContent>  
         </Popover>
-    </div>
+    </>
   )
 }
-
-export default FIlter

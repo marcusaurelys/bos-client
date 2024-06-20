@@ -1,5 +1,3 @@
-import React, { useState, useEffect } from 'react';
-
 import {
     Dialog,
     DialogContent,
@@ -27,15 +25,18 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import { User, ITicket } from '@/types';
+import { refreshTicket } from "@/db/tickets";
+import { getAllUsers } from "@/db/users";
+import { useDataContext } from '@/contexts/DataContext'
 
 import styled from 'styled-components';
 
 interface EmployeeTableProps {
     ticket: ITicket;
-    tickets: ITicket[];
 }
 
 const CustomDialogContent = styled(DialogContent)`
@@ -44,24 +45,22 @@ const CustomDialogContent = styled(DialogContent)`
   max-width: 100%;
 `;
 
-export default function EmployeeTable({ticket, tickets}: EmployeeTableProps) {
+export default function EmployeeTable({ticket}: EmployeeTableProps) {
 
     const [users, setUsers] = useState<User[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [isOpen, setOpen] = useState(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [ticketToUpdate, updateTicket] = useState(ticket);
-
+    const { tickets, ticketsTrigger, setTicketsTrigger } = useDataContext()
+    
+    console.log(ticketToUpdate)
     const fetchUsers = async () => {
         try {
-            const response = await fetch('/api/users');
-            if (response.ok) {
-                const data: User[] = await response.json();
-                setUsers(data);
-                setFilteredUsers(data);
-            } else {
-                console.error('Failed to fetch users');
-            }
+            const response = await getAllUsers()
+            const users = JSON.parse(response) 
+            setUsers(users);
+            setFilteredUsers(users);            
         } catch (error) {
             console.error('Error fetching users:', error);
         } finally {
@@ -82,20 +81,8 @@ export default function EmployeeTable({ticket, tickets}: EmployeeTableProps) {
 
     const updateUserIDs = async () => {
         try {
-            const response = await fetch(`/api/tickets/${ticketToUpdate.id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userIDs: ticketToUpdate.userIDs
-                }),
-            });
-            if (!response.ok) {
-                console.error('Failed to update user IDs');
-            } else {
-                //setTemp(tickets)
-            }
+            refreshTicket(ticketToUpdate.id, {userIDs: ticketToUpdate.userIDs})
+            setTicketsTrigger(trigger => trigger + 1)
         } catch (error) {
             console.error('Error updating user IDs:', error);
         }
@@ -114,10 +101,10 @@ export default function EmployeeTable({ticket, tickets}: EmployeeTableProps) {
         }
         setFilteredUsers(sortedUsers);
     };
-
+        
     useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [ticketsTrigger]);
 
     if (loading) {
         return <div>Loading...</div>;

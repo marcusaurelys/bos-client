@@ -20,17 +20,16 @@ import {
     SelectValue,
   } from "@/components/ui/select"
   
-  import { getTickets } from "@/db/tickets";
+import { getTickets } from "@/db/tickets";
 import { Button } from "@/components/ui/button"
 import { Key } from "react"
   
   
-
 export default async function ticket({params}:{params:{ticketid:string}}) {
 
     const tickets = await getTickets()
     const id = tickets.findIndex(x => x.id === params.ticketid)
-    const ticket_info = tickets[id]
+    const ticket_info = tickets.id
 
     const chat_history = {
         "messages": [

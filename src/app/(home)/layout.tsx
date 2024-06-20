@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import NavBar from "../components/NavBar";
-import { validateUser } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { getToken } from "@/db/users";
+import DataContextProvider from '@/contexts/DataContext'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,15 +29,13 @@ export default async function RootLayout({
 
   }
   
-
-  return ( <>
-
+  return ( 
+  <>
   <NavBar user={user} handleLogout={handleLogout}/>
-    <div>
-        {children}
-    </div>
-
+    <DataContextProvider>
+      {children}
+    </DataContextProvider>
   </>
-    
   );
+  
 }

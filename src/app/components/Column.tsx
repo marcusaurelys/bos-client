@@ -1,46 +1,43 @@
 import React, { useEffect, useState } from 'react'
 import Ticket from './Ticket'
 import DropArea from './DropArea'
-import {motion} from 'framer-motion'
+import { motion } from 'framer-motion'
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {ITicket} from '../../types'
-
+import { ITicket } from '../../types'
+import { useDataContext } from '@/contexts/DataContext'
+import { changeStatus } from '@/db/tickets'
 
 interface ColumnProps {
     title: string,
     status: string,
-    tickets: ITicket[],
-    setTickets: any,
-    filters: Set<string>,
-    changeStatus: (id: string, status: string) => void
 }
-
-
 
 // allTickets -> not filtered
 // tickets -> filtered by priority
 // filteredTickets -> filtered by column
 
-function Column({title, status, tickets, setTickets, filters, changeStatus}: ColumnProps) {
+export default function Column({title, status}: ColumnProps) {
     const [active, setActive] = useState(false)
+    const { tickets, setTickets } = useDataContext()
+    const { filters } = useDataContext()
     const [filteredTickets, setFilteredTickets] = useState<ITicket[]>([])
-
-
+    
     useEffect(() => {
-        let temp = tickets.filter((t) => t.status === status)
-        if(filters.size > 0) {
-            temp = Array.from(filters).map((f) => {
-                let x = temp.filter((t) => t.priority === f)
-                return x
-            }).flat()
+        const filtered_tickets_by_status = tickets.filter((ticket) => ticket.status === status)
+        
+        if (filters.size > 0) {
+             const filtered_tickets_by_priority = filters.map((filter) => {
+                  return filtered_tickets_by_status.filter((ticket) => ticket.priority === filter)
+             }).flat()
+
+             setFilteredTickets(filtered_tickets_by_priority)
+        } else {
+             setFilteredTickets(filtered_tickets_by_status)
         }
 
-        setFilteredTickets(f => temp)
     }, [tickets, filters])
 
     
-    
-
     const handleDragStart = (e: React.DragEvent<HTMLElement>, ticket: ITicket) => {
         e.dataTransfer.setData("ticketId", ticket.id)
     }
@@ -158,16 +155,12 @@ function Column({title, status, tickets, setTickets, filters, changeStatus}: Col
             <DropArea id={"-1"} status={status}/>
             {
                 filteredTickets.map((ticket, index) => {
-                    return <Ticket key={ticket.id} ticket={ticket} tickets = {tickets} handleDragStart={handleDragStart}/> 
+                    return <Ticket key={ticket.id} ticket={ticket} handleDragStart={handleDragStart}/> 
                 })
             }
-            
-            
         </div>
         </ScrollArea>
 
     </motion.div>
   )
 }
-
-export default Column
