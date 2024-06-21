@@ -41,6 +41,28 @@ export const getTickets = async () => {
     return ticketsData
 }
 
+export const getTicket = async(id: string) => {
+    const result = await tickets.findOne({_id: new ObjectId(id)})
+    try {
+        const ticket = {
+            id: result._id.toString(),
+            title: result.name ?? "No title found",
+            description: result.description ?? "No description found",
+            status: result.status ?? "open",
+            priority: result.priority_score ?? "high",
+            userIDs: result.userIDs ?? [],
+            tags: result.tags ?? [],
+            dateCreated: result.date_created.toString() ?? "You should crash at this point"
+        }
+        return ticket
+    } catch (error) {
+        console.log(error)
+        return null
+    }
+
+    
+}
+
 export const changeStatus = async (id: string, status: string) => {
     await tickets.updateOne({_id: new ObjectId(id)}, {$set: {status: status}})
 }

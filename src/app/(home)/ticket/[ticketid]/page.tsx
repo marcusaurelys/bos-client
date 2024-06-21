@@ -19,18 +19,22 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
-  
-import { getTickets } from "@/db/tickets";
+
+import { getTicket } from "@/db/tickets";
 import { Button } from "@/components/ui/button"
 import { Key } from "react"
   
   
 export default async function ticket({params}:{params:{ticketid:string}}) {
 
-    const tickets = await getTickets()
-    const id = tickets.findIndex(x => x.id === params.ticketid)
-    const ticket_info = tickets[id]
+    const ticket_info = await getTicket(params.ticketid)
 
+    if (!ticket_info) {
+        return (
+            <p>Ticket returned null from database, check the id in the url</p>
+        )
+    }
+    
     const chat_history = {
         "messages": [
           { "content": "Hi there, I'm experiencing some issues with one of our servers. It seems to be running slow and some services are unresponsive. Can you help?", "from": "Boris" },
@@ -47,6 +51,7 @@ export default async function ticket({params}:{params:{ticketid:string}}) {
     }
 
     let priorityColor
+    
     if(ticket_info.priority == "high") {
         priorityColor = "bg-red-500"
     }
@@ -60,7 +65,8 @@ export default async function ticket({params}:{params:{ticketid:string}}) {
     return (<>
         <div className="flex flex-row m-4">
             <div className="w-2/3 border rounded-lg m-2">
-                <Tabs defaultValue="account" className="w-full">
+
+                                <Tabs defaultValue="account" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="chat">Chat History</TabsTrigger>
                     <TabsTrigger value="ai">AI Recommendations</TabsTrigger>
