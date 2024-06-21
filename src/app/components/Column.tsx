@@ -33,7 +33,7 @@ export default function Column({title, status}: ColumnProps) {
              setFilteredTickets(filtered_tickets_by_priority)
         } else {
              setFilteredTickets(filtered_tickets_by_status)
-
+        }
         return () => {
             console.log(filteredTickets)
         }
