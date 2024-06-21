@@ -24,6 +24,7 @@ import { getTickets } from "@/db/tickets";
 import { Button } from "@/components/ui/button"
 import { Key } from "react"
 import { handleChangeStatus } from "@/contexts/actions";
+import { revalidatePath } from "next/cache";
   
 export default async function ticket({params}:{params:{ticketid:string}}) {
 
@@ -36,6 +37,7 @@ export default async function ticket({params}:{params:{ticketid:string}}) {
         "use server"
         const status = (formData.get('status') as string).toLowerCase()
         handleChangeStatus(params.ticketid, status)
+        revalidatePath(`/ticket/${params.ticketid}`)
     }
 
     const chat_history = {
