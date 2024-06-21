@@ -47,26 +47,13 @@ const CustomDialogContent = styled(DialogContent)`
 
 export default function EmployeeTable({ticket}: EmployeeTableProps) {
 
-    const [users, setUsers] = useState<User[]>([]);
+    const { users, setUsers } = useDataContext();
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [isOpen, setOpen] = useState(false);
-    const [loading, setLoading] = useState<boolean>(true);
+    const { loading, setLoading } = useDataContext();
     const [ticketToUpdate, updateTicket] = useState(ticket);
     const { tickets, ticketsTrigger, setTicketsTrigger } = useDataContext()
-    
-    const fetchUsers = async () => {
-        try {
-            const response = await getAllUsers()
-            const users = JSON.parse(response) 
-            setUsers(users);
-            setFilteredUsers(users);            
-        } catch (error) {
-            console.error('Error fetching users:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-    
+     
     const toggleUser = (user: User) => {
         const userId = user._id;
         const hasUser = ticketToUpdate.userIDs.includes(userId);
@@ -100,39 +87,11 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
         }
         setFilteredUsers(sortedUsers);
     };
-        
+
     useEffect(() => {
-        let abort = false
+        setFilteredUsers(users)
+    }, [ticketsTrigger])
         
-        const fetchUsers = async () => {
-            try {
-                const response = await getAllUsers()
-                const users = JSON.parse(response)
-
-                if (!abort) {
-                    setUsers(users);
-                    setFilteredUsers(users);            
-                } 
-                
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            } finally {
-                if (!abort) {
-                    setLoading(false);
-                }
-            }
-        };
-        
-        fetchUsers();
-        
-        return () => {
-            abort = true
-        }
-        
-    }, [ticketsTrigger]);
-
-        
-
     if (loading) {
         return <div>Loading...</div>;
     }

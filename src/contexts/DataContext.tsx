@@ -22,6 +22,9 @@ export default function DataContextProvider({ children }){
     const [tickets, setTickets] = useState<ITicket[]>([])
     const [filters, setFilters] = useState<string[]>([])
     const [ticketsTrigger, setTicketsTrigger] = useState(0)
+    const [users, setUsers] = useState([])
+    const [loading, setLoading] = useState(true)
+    
     // Filter Functions
     const addFilter = (toAdd: string) => {
       setFilters([...filters, toAdd]);
@@ -35,18 +38,33 @@ export default function DataContextProvider({ children }){
       setFilters([])
     }
 
-    // Fetch tickets on initial page load
+    // Fetch tickets and users on initial page load
     useEffect(() => {
         let abort = false
+        setLoading(true)
         
         const fetchTickets = async() => {
           const tickets = await getTickets()
-          if (!abort) {
-              setTickets(tickets)
-          }
+          return tickets
         } 
 
-        fetchTickets()
+        const fetchUsers = async() => {
+            const response = await getAllUsers()
+            const users = JSON.parse(response)
+            return users
+        }
+
+        const fetchData = async() => {
+            const [tickets, users] = await Promise.all([fetchTickets(), fetchUsers()])
+
+            if (!abort) { 
+                setTickets(tickets)
+                setUsers(users)
+                setLoading(false)
+            }
+        }
+
+        fetchData()
 
         return () => {
             abort = true
@@ -65,6 +83,10 @@ export default function DataContextProvider({ children }){
                 addFilter,
                 removeFilter,
                 clearFilters,
+                users,
+                setUsers,
+                loading,
+                setLoading,
                 ticketsTrigger,
                 setTicketsTrigger,
             }
