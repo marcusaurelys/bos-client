@@ -23,13 +23,20 @@ import {
 import { getTickets } from "@/db/tickets";
 import { Button } from "@/components/ui/button"
 import { Key } from "react"
-  
+import { handleChangeStatus } from "@/contexts/actions";
   
 export default async function ticket({params}:{params:{ticketid:string}}) {
 
     const tickets = await getTickets()
     const id = tickets.findIndex(x => x.id === params.ticketid)
     const ticket_info = tickets[id]
+
+
+    async function setStatus(formData : FormData){
+        "use server"
+        const status = (formData.get('status') as string).toLowerCase()
+        handleChangeStatus(params.ticketid, status)
+    }
 
     const chat_history = {
         "messages": [
@@ -113,19 +120,23 @@ export default async function ticket({params}:{params:{ticketid:string}}) {
                         {ticket_info.description}
                     </CardContent>
                     <CardFooter>
+                    <form action={setStatus}>
                         <div className="flex flex-row w-full gap-2">
-                            <Select>
-                            <SelectTrigger className="w-2/3">
-                                <SelectValue placeholder={ticket_info.status} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="light">Pending</SelectItem>
-                                <SelectItem value="dark">Open</SelectItem>
-                                <SelectItem value="system">Closed</SelectItem>
-                            </SelectContent>
-                            </Select>
-                            <Button className="w-1/3">Update</Button>
+                            
+                                <Select name="status">
+                                <SelectTrigger className="w-2/3">
+                                    <SelectValue placeholder={ticket_info.status} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="pending">Pending</SelectItem>
+                                    <SelectItem value="open">Open</SelectItem>
+                                    <SelectItem value="closed">Closed</SelectItem>
+                                </SelectContent>
+                                </Select>
+                                <Button className="w-1/3">Update</Button>
+                            
                         </div>
+                    </form>
                     </CardFooter>
                 </Card> 
             </div>
