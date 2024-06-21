@@ -19,7 +19,7 @@ interface ColumnProps {
 export default function Column({title, status}: ColumnProps) {
     const [active, setActive] = useState(false)
     const { tickets, setTickets } = useDataContext()
-    const { filters } = useDataContext()
+    const { filters, setFilters } = useDataContext()
     const [filteredTickets, setFilteredTickets] = useState<ITicket[]>([])
     
     useEffect(() => {
@@ -33,6 +33,9 @@ export default function Column({title, status}: ColumnProps) {
              setFilteredTickets(filtered_tickets_by_priority)
         } else {
              setFilteredTickets(filtered_tickets_by_status)
+
+        return () => {
+            console.log(filteredTickets)
         }
 
     }, [tickets, filters])

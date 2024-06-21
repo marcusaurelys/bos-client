@@ -66,7 +66,7 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
             setLoading(false);
         }
     };
-
+    
     const toggleUser = (user: User) => {
         const userId = user._id;
         const hasUser = ticketToUpdate.userIDs.includes(userId);
@@ -102,8 +102,36 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
     };
         
     useEffect(() => {
+        let abort = false
+        
+        const fetchUsers = async () => {
+            try {
+                const response = await getAllUsers()
+                const users = JSON.parse(response)
+
+                if (!abort) {
+                    setUsers(users);
+                    setFilteredUsers(users);            
+                } 
+                
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            } finally {
+                if (!abort) {
+                    setLoading(false);
+                }
+            }
+        };
+        
         fetchUsers();
+        
+        return () => {
+            abort = true
+        }
+        
     }, [ticketsTrigger]);
+
+        
 
     if (loading) {
         return <div>Loading...</div>;
