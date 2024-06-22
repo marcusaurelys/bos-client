@@ -9,10 +9,9 @@ import {
     DialogTitle,
     DialogTrigger,
     DialogClose
-  } from "@/components/ui/dialog"
+} from "@/components/ui/dialog"
 
-
-  import {
+import {
     Select,
     SelectContent,
     SelectGroup,
@@ -20,19 +19,20 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-  } from "@/components/ui/select"
+} from "@/components/ui/select"
 
   
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from 'react'
+import { register } from '@/db/users'
 
 interface Props {
     register : ((formData : FormData) => void)
 }
 
-export default function AddUserForm( { register } : Props ){
+export default function AddUserForm(){
 
     const [isOpen, setOpen] = useState(false)
 

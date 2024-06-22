@@ -1,4 +1,4 @@
-import { changeStatus, getTickets } from "@/db/tickets";  
+import { getTickets } from "@/db/tickets";  
 
 export default async function ticket() {
 

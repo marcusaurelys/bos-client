@@ -56,3 +56,6 @@ export const get_chatbot_response = async(prompt) => {
   const output = await response.json() 
   return output 
 } 
+
+// Chatbot History 
+

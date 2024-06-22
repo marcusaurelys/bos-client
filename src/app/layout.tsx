@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
-import SessionContextWrapper from "@/components/SessionContext";
 import { cookies } from "next/headers";
 import { getToken } from "@/db/users";
 
@@ -23,20 +22,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  const sessionToken = cookies().get('session')?.value
-  let session : UserSession | null = null
-  if (sessionToken != null) {
-    session = await getToken(sessionToken)
-  }
-  //console.log(session)
-  
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionContextWrapper session={session}>
           {children}
-        </SessionContextWrapper>
-        </body>
+      </body>
     </html>
   );
 }

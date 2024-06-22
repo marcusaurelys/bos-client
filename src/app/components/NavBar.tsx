@@ -11,16 +11,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Command, CommandDialog, CommandItem, CommandList } from '@/components/ui/command'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { get_user_by_token, logout } from '@/db/users'
+import { cookies } from 'next/headers'
 
-interface NavBarProps {
-  user: UserSession | null
-  handleLogout: () => void
-}
+export default function NavBar() {
 
-export default function NavBar({user, handleLogout}: NavBarProps) {
-  const pathName = usePathname()
+  const user = await get_user_by_token(cookies().get('session').value)
   
-
+  const pathName = usePathname()
 
   return (
     <header className="flex items-center justify-between px-16 h-12 text-primary border-b ">
@@ -66,10 +64,8 @@ export default function NavBar({user, handleLogout}: NavBarProps) {
                   <Link href="/settings"><DropdownMenuItem>Settings</DropdownMenuItem></Link>
                 </DropdownMenuGroup> */}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600" onClick={() => handleLogout()}>Log out</DropdownMenuItem>
-
-
-
+                <DropdownMenuItem className="text-red-600" onClick={() => logout()}>Log out</DropdownMenuItem>
+                
               </DropdownMenuContent>
           </DropdownMenu>
           : 
