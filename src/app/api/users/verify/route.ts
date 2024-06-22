@@ -1,18 +1,34 @@
 import { cookies } from 'next/headers'
+import { get_user_by_token } from '@/db/users'
 
-export default async function handler(req, res) {
+export async function GET() {
   const token = cookies().get('session')
-
-  if (!token.value) {
-    res.status(404).json({error: 'No token found!''})
+  if (!token) {
+    return new Response(JSON.stringify({error: 'No token found!'}), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
   }
   
-  const response = await get_user_by_token(token.value)
+  const user = await get_user_by_token(token.value)
 
   if (!user) {
-    res.status(404).json({error: 'No user with that token!'})
+    return new Response(JSON.stringify({error: 'No user with that token found!'}), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
   }
     
-  res.status(200).json({success: 'Valid token!'})
+
+  return new Response(JSON.stringify({success: 'Valid token!'}), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
   
 } 

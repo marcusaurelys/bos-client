@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import NavBar from "../components/NavBar";
 import DataContextProvider from '@/contexts/DataContext'
+import { cookies } from 'next/headers'
+import { get_user_by_token } from '@/db/users'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,10 +18,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
- 
+
+  const response = await get_user_by_token(cookies().get('session').value)
+  const user = {
+    name: response.name,
+    email: response.email,
+    role: response.role
+  }
+  
   return ( 
   <>
-  <NavBar/>
+    <NavBar user={user}/>
     <DataContextProvider>
       {children}
     </DataContextProvider>

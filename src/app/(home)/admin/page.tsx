@@ -44,7 +44,7 @@ import {
     TableRow,
   } from "@/components/ui/table"
 
-import AddUserForm from '@/components/AddUserForm'
+import AddUserForm from '@/app/components/AddUserForm'
 
 import { fuckNextTickets } from '@/db/tickets'
 import { fuckNextUsers, getAllUsers } from '@/db/users'

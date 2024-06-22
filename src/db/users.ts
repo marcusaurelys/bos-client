@@ -49,7 +49,7 @@ export const getAllUsers = async() => {
     
 }
 
-export const register = async (formData : FormData) {
+export const register = async (formData : FormData) => {
     let success = false
 
     const name = formData.get('name') as string
@@ -117,7 +117,7 @@ export const login = async(formData) => {
     if (!response) {
         redirect('fail')
     }
-    
+    console.log("setting cookie")
     cookies().set('session', token, {
         path: '/',
         httpOnly: true,
@@ -132,6 +132,7 @@ export const login = async(formData) => {
     
 export const logout = async() => {
     cookies().delete("session")
+    redirect('/login')
 }
 
 

@@ -11,13 +11,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Command, CommandDialog, CommandItem, CommandList } from '@/components/ui/command'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { get_user_by_token, logout } from '@/db/users'
-import { cookies } from 'next/headers'
+import { logout } from '@/db/users'
 
-export default function NavBar() {
-
-  const user = await get_user_by_token(cookies().get('session').value)
-  
+export default function NavBar({user}) {
+    
   const pathName = usePathname()
 
   return (
