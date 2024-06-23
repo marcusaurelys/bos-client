@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "@/app/globals.css";
 import NavBar from "../components/NavBar";
 import DataContextProvider from '@/contexts/DataContext'
 import { cookies } from 'next/headers'
