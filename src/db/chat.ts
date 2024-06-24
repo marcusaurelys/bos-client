@@ -1,6 +1,7 @@
 'use server'
 
 import { Base64 } from 'js-base64'
+   
 
 const CRISP_WEBSITE_ID = process.env.CRISP_WEBSITE_ID
 const CRISP_API_ID = process.env.CRISP_API_ID
@@ -58,4 +59,8 @@ export const get_chatbot_response = async(prompt) => {
 } 
 
 // Chatbot History 
+
+export const get_chatbot_history = async() => {
+  
+}
 
