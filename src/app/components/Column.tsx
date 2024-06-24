@@ -77,7 +77,6 @@ export default function Column({title, status}: ColumnProps) {
     }
     
     const handle_drop = (e: React.DragEvent) => {
-        e.stopPropagation()
         setActive(false)
 
         const index = 0;
