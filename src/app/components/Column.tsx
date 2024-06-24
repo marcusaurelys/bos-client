@@ -42,6 +42,11 @@ export default function Column({title, status}: ColumnProps) {
     const handle_drag_enter = (e: React.DragEvent) => {
         e.preventDefault()
         setActive(true)
+        const ticket_status = e.dataTransfer.getData("ticket_status")
+    
+        if (ticket_status !== status) {
+            e.dataTransfer.dropEffect = 'copy'
+        }
     }
   
     const handle_drag_over = (e: React.DragEvent) => {
@@ -82,6 +87,10 @@ export default function Column({title, status}: ColumnProps) {
         const ticket_index = e.dataTransfer.getData("ticket_index")
         const column_status = status
         
+        if (ticket_status !== status) {
+            e.dataTransfer.dropEffect = 'copy'
+        }
+        
         console.log(`column_status - ${column_status}: ticket_status - ${ticket_status}`)
         console.log(`index to move to - ${index}: ticket_index - ${ticket_index}`)
 
@@ -99,9 +108,10 @@ export default function Column({title, status}: ColumnProps) {
             filtered_copy.splice(index, 0, ticket_to_transfer)
             
             setFilteredTickets(filtered_copy)
+            console.log(filteredTickets)
             
         } else if ( column_status !== ticket_status ) {
-    
+            console.log("in column not equal ticket")
             const filtered_copy = [...filteredTickets]
             let ticket_to_transfer = tickets.find((ticket) => ticket.id === ticket_id)
             ticket_to_transfer = {...ticket_to_transfer, status}
@@ -111,6 +121,7 @@ export default function Column({title, status}: ColumnProps) {
 
             filtered_copy.splice(index, 0, ticket_to_transfer)
             setFilteredTickets(filtered_copy)
+            console.log(filteredTickets)
             changeStatus(ticket_id, status)
             
         } 

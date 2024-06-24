@@ -38,6 +38,12 @@ export default function Ticket({filteredTickets, setFilteredTickets, status, ind
         e.preventDefault()
         setActive(true)
         
+        const ticket_status = e.dataTransfer.getData("ticket_status")
+    
+        if (ticket_status !== status) {
+            e.dataTransfer.dropEffect = 'copy'
+        }    
+        
     }
 
     const handle_drag_over = (e: React.DragEvent) => {
@@ -78,6 +84,9 @@ export default function Ticket({filteredTickets, setFilteredTickets, status, ind
         
         console.log(`column_status - ${column_status}: ticket_status - ${ticket_status}`)
         console.log(`index to move to - ${index}: ticket_index - ${ticket_index}`)
+        if (ticket_status !== status) {
+            e.dataTransfer.dropEffect = 'copy'
+        }
 
         // If we are on the same column and the indexes are not the same
         if (column_status === ticket_status && index != ticket_index ) {
@@ -93,9 +102,10 @@ export default function Ticket({filteredTickets, setFilteredTickets, status, ind
             filtered_copy.splice(index, 0, ticket_to_transfer)
             
             setFilteredTickets(filtered_copy)
+            console.log(filteredTickets)
             
         } else if ( column_status !== ticket_status ) {
-    
+            console.log("in ticket not equal status")
             const filtered_copy = [...filteredTickets]
             let ticket_to_transfer = tickets.find((ticket) => ticket.id === ticket_id)
             ticket_to_transfer = {...ticket_to_transfer, status}
@@ -105,6 +115,7 @@ export default function Ticket({filteredTickets, setFilteredTickets, status, ind
 
             filtered_copy.splice(index, 0, ticket_to_transfer)
             setFilteredTickets(filtered_copy)
+            console.log(filteredTickets)
             changeStatus(ticket_id, status)
         } 
 
