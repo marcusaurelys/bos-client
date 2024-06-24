@@ -1,6 +1,4 @@
 'use client'
-import React, { useState, useEffect } from 'react'
-import { useDataContext } from '@/contexts/DataContext'
 import Column from './Column'
 import Filter from './Filter'
     
