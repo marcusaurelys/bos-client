@@ -149,7 +149,7 @@ export default function Ticket({filteredTickets, setFilteredTickets, index, tick
             
             filtered_copy.splice(index, 0, ticket_to_transfer)
             setFilteredTickets(filtered_copy)
-            //changeStatus(ticket_id, status)
+            changeStatus(ticket_id, status)
         } 
 
     }
