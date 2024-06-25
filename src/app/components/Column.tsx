@@ -78,6 +78,7 @@ export default function Column({title, status}: ColumnProps) {
     const handle_drag_end = (e: React.DragEvent) => {
         e.stopPropagation()
         setActive(false) 
+        console.log(e)
         // Ticket was successfully dropped
         if (e.dataTransfer.dropEffect === 'copy' && (e.dataTransfer.items.length === 3 || e.dataTransfer.items.length === 11) && e.dataTransfer.getData("ticket_id")) {
             const ticket_id = e.dataTransfer.getData("ticket_id")
@@ -87,6 +88,9 @@ export default function Column({title, status}: ColumnProps) {
             filtered_copy = filtered_copy.filter((ticket) => ticket.id !== ticket_id)
             setFilteredTickets(filtered_copy)
         } else {
+            console.log(e.dataTransfer.dropEffect)
+            console.log(e.dataTransfer.items.length)
+            console.log(e.dataTransfer.getData("ticket_id"))
             console.log("dropped")
         }
 
@@ -97,7 +101,7 @@ export default function Column({title, status}: ColumnProps) {
         e.stopPropagation()
         setActive(false)
 
-        if (e.dataTransfer.items.length != 3 && e.dataTransfer.items.length != 11 || !e.dataTransfer.getData("ticket_id")) {
+        if (e.dataTransfer.dropEffect === 'none' || e.dataTransfer.items.length != 3 && e.dataTransfer.items.length != 11 || !e.dataTransfer.getData("ticket_id")) {
             return
         }
 
@@ -135,6 +139,7 @@ export default function Column({title, status}: ColumnProps) {
             setFilteredTickets(filtered_copy)
             
         } else if ( column_status !== ticket_status ) {
+            console.log("in column status not equal")
             const filtered_copy = filteredTickets.map((ticket) => (
                 {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
             ))
@@ -148,7 +153,7 @@ export default function Column({title, status}: ColumnProps) {
             tickets[ind].status = status
             filtered_copy.splice(index, 0, ticket_to_transfer)
             setFilteredTickets(filtered_copy)
-            changeStatus(ticket_id, status)
+           // changeStatus(ticket_id, status)
         } 
 
     }
@@ -174,7 +179,7 @@ export default function Column({title, status}: ColumnProps) {
             {   // The handle drag and drop functions are inside ticket now
                 // Btw, consider moving these functions to a context if this gets refactored 
                 filteredTickets.map((ticket, index) => {
-                    return <Ticket filteredTickets={filteredTickets} setFilteredTickets={setFilteredTickets} status={status} index={index} key={ticket.id} ticket={ticket} /> 
+                    return <Ticket filteredTickets={filteredTickets} setFilteredTickets={setFilteredTickets} index={index} key={ticket.id} ticket={ticket} /> 
                 })
             }
         </div>
