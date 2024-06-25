@@ -20,9 +20,12 @@ export default function Column({title, status}: ColumnProps) {
     const { tickets, setTickets } = useDataContext()
     const { filters, setFilters } = useDataContext()
     const [filteredTickets, setFilteredTickets] = useState<ITicket[]>([])
-    
     useEffect(() => {
-        const filtered_tickets_by_status = tickets.filter((ticket) => ticket.status.toLowerCase() === status.toLowerCase())
+           
+        const filtered_copy = tickets.map((ticket) => (
+            {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
+        ))        
+        const filtered_tickets_by_status = filtered_copy.filter((ticket) => ticket.status.toLowerCase() === status.toLowerCase())
         
         if (filters.length > 0) {
              const filtered_tickets_by_priority = filters.map((filter) => {
@@ -33,52 +36,72 @@ export default function Column({title, status}: ColumnProps) {
         } else {
              setFilteredTickets(filtered_tickets_by_status)
         }
-        return () => {
-           // console.log(filteredTickets)
-        }
-
-    }, [tickets, filters])
+    }, [tickets, filters])        
+    
+    useEffect(() => {
+        console.log(`in ${status} column`)
+        console.log(filteredTickets)
+    }, [filteredTickets])
 
     const handle_drag_enter = (e: React.DragEvent) => {
         e.preventDefault()
+        e.stopPropagation()
         setActive(true)
         const ticket_status = e.dataTransfer.getData("ticket_status")
     
         if (ticket_status !== status) {
             e.dataTransfer.dropEffect = 'copy'
+        } else {
+            e.dataTransfer.dropEffect = 'move'
         }
     }
   
     const handle_drag_over = (e: React.DragEvent) => {
         e.preventDefault()
+        e.stopPropagation()
         setActive(true)
 
         const ticket_status = e.dataTransfer.getData("ticket_status")
-    
+
         if (ticket_status !== status) {
             e.dataTransfer.dropEffect = 'copy'
+        } else {
+            e.dataTransfer.dropEffect = 'move'
         }
-
     }
 
     const handle_drag_leave = (e: React.DragEvent) => {
+        e.stopPropagation()
         setActive(false)
     }
 
     const handle_drag_end = (e: React.DragEvent) => {
+        e.stopPropagation()
         setActive(false) 
         // Ticket was successfully dropped
-
-        if (e.dataTransfer.dropEffect === 'copy') {
+        if (e.dataTransfer.dropEffect === 'copy' && (e.dataTransfer.items.length === 3 || e.dataTransfer.items.length === 11) && e.dataTransfer.getData("ticket_id")) {
             const ticket_id = e.dataTransfer.getData("ticket_id")
-            const filtered_copy = filteredTickets.filter((ticket) => ticket.id !== ticket_id)
+            let filtered_copy = filteredTickets.map((ticket) => (
+                {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
+            ))
+            filtered_copy = filtered_copy.filter((ticket) => ticket.id !== ticket_id)
             setFilteredTickets(filtered_copy)
+        } else {
+            console.log("dropped")
         }
+
     }
     
     const handle_drop = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
         setActive(false)
 
+        if (e.dataTransfer.items.length != 3 && e.dataTransfer.items.length != 11 || !e.dataTransfer.getData("ticket_id")) {
+            return
+        }
+
+        
         const index = 0;
         // Assign status to columnStatus to make the functionality clear
         const ticket_id = e.dataTransfer.getData("ticket_id")
@@ -86,20 +109,23 @@ export default function Column({title, status}: ColumnProps) {
         const ticket_index = e.dataTransfer.getData("ticket_index")
         const column_status = status
         
-        if (ticket_status !== status) {
-            e.dataTransfer.dropEffect = 'copy'
-        }
-        
         console.log(`column_status - ${column_status}: ticket_status - ${ticket_status}`)
         console.log(`index to move to - ${index}: ticket_index - ${ticket_index}`)
-
+        
+        if (ticket_status !== status) {
+            e.dataTransfer.dropEffect = 'copy'
+        } else {
+            e.dataTransfer.dropEffect = 'move'
+        }
         // If we are on the same column and the indexes are not the same
         if (column_status === ticket_status && index != ticket_index ) {
-
-            const filtered_copy = filteredTickets.filter((ticket) => ticket.id !== ticket_id)
+            let filtered_copy = filteredTickets.map((ticket) => (
+                {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
+            ))
+            filtered_copy = filtered_copy.filter((ticket) => ticket.id !== ticket_id)
 
             let ticket_to_transfer = tickets.find((ticket) => ticket.id === ticket_id)
-            ticket_to_transfer = {...ticket_to_transfer}
+            ticket_to_transfer = {...ticket_to_transfer, tags: [...ticket_to_transfer.tags], userIDs: [...ticket_to_transfer.userIDs]}
             if (!ticket_to_transfer) {
                 return
             }
@@ -107,29 +133,29 @@ export default function Column({title, status}: ColumnProps) {
             filtered_copy.splice(index, 0, ticket_to_transfer)
             
             setFilteredTickets(filtered_copy)
-            console.log(filteredTickets)
             
         } else if ( column_status !== ticket_status ) {
-            console.log("in column not equal ticket")
-            const filtered_copy = [...filteredTickets]
-            let ticket_to_transfer = tickets.find((ticket) => ticket.id === ticket_id)
-            ticket_to_transfer = {...ticket_to_transfer, status}
-            if (!ticket_to_transfer) {
+            const filtered_copy = filteredTickets.map((ticket) => (
+                {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
+            ))
+
+            const ind = tickets.findIndex((ticket) => ticket.id === ticket_id)
+            if (ind == -1) {
                 return
             }
 
+            const ticket_to_transfer = {...tickets[ind], status, tags: [...tickets[ind].tags], userIDs: [...tickets[ind].userIDs]}
+            tickets[ind].status = status
             filtered_copy.splice(index, 0, ticket_to_transfer)
             setFilteredTickets(filtered_copy)
-            console.log(filteredTickets)
             changeStatus(ticket_id, status)
-            
         } 
 
     }
-
+    
   return (
     <motion.div layout
-       onDragEnter={handle_drag_enter}        
+       onDragEnter={handle_drag_enter}       
        onDragOver={handle_drag_over}
        onDragLeave={handle_drag_leave}
        onDragEnd={handle_drag_end}
