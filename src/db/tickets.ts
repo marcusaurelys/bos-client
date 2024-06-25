@@ -1,32 +1,37 @@
+'use server'
+
 import { useDB } from "@/db/mongo"
-import { UUID } from "crypto"
 import { ObjectId } from "mongodb"
 import { ITicket } from '@/types'
 
-
 const db = await useDB()
-export const tickets = db.collection('tickets')
+const tickets = db.collection('tickets')
+
+export const fuckNextTickets = async() => {
+    
+    
+}
 
 export const getTickets = async () => {
     let ticketsData: ITicket[] = []
-
+    
     const result = await tickets.find({}).toArray()
     
-    result.forEach((t) => {
+    result.forEach((ticket) => {
         try {
             ticketsData.push({
-                id: t._id.toString(), 
-                title: t.name,
-                description: t.description,
-                status: t.status,
-                priority: t['priority_score'],
-                tags: t.tags,
-                dateCreated: t.date_created.toString()
+                id: ticket._id.toString(), 
+                title: ticket.name,
+                description: ticket.description,
+                status: ticket.status,
+                priority: ticket.priority_score,
+                userIDs: ticket.userIDs ?? [],
+                tags: ticket.tags,
+                dateCreated: ticket.date_created.toString()
             })
-
         }
         catch(e) {
-            console.log("invalid ticket")
+            console.log("Invalid ticket")
         }
         
     })
@@ -36,6 +41,37 @@ export const getTickets = async () => {
     return ticketsData
 }
 
+export const getTicket = async(id: string) => {
+    const result = await tickets.findOne({_id: new ObjectId(id)})
+    try {
+        const ticket = {
+            id: result._id.toString(),
+            title: result.name ?? "No title found",
+            description: result.description ?? "No description found",
+            status: result.status ?? "open",
+            priority: result.priority_score ?? "high",
+            userIDs: result.userIDs ?? [],
+            tags: result.tags ?? [],
+            dateCreated: result.date_created.toString() ?? "You should crash at this point"
+        }
+        return ticket
+    } catch (error) {
+        console.log(error)
+        return null
+    }
+
+    
+}
+
 export const changeStatus = async (id: string, status: string) => {
     await tickets.updateOne({_id: new ObjectId(id)}, {$set: {status: status}})
+}
+
+export const refreshTicket = async (id: string, params: {}) => {
+    await tickets.updateOne(
+        {_id: new ObjectId(id)}, 
+        {$set: {
+            ...params
+        }}
+    );
 }

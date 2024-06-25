@@ -2,8 +2,6 @@
 
 import { cookies } from 'next/headers'
 import { createContext, useContext, useState } from 'react'
-import { getToken } from '@/db/users'
-
 
 interface User {
     name : string,
@@ -12,10 +10,10 @@ interface User {
 
 export const SessionContext = createContext<User | null>(null)
 
-export default function SessionContextWrapper({ session, children } : any){
+export default function SessionContextWrapper({ children } : any){
     
     return (
-        <SessionContext.Provider value={session}>
+        <SessionContext.Provider value={user}>
             {children}
         </SessionContext.Provider>
     )
