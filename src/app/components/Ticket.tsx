@@ -35,6 +35,11 @@ export default function Ticket({filteredTickets, setFilteredTickets, index, tick
         e.dataTransfer.setData("ticket_index", index)
         e.dataTransfer.effectAllowed = "all"
 
+        //chrome and edge fix
+        e.dataTransfer.setData(`${ticket.status}`, '')
+        e.dataTransfer.setData(`${ticket.id}`, '')
+
+
     }
 
     const handle_drag_enter = (e: React.DragEvent) => {
@@ -42,53 +47,40 @@ export default function Ticket({filteredTickets, setFilteredTickets, index, tick
         e.stopPropagation()
         setActive(true)
         
-        const ticket_status = e.dataTransfer.getData("ticket_status")
-    
-
-        if (ticket_status !== status) {
-            e.dataTransfer.dropEffect = 'copy'
-        } else {
-            e.dataTransfer.dropEffect = 'move'
-        }
-        
     }
 
     const handle_drag_over = (e: React.DragEvent) => {
         e.preventDefault()
         e.stopPropagation()
         setActive(true)
-
-        const ticket_status = e.dataTransfer.getData("ticket_status")
-        if (ticket_status !== status) {
-            e.dataTransfer.dropEffect = 'copy'
-        } else {
-            e.dataTransfer.dropEffect = 'move'
-        }
     
     }
 
     const handle_drag_leave = (e: React.DragEvent) => {
         e.stopPropagation()
         setActive(false)
+
     }
 
     const handle_drag_end = (e: React.DragEvent) => {
         e.stopPropagation()
         setActive(false) 
         console.log(e)
+        console.log(e.dataTransfer.types)
+        console.log(tickets)
         // Ticket was successfully dropped
-        if (e.dataTransfer.dropEffect === 'copy' && (e.dataTransfer.items.length === 3 || e.dataTransfer.items.length === 11) && e.dataTransfer.getData("ticket_id")) {
-            const ticket_id = e.dataTransfer.getData("ticket_id")
+
+        const index = tickets.findIndex((ticket) => ticket.id === e.dataTransfer.types[e.dataTransfer.types.length-1] )
+        const filter = tickets[index].status != e.dataTransfer.types[e.dataTransfer.types.length-2]
+        if (filter && (e.dataTransfer.items.length === 5 || e.dataTransfer.items.length === 8 || e.dataTransfer.items.length === 13) && e.dataTransfer.types.find((type) => type === 'ticket_id')) {
+            const ticket_id = e.dataTransfer.types[e.dataTransfer.types.length-1]
             let filtered_copy = filteredTickets.map((ticket) => (
                 {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
             ))
             filtered_copy = filtered_copy.filter((ticket) => ticket.id !== ticket_id)
             setFilteredTickets(filtered_copy)
         } else {
-            console.log(e.dataTransfer.dropEffect)
-            console.log(e.dataTransfer.items.length)
-            console.log(e.dataTransfer.getData("ticket_id"))
-            console.log("dropped")
+
         }
     }
     
@@ -96,10 +88,15 @@ export default function Ticket({filteredTickets, setFilteredTickets, index, tick
         e.preventDefault()
         e.stopPropagation()
         setActive(false)
+        
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isChromium = userAgent.indexOf(' chrome/') > -1;
 
- 
-        if (e.dataTransfer.dropEffect === 'none' || e.dataTransfer.items.length != 3 && e.dataTransfer.items.length != 11 || !e.dataTransfer.getData("ticket_id")) {
-                        
+        if (!isChromium && e.dataTransfer.dropEffect === 'none') {
+            return
+        }
+
+        if (e.dataTransfer.items.length != 5 && e.dataTransfer.items.length != 8 && e.dataTransfer.items.length != 13 || !e.dataTransfer.getData("ticket_id")) {
             return
         }
 
@@ -111,6 +108,7 @@ export default function Ticket({filteredTickets, setFilteredTickets, index, tick
         
         console.log(`column_status - ${column_status}: ticket_status - ${ticket_status}`)
         console.log(`index to move to - ${index}: ticket_index - ${ticket_index}`) 
+
         if (ticket_status !== status) {
             e.dataTransfer.dropEffect = 'copy'
         } else {
@@ -154,8 +152,6 @@ export default function Ticket({filteredTickets, setFilteredTickets, index, tick
 
     }
     
-    
-
   return ( <>
 
     <motion.div layout layoutId={ticket.id.toString()} 

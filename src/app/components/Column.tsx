@@ -47,53 +47,17 @@ export default function Column({title, status}: ColumnProps) {
         e.preventDefault()
         e.stopPropagation()
         setActive(true)
-        const ticket_status = e.dataTransfer.getData("ticket_status")
-    
-        if (ticket_status !== status) {
-            e.dataTransfer.dropEffect = 'copy'
-        } else {
-            e.dataTransfer.dropEffect = 'move'
-        }
     }
   
     const handle_drag_over = (e: React.DragEvent) => {
         e.preventDefault()
         e.stopPropagation()
         setActive(true)
-
-        const ticket_status = e.dataTransfer.getData("ticket_status")
-
-        if (ticket_status !== status) {
-            e.dataTransfer.dropEffect = 'copy'
-        } else {
-            e.dataTransfer.dropEffect = 'move'
-        }
     }
 
     const handle_drag_leave = (e: React.DragEvent) => {
         e.stopPropagation()
         setActive(false)
-    }
-
-    const handle_drag_end = (e: React.DragEvent) => {
-        e.stopPropagation()
-        setActive(false) 
-        console.log(e)
-        // Ticket was successfully dropped
-        if (e.dataTransfer.dropEffect === 'copy' && (e.dataTransfer.items.length === 3 || e.dataTransfer.items.length === 11) && e.dataTransfer.getData("ticket_id")) {
-            const ticket_id = e.dataTransfer.getData("ticket_id")
-            let filtered_copy = filteredTickets.map((ticket) => (
-                {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
-            ))
-            filtered_copy = filtered_copy.filter((ticket) => ticket.id !== ticket_id)
-            setFilteredTickets(filtered_copy)
-        } else {
-            console.log(e.dataTransfer.dropEffect)
-            console.log(e.dataTransfer.items.length)
-            console.log(e.dataTransfer.getData("ticket_id"))
-            console.log("dropped")
-        }
-
     }
     
     const handle_drop = (e: React.DragEvent) => {
@@ -101,10 +65,17 @@ export default function Column({title, status}: ColumnProps) {
         e.stopPropagation()
         setActive(false)
 
-        if (e.dataTransfer.dropEffect === 'none' || e.dataTransfer.items.length != 3 && e.dataTransfer.items.length != 11 || !e.dataTransfer.getData("ticket_id")) {
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isChromium = userAgent.indexOf(' chrome/') > -1;
+
+        if (!isChromium && e.dataTransfer.dropEffect === 'none') {
             return
         }
 
+        if (e.dataTransfer.items.length != 5 && e.dataTransfer.items.length != 8 && e.dataTransfer.items.length != 13 || !e.dataTransfer.getData("ticket_id")) {
+                        
+            return
+        }
         
         const index = 0;
         // Assign status to columnStatus to make the functionality clear
@@ -115,12 +86,9 @@ export default function Column({title, status}: ColumnProps) {
         
         console.log(`column_status - ${column_status}: ticket_status - ${ticket_status}`)
         console.log(`index to move to - ${index}: ticket_index - ${ticket_index}`)
+        console.log(e.dataTransfer.types)
+        console.log(status)
         
-        if (ticket_status !== status) {
-            e.dataTransfer.dropEffect = 'copy'
-        } else {
-            e.dataTransfer.dropEffect = 'move'
-        }
         // If we are on the same column and the indexes are not the same
         if (column_status === ticket_status && index != ticket_index ) {
             let filtered_copy = filteredTickets.map((ticket) => (
@@ -163,7 +131,6 @@ export default function Column({title, status}: ColumnProps) {
        onDragEnter={handle_drag_enter}       
        onDragOver={handle_drag_over}
        onDragLeave={handle_drag_leave}
-       onDragEnd={handle_drag_end}
        onDrop={handle_drop} 
        className={`z-0 relative shadow-sm flex flex-col h-[calc(100vh-12rem)] bg-muted w-96 rounded-md p-3 ${active ? "ring-2 ring-cyan-400" : ""}`}>
       
