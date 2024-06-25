@@ -11,9 +11,11 @@ interface TicketProps {
     ticket: ITicket
 }
 
-export default function Ticket({filteredTickets, setFilteredTickets, status, index, ticket}: TicketProps) {
+export default function Ticket({filteredTickets, setFilteredTickets, index, ticket}: TicketProps) {
     const [active, setActive] = useState(false)
     const { tickets } = useDataContext()
+
+    const status = ticket.status
     let priorityColor
     if(ticket.priority.toLowerCase() === "high") {
         priorityColor = "bg-red-500"
@@ -25,7 +27,8 @@ export default function Ticket({filteredTickets, setFilteredTickets, status, ind
         priorityColor = "bg-green-500"
     }
     
-    const handle_drag_start = (e) => { 
+    const handle_drag_start = (e) => {
+        console.log(ticket)
         e.stopPropagation()
         e.dataTransfer.setData("ticket_id", ticket.id)
         e.dataTransfer.setData("ticket_status", ticket.status)
@@ -72,6 +75,7 @@ export default function Ticket({filteredTickets, setFilteredTickets, status, ind
     const handle_drag_end = (e: React.DragEvent) => {
         e.stopPropagation()
         setActive(false) 
+        console.log(e)
         // Ticket was successfully dropped
         if (e.dataTransfer.dropEffect === 'copy' && (e.dataTransfer.items.length === 3 || e.dataTransfer.items.length === 11) && e.dataTransfer.getData("ticket_id")) {
             const ticket_id = e.dataTransfer.getData("ticket_id")
@@ -80,6 +84,11 @@ export default function Ticket({filteredTickets, setFilteredTickets, status, ind
             ))
             filtered_copy = filtered_copy.filter((ticket) => ticket.id !== ticket_id)
             setFilteredTickets(filtered_copy)
+        } else {
+            console.log(e.dataTransfer.dropEffect)
+            console.log(e.dataTransfer.items.length)
+            console.log(e.dataTransfer.getData("ticket_id"))
+            console.log("dropped")
         }
     }
     
@@ -89,17 +98,16 @@ export default function Ticket({filteredTickets, setFilteredTickets, status, ind
         setActive(false)
 
  
-        if (e.dataTransfer.items.length != 3 && e.dataTransfer.items.length != 11 || !e.dataTransfer.getData("ticket_id")) {
+        if (e.dataTransfer.dropEffect === 'none' || e.dataTransfer.items.length != 3 && e.dataTransfer.items.length != 11 || !e.dataTransfer.getData("ticket_id")) {
                         
             return
         }
 
-        
-        // Assign status to columnStatus to make the functionality clear
         const ticket_id = e.dataTransfer.getData("ticket_id")
         const ticket_status = e.dataTransfer.getData("ticket_status")
         const ticket_index = e.dataTransfer.getData("ticket_index")
-        const column_status = status
+        const status = ticket.status
+        const column_status = ticket.status
         
         console.log(`column_status - ${column_status}: ticket_status - ${ticket_status}`)
         console.log(`index to move to - ${index}: ticket_index - ${ticket_index}`) 
@@ -127,6 +135,7 @@ export default function Ticket({filteredTickets, setFilteredTickets, status, ind
             setFilteredTickets(filtered_copy)
             
         } else if ( column_status !== ticket_status ) {
+            console.log("in ticket status not equal")
             const filtered_copy = filteredTickets.map((ticket) => (
                 {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
             ))
@@ -140,7 +149,7 @@ export default function Ticket({filteredTickets, setFilteredTickets, status, ind
             
             filtered_copy.splice(index, 0, ticket_to_transfer)
             setFilteredTickets(filtered_copy)
-            changeStatus(ticket_id, status)
+            //changeStatus(ticket_id, status)
         } 
 
     }
