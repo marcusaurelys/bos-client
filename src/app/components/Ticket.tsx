@@ -6,14 +6,16 @@ import {User, ITicket} from "../../types"
 import EmployeeTable from './EmployeeTable'
 import { useDataContext } from '@/contexts/DataContext'
 import Link from 'next/link'
-
+import { changeStatus } from '@/db/tickets'
 interface TicketProps {
     ticket: ITicket
-    handleDragStart: (e: React.DragEvent<HTMLDivElement>, ticket: ITicket) => void
 }
 
-export default function Ticket({ticket, handleDragStart}: TicketProps) {
+export default function Ticket({filteredTickets, setFilteredTickets, index, ticket}: TicketProps) {
+    const [active, setActive] = useState(false)
+    const { tickets } = useDataContext()
 
+    const status = ticket.status
     let priorityColor
     if(ticket.priority.toLowerCase() === "high") {
         priorityColor = "bg-red-500"
@@ -24,11 +26,143 @@ export default function Ticket({ticket, handleDragStart}: TicketProps) {
     if(ticket.priority.toLowerCase() === "low") {
         priorityColor = "bg-green-500"
     }
+    
+    const handle_drag_start = (e) => {
+        console.log(ticket)
+        e.stopPropagation()
+        e.dataTransfer.setData("ticket_id", ticket.id)
+        e.dataTransfer.setData("ticket_status", ticket.status)
+        e.dataTransfer.setData("ticket_index", index)
+        e.dataTransfer.effectAllowed = "all"
 
+        //chrome and edge fix
+        e.dataTransfer.setData(`${ticket.status}`, '')
+        e.dataTransfer.setData(`${ticket.id}`, '')
+
+
+    }
+
+    const handle_drag_enter = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setActive(true)
+        
+    }
+
+    const handle_drag_over = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setActive(true)
+    
+    }
+
+    const handle_drag_leave = (e: React.DragEvent) => {
+        e.stopPropagation()
+        setActive(false)
+
+    }
+
+    const handle_drag_end = (e: React.DragEvent) => {
+        e.stopPropagation()
+        setActive(false) 
+        console.log(e)
+        console.log(e.dataTransfer.types)
+        console.log(tickets)
+        // Ticket was successfully dropped
+
+        const index = tickets.findIndex((ticket) => ticket.id === e.dataTransfer.types[e.dataTransfer.types.length-1] )
+        const filter = tickets[index].status != e.dataTransfer.types[e.dataTransfer.types.length-2]
+        if (filter && (e.dataTransfer.items.length === 5 || e.dataTransfer.items.length === 8 || e.dataTransfer.items.length === 13) && e.dataTransfer.types.find((type) => type === 'ticket_id')) {
+            const ticket_id = e.dataTransfer.types[e.dataTransfer.types.length-1]
+            let filtered_copy = filteredTickets.map((ticket) => (
+                {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
+            ))
+            filtered_copy = filtered_copy.filter((ticket) => ticket.id !== ticket_id)
+            setFilteredTickets(filtered_copy)
+        } else {
+
+        }
+    }
+    
+    const handle_drop = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setActive(false)
+        
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isChromium = userAgent.indexOf(' chrome/') > -1;
+
+        if (!isChromium && e.dataTransfer.dropEffect === 'none') {
+            return
+        }
+
+        if (e.dataTransfer.items.length != 5 && e.dataTransfer.items.length != 8 && e.dataTransfer.items.length != 13 || !e.dataTransfer.getData("ticket_id")) {
+            return
+        }
+
+        const ticket_id = e.dataTransfer.getData("ticket_id")
+        const ticket_status = e.dataTransfer.getData("ticket_status")
+        const ticket_index = e.dataTransfer.getData("ticket_index")
+        const status = ticket.status
+        const column_status = ticket.status
+        
+        console.log(`column_status - ${column_status}: ticket_status - ${ticket_status}`)
+        console.log(`index to move to - ${index}: ticket_index - ${ticket_index}`) 
+
+        if (ticket_status !== status) {
+            e.dataTransfer.dropEffect = 'copy'
+        } else {
+            e.dataTransfer.dropEffect = 'move'
+        }
+
+        // If we are on the same column and the indexes are not the same
+        if (column_status === ticket_status && index != ticket_index ) {
+            let filtered_copy = filteredTickets.map((ticket) => (
+                {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
+            ))
+            filtered_copy = filtered_copy.filter((ticket) => ticket.id !== ticket_id)
+
+            let ticket_to_transfer = tickets.find((ticket) => ticket.id === ticket_id)
+            ticket_to_transfer = {...ticket_to_transfer, tags: [...ticket_to_transfer.tags], userIDs: [...ticket_to_transfer.userIDs]}
+            if (!ticket_to_transfer) {
+                return
+            }
+
+            filtered_copy.splice(index, 0, ticket_to_transfer)
+            
+            setFilteredTickets(filtered_copy)
+            
+        } else if ( column_status !== ticket_status ) {
+            console.log("in ticket status not equal")
+            const filtered_copy = filteredTickets.map((ticket) => (
+                {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
+            ))
+            const ind = tickets.findIndex((ticket) => ticket.id === ticket_id)
+            if (ind == -1) {
+                return
+            }
+
+            const ticket_to_transfer = {...tickets[ind], status, tags: [...tickets[ind].tags], userIDs: [...tickets[ind].userIDs]}
+            tickets[ind].status = status
+            
+            filtered_copy.splice(index, 0, ticket_to_transfer)
+            setFilteredTickets(filtered_copy)
+            changeStatus(ticket_id, status)
+        } 
+
+    }
+    
   return ( <>
 
-    <motion.div layout layoutId={ticket.id.toString()} onDragStart={(e) => {handleDragStart(e as unknown as React.DragEvent<HTMLDivElement>, ticket)}} className='flex flex-col bg-card rounded-sm p-3 text-sm h-fit gap-1 cursor-grab active:cursor-grabbing' draggable="true" >
-
+    <motion.div layout layoutId={ticket.id.toString()} 
+        onDragStart={handle_drag_start}
+        onDragEnter={handle_drag_enter}
+        onDragLeave={handle_drag_leave}
+        onDragOver={handle_drag_over}
+        onDragEnd={handle_drag_end} 
+        onDrop={handle_drop} 
+        className={`flex flex-col bg-card rounded-sm p-3 text-sm h-fit gap-1 cursor-grab active:cursor-grabbing ${active ? "ring-2 ring-cyan-400 ring-inset" : ""}`}
+        draggable="true">
         {/* ticket tags */}
         <div className="flex gap-2 flex-wrap">
             <div className={`flex flex-row rounded-md w-fit text-xs py-1 px-2 items-center gap-2 mb-1 text-white ${priorityColor}`}>

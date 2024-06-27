@@ -11,7 +11,7 @@ export default async function Home() {
 
   return (
    <>
-    <main className=" w-full h-[calc(100vh-3rem)] flex justify-center">
+    <main className="w-full h-[calc(100vh-3rem)] flex justify-center">
       <div className="w-full flex flex-row">
         <Board/>
       </div>    

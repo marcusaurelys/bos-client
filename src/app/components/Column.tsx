@@ -6,7 +6,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { ITicket } from '../../types'
 import { useDataContext } from '@/contexts/DataContext'
 import { changeStatus } from '@/db/tickets'
-
 interface ColumnProps {
     title: string,
     status: string,
@@ -21,9 +20,12 @@ export default function Column({title, status}: ColumnProps) {
     const { tickets, setTickets } = useDataContext()
     const { filters, setFilters } = useDataContext()
     const [filteredTickets, setFilteredTickets] = useState<ITicket[]>([])
-    
     useEffect(() => {
-        const filtered_tickets_by_status = tickets.filter((ticket) => ticket.status.toLowerCase() === status.toLowerCase())
+           
+        const filtered_copy = tickets.map((ticket) => (
+            {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
+        ))        
+        const filtered_tickets_by_status = filtered_copy.filter((ticket) => ticket.status.toLowerCase() === status.toLowerCase())
         
         if (filters.length > 0) {
              const filtered_tickets_by_priority = filters.map((filter) => {
@@ -34,118 +36,104 @@ export default function Column({title, status}: ColumnProps) {
         } else {
              setFilteredTickets(filtered_tickets_by_status)
         }
-        return () => {
-            console.log(filteredTickets)
-        }
-
-    }, [tickets, filters])
-
+    }, [tickets, filters])        
     
-    const handleDragStart = (e: React.DragEvent<HTMLElement>, ticket: ITicket) => {
-        e.dataTransfer.setData("ticketId", ticket.id)
-    }
+    useEffect(() => {
+        console.log(`in ${status} column`)
+        console.log(filteredTickets)
+    }, [filteredTickets])
 
-    const handleDragOver = (e: React.DragEvent) => {
+    const handle_drag_enter = (e: React.DragEvent) => {
         e.preventDefault()
-        highlightDropArea(e)
+        e.stopPropagation()
+        setActive(true)
+    }
+  
+    const handle_drag_over = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
         setActive(true)
     }
 
-    const handleDragLeave = () => {
-        clearHighlights()
+    const handle_drag_leave = (e: React.DragEvent) => {
+        e.stopPropagation()
         setActive(false)
     }
-
-    const handleDrop = (e: React.DragEvent) => {
-        clearHighlights()
+    
+    const handle_drop = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
         setActive(false)
 
-        const ticketId = e.dataTransfer?.getData("ticketId")
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isChromium = userAgent.indexOf(' chrome/') > -1;
 
-        const dropAreas = getDropAreas()
-        const { element } = getNearestDropArea(e, dropAreas)
-
-        const before = element.dataset.id || "-1"
-
-
-        if(before !== ticketId) {
-            
-            let copy = [...tickets]
-
-            let ticketToTransfer = copy.find((c) => c.id == ticketId)
-
-            if (!ticketToTransfer) return
-
-            ticketToTransfer = {...ticketToTransfer, status}
-
-            copy = copy.filter((c) => c.id !== ticketId)
-
-            const moveToBack = before === "-1"
-
-            if(moveToBack) {
-                copy.unshift(ticketToTransfer)
-
-            } else {
-                const insertAtIndex = copy.findIndex((el) => el.id === before)
-                
-                if(insertAtIndex === undefined ) return
-                
-                copy.splice(insertAtIndex, 0, ticketToTransfer)
-            }
-
-            console.log(copy)
-            setTickets(copy)
-            changeStatus(ticketId, status)
+        if (!isChromium && e.dataTransfer.dropEffect === 'none') {
+            return
         }
 
-    }
+        if (e.dataTransfer.items.length != 5 && e.dataTransfer.items.length != 8 && e.dataTransfer.items.length != 13 || !e.dataTransfer.getData("ticket_id")) {
+                        
+            return
+        }
+        
+        const index = 0;
+        // Assign status to columnStatus to make the functionality clear
+        const ticket_id = e.dataTransfer.getData("ticket_id")
+        const ticket_status = e.dataTransfer.getData("ticket_status")
+        const ticket_index = e.dataTransfer.getData("ticket_index")
+        const column_status = status
+        
+        console.log(`column_status - ${column_status}: ticket_status - ${ticket_status}`)
+        console.log(`index to move to - ${index}: ticket_index - ${ticket_index}`)
+        console.log(e.dataTransfer.types)
+        console.log(status)
+        
+        // If we are on the same column and the indexes are not the same
+        if (column_status === ticket_status && index != ticket_index ) {
+            let filtered_copy = filteredTickets.map((ticket) => (
+                {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
+            ))
+            filtered_copy = filtered_copy.filter((ticket) => ticket.id !== ticket_id)
 
-    const highlightDropArea = (e: React.DragEvent) => {
-        const dropAreas = getDropAreas()
-        clearHighlights()
-        const el = getNearestDropArea(e, dropAreas)
-        el.element.style.opacity ="1"
-    }
-
-    const clearHighlights = () => {
-        const dropAreas = getDropAreas()
-
-        dropAreas.forEach((i) => {
-            i.style.opacity = "0"
-        })
-
-    }
-
-    const getDropAreas = () => {
-        return Array.from(document.querySelectorAll<HTMLElement>(`[data-column="${status}"]`))
-    }
-
-    const getNearestDropArea  = (e: React.DragEvent, dropAreas: HTMLElement[]) => {
-        const DISTANCE_OFFSET = 75
-
-        const el = dropAreas.reduce(
-            (closest, child) => {
-                const box = child.getBoundingClientRect()
-                const offset = e.clientY - (box.top + DISTANCE_OFFSET)
-
-                if(offset < 0 && offset > closest.offset) {
-                    return {offset: offset, element: child}
-                } else {
-                    return closest
-                }
-
-            },
-            {
-                offset: Number.NEGATIVE_INFINITY,
-                element: dropAreas[dropAreas.length-1]
+            let ticket_to_transfer = tickets.find((ticket) => ticket.id === ticket_id)
+            ticket_to_transfer = {...ticket_to_transfer, tags: [...ticket_to_transfer.tags], userIDs: [...ticket_to_transfer.userIDs]}
+            if (!ticket_to_transfer) {
+                return
             }
-        )
 
-        return el
+            filtered_copy.splice(index, 0, ticket_to_transfer)
+            
+            setFilteredTickets(filtered_copy)
+            
+        } else if ( column_status !== ticket_status ) {
+            console.log("in column status not equal")
+            const filtered_copy = filteredTickets.map((ticket) => (
+                {...ticket, tags: [...ticket.tags], userIDs: [...ticket.userIDs]}
+            ))
+
+            const ind = tickets.findIndex((ticket) => ticket.id === ticket_id)
+            if (ind == -1) {
+                return
+            }
+
+            const ticket_to_transfer = {...tickets[ind], status, tags: [...tickets[ind].tags], userIDs: [...tickets[ind].userIDs]}
+            tickets[ind].status = status
+            filtered_copy.splice(index, 0, ticket_to_transfer)
+            setFilteredTickets(filtered_copy)
+            changeStatus(ticket_id, status)
+        } 
+
     }
-
+    
   return (
-    <motion.div layout onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} className={`z-0 relative shadow-sm flex flex-col h-[calc(100vh-12rem)] bg-muted w-96 rounded-md p-3 ${active ? "ring-2 ring-cyan-400" : ""}`}>
+    <motion.div layout
+       onDragEnter={handle_drag_enter}       
+       onDragOver={handle_drag_over}
+       onDragLeave={handle_drag_leave}
+       onDrop={handle_drop} 
+       className={`z-0 relative shadow-sm flex flex-col h-[calc(100vh-12rem)] bg-muted w-96 rounded-md p-3 ${active ? "ring-2 ring-cyan-400" : ""}`}>
+      
         {/* column header*/}
         <motion.div layout className="flex flex-row gap-2 items-center my-1 h-7">
             <h1 className="font-semibold">{title}</h1>
@@ -155,10 +143,10 @@ export default function Column({title, status}: ColumnProps) {
         {/* column body */}
         <ScrollArea>
         <div className="h-full flex-auto gap-2 flex flex-col"> 
-            <DropArea id={"-1"} status={status}/>
-            {
+            {   // The handle drag and drop functions are inside ticket now
+                // Btw, consider moving these functions to a context if this gets refactored 
                 filteredTickets.map((ticket, index) => {
-                    return <Ticket key={ticket.id} ticket={ticket} handleDragStart={handleDragStart}/> 
+                    return <Ticket filteredTickets={filteredTickets} setFilteredTickets={setFilteredTickets} index={index} key={ticket.id} ticket={ticket} /> 
                 })
             }
         </div>
