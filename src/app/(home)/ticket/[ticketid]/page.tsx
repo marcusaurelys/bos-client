@@ -130,7 +130,7 @@ export default async function ticket({params}:{params:{ticketid:string}}) {
                         <div className="flex flex-row w-full gap-2">
                             <Select>
                             <SelectTrigger className="w-2/3">
-                                <SelectValue placeholder={ticket_info.status} />
+                                <SelectValue placeholder={ticket_info.status.charAt(0).toUpperCase() + ticket_info.status.slice(1)} />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="light">Pending</SelectItem>
