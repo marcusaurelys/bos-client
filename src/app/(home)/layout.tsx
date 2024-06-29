@@ -18,17 +18,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-  const response = await get_user_by_token(cookies().get('session').value)
-  const user = {
-    name: response.name,
-    email: response.email,
-    role: response.role
-  }
   
   return ( 
   <>
-    <NavBar user={user}/>
+    <NavBar/>
     <DataContextProvider>
       {children}
     </DataContextProvider>

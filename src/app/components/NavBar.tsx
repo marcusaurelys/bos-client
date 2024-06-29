@@ -1,21 +1,29 @@
-'use client'
-
-import React from 'react'
 import Link from "next/link"
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { usePathname } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import { UserSession } from '@/types'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Command, CommandDialog, CommandItem, CommandList } from '@/components/ui/command'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { logout } from '@/db/users'
+import { getUserByToken, logout } from '@/db/users'
+import { cookies } from "next/headers"
 
-export default function NavBar({user}) {
-    
-  const pathName = usePathname()
+import { headers } from 'next/headers'
+import NavButtons from "./NavButtons"
+
+export default async function NavBar({}) {
+
+  const pathname = headers().get('url')
+  console.log('url: ', headers().get('url'))
+  
+  const response = await getUserByToken(cookies().get('session')?.value || '')
+  const user = {
+    name: response?.name,
+    email: response?.email,
+    role: response?.role
+  }
 
   return (
     <header className="flex items-center justify-between px-16 h-12 text-primary border-b ">
@@ -24,18 +32,7 @@ export default function NavBar({user}) {
         <span className="text-lg font-bold text-sky-600">OS</span>
       </Link>
       <nav className="hidden md:flex items-center gap-4">
-        <Link href="/" className={`text-sm font-medium hover:underline ${pathName == "/" ? "text-sky-600": ""}`} prefetch={false}>
-          Board
-        </Link>
-        {
-          user?.role === "admin" 
-          ?
-          <Link href="/admin" className={`text-sm font-medium hover:underline ${pathName.startsWith("/admin") ? "text-sky-600": ""}`} prefetch={false}>
-          Team
-        </Link>
-          :
-          <></>
-        }
+          <NavButtons user={user}/>
         <Separator className="h-4" orientation="vertical" />
         {
           user 
@@ -45,7 +42,7 @@ export default function NavBar({user}) {
                 <div>{user?.name}</div>
                 <Avatar className="h-6 w-6 cursor-pointer">
                   <AvatarImage src={""}/>
-                  <AvatarFallback className="bg-sky-500 text-white text-xs font-semibold">{user?.name.split(" ").map((n)=>n[0]).join("")}</AvatarFallback>
+                  <AvatarFallback className="bg-sky-500 text-white text-xs font-semibold">{user?.name.split(" ").map((n : string)=>n[0]).join("")}</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -61,12 +58,20 @@ export default function NavBar({user}) {
                   <Link href="/settings"><DropdownMenuItem>Settings</DropdownMenuItem></Link>
                 </DropdownMenuGroup> */}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600" onClick={() => logout()}>Log out</DropdownMenuItem>
+                
+                <DropdownMenuItem className="text-red-600">
+                <form action={logout}>
+                  <button>
+                    Log out
+                  </button>
+                </form>
+                </DropdownMenuItem>
+                
                 
               </DropdownMenuContent>
           </DropdownMenu>
           : 
-          <Link href="/login" className={`text-sm font-medium hover:underline ${pathName.startsWith("/login") ? "text-sky-600": ""}`} prefetch={false}>
+          <Link href="/login" className={`text-sm font-medium hover:underline`} prefetch={false}>
             Login
           </Link> 
 
