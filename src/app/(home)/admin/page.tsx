@@ -49,11 +49,12 @@ import AddUserForm from '@/app/components/AddUserForm'
 import { fuckNextTickets } from '@/db/tickets'
 import { fuckNextUsers, getAllUsers } from '@/db/users'
 import { fuckNextDB } from '@/db/mongo'
+import { User } from '@/types'
 
 export default async function Page(){
 
-    let users = await getAllUsers()
-    users = JSON.parse(users)
+    let res = await getAllUsers()
+    const users : User[] = JSON.parse(res)
 
     fuckNextDB()
     fuckNextUsers()
@@ -73,7 +74,7 @@ export default async function Page(){
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                    {users.map((user) => (
+                    {users.map((user : User) => (
                         
                         <TableRow key={user._id.toString()}> 
                         <TableCell>{user.name}</TableCell>
