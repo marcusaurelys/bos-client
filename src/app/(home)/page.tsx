@@ -5,15 +5,43 @@ import { fuckNextDB } from '@/db/mongo'
 import Column from '@/app/components/Column'
 import Filter from '@/app/components/Filter'
 
+function parseStringToArray(input: string): string[] {
+  try {
+      // Remove any whitespace and check if the input string is a valid array format
+      const trimmedInput = input.trim();
+      if (trimmedInput.startsWith("[") && trimmedInput.endsWith("]")) {
+          // Use JSON.parse to convert the string to an array
+          const result = JSON.parse(trimmedInput);
+          // Ensure the parsed result is an array of strings
+          if (Array.isArray(result) && result.every(item => typeof item === 'string')) {
+              return result;
+          } else {
+              throw new Error("Parsed result is not an array of strings");
+          }
+      } else {
+          throw new Error("Invalid array format");
+      }
+  } catch (error) {
+      console.error("Error parsing string to array:", error.message);
+      return [];
+  }
+}
 
-export default async function Home() {
+export default async function Home({ searchParams } : { searchParams?: { [key: string]: string | string[] | undefined }}) {
 
   fuckNextDB()
   fuckNextUsers()
   fuckNextTickets()
 
-  const [pending, open, closed] = await Promise.all([getTicketByStatus('pending'), getTicketByStatus('open'), getTicketByStatus('closed')])
+  let filters = ['high', 'medium', 'low']
 
+  if(searchParams.filters){
+    filters = parseStringToArray(searchParams.filters)
+  }
+  console.log(filters)
+  
+  const [pending, open, closed] = await Promise.all([getTicketByStatus('pending', filters), getTicketByStatus('open', filters), getTicketByStatus('closed', filters)])
+  
 
   return (
    <>

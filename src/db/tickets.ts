@@ -12,10 +12,10 @@ export const fuckNextTickets = async() => {
     
 }
 
-export const getTicketByStatus = async (status : string) => {
+export const getTicketByStatus = async (status : string, filters: string[]) => {
     let ticketsData : ITicket[] = []
 
-    const result = await tickets.find({status : status}).toArray()
+    const result = await tickets.find({status : status, priority_score: {$in: filters}}).toArray()
 
     result.forEach((ticket) => {
         try {
@@ -36,7 +36,7 @@ export const getTicketByStatus = async (status : string) => {
         
     })
 
-    //console.log(ticketsData)
+   // console.log(status, filters, ticketsData)
 
     return ticketsData
 }
