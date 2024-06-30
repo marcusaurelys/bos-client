@@ -22,9 +22,7 @@ export default async function RootLayout({
   return ( 
   <>
     <NavBar/>
-    <DataContextProvider>
       {children}
-    </DataContextProvider>
   </>
   );
   
