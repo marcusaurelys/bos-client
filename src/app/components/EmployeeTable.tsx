@@ -34,6 +34,9 @@ import { getAllUsers } from "@/db/users";
 import { useDataContext } from '@/contexts/DataContext'
 
 import styled from 'styled-components';
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { Scroll } from "lucide-react";
+import Link from "next/link";
 
 interface EmployeeTableProps {
     ticket: ITicket;
@@ -41,8 +44,8 @@ interface EmployeeTableProps {
 
 const CustomDialogContent = styled(DialogContent)`
   width: 800px !important; /* Ensure it overrides other styles */
-  min-width: 56%;
-  max-width: 100%;
+  max-width: 50%;
+  max-height: 80%;
 `;
 
 export default function EmployeeTable({ticket}: EmployeeTableProps) {
@@ -69,6 +72,7 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
         try {
             refreshTicket(ticketToUpdate.id, {userIDs: ticketToUpdate.userIDs})
             setTicketsTrigger(trigger => trigger + 1)
+            setOpen(false)
         } catch (error) {
             console.error('Error updating user IDs:', error);
         }
@@ -112,15 +116,12 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
                         Role
                     </Button>
                 </div>
-                <Table className="w-[800px] rounded-lg">
+                <Table>
+                    <ScrollArea className = "h-[400px]">
                     <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[100px]">Name</TableHead>
+                            <TableHead>Name</TableHead>
                             <TableHead>Email</TableHead>
                             <TableHead>Role</TableHead>
-                            <TableHead className="justify-end">View Tickets</TableHead>
-                            <TableHead className="justify-end">Assign User</TableHead>
-                        </TableRow>
                     </TableHeader>
                     <TableBody>
                         {filteredUsers.map((user) => (
@@ -130,7 +131,7 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
                                 <TableCell>{user.role}</TableCell>
                                 <TableCell>
                                     <DropdownMenu>
-                                        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+                                        <DropdownMenuTrigger>View Tickets</DropdownMenuTrigger>
                                         <DropdownMenuContent>
                                             <DropdownMenuLabel>Tickets</DropdownMenuLabel>
                                             <DropdownMenuSeparator />
@@ -139,7 +140,9 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
                                                     .filter(ticket => ticket.userIDs.includes(user._id))
                                                     .map(ticket => (
                                                         <DropdownMenuItem key={ticket.id}>
-                                                            {ticket.title}
+                                                             <Link href={`ticket/${ticket.id}`}>
+                                                                {ticket.title}
+                                                            </Link>
                                                         </DropdownMenuItem>
                                                     ))
                                             ) : (
@@ -150,12 +153,13 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
                                 </TableCell>
                                 <TableCell>
                                     <Toggle aria-label="Toggle bold" onClick={() => toggleUser(user)}>
-                                        {ticketToUpdate.userIDs.includes(user._id) ? 'Cancel' : 'Select'}
+                                        {ticketToUpdate.userIDs.includes(user._id) ? 'Remove User' : 'Assign User'}
                                     </Toggle>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
+                    </ScrollArea>
                 </Table>
                 <DialogFooter>
                     <Button variant="ghost" onClick={clearModal}>Clear Changes</Button>
