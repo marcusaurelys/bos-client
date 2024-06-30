@@ -20,7 +20,6 @@ interface ColumnProps {
 
 export default function Column({title, status, tickets}: ColumnProps) {
 
-   
     
   return (
     <motion.div layout
@@ -39,7 +38,7 @@ export default function Column({title, status, tickets}: ColumnProps) {
             {   // The handle drag and drop functions are inside ticket now
                 // Btw, consider moving these functions to a context if this gets refactored 
                 tickets.map((ticket, index) => {
-                    return <Ticket ticket={ticket} /> 
+                    return <Ticket ticket={ticket} key={ticket.id}/> 
                 })
             }
         </div>

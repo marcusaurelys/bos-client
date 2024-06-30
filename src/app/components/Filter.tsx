@@ -3,19 +3,48 @@
 import { Button } from '@/components/ui/button'
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { PlusCircleIcon, CheckIcon } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Separator } from '@/components/ui/separator'
 import { useDataContext } from '@/contexts/DataContext'
+import { redirect, useRouter } from 'next/navigation'
 
 const filterChoices =  ["High", "Medium", "Low"]
 
 
+
 export default function Filter() {
 
-    const { filters, addFilter, removeFilter, clearFilters } = useDataContext()
+    const router = useRouter()
+
+    const [filters, setFilters] = useState([])
+
+    const addFilter = (filter : string) => {
+        setFilters((filters) => [...filters, filter])
+    }
+
+    const removeFilter = (filter : string) => {
+        setFilters(filters.filter((i : string) => i != filter))
+    }
+
+    const clearFilters = () => {
+        setFilters([])
+    }
     const selectedFilters = [...filters]
+
+    useEffect(() => {
+        if(filters.length > 0){
+            let stringified = ''
+            filters.forEach((filter) => {stringified = stringified += `"${filter.toLowerCase()}",`})
+            router.push(`?filters=[${stringified.slice(0, -1)}]`)
+        }
+        else{
+            router.push('/')
+        }
+    }, [filters])
+
+
 
   return (
     <>
@@ -25,11 +54,11 @@ export default function Filter() {
                 <PlusCircleIcon className="h-4 stroke-1"/>
                 <h1 className="">Priority</h1>
                 {
-                    selectedFilters.length > 0 && 
+                    filters.length > 0 && 
                     <div className="flex flex-row gap-2 items-center">
                         <Separator orientation="vertical" className="mx-2 h-4"/>
                         {
-                            selectedFilters.map((filter, index) => {
+                            filters.map((filter, index) => {
                                 return <h1 key={filter} className="bg-muted px-2 py-1 rounded text-xs">{filter.slice(0,2)}</h1>
                             })
                         }
@@ -38,13 +67,14 @@ export default function Filter() {
                 </div>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0 border rounded" align="start">
+                <form>
                 <Command>
                     <CommandList>   
                         {
                             filterChoices.map((filter, index) => {
                                 const isSelected = selectedFilters.includes(filter)
 
-                                return <CommandItem className="m-1" key={filter} onSelect={() => {
+                                return <CommandItem className="m-1" key={filter} value={filter} onSelect={() => {
                                                 if (isSelected) {
                                                     removeFilter(filter)
                                                 }  
@@ -70,6 +100,7 @@ export default function Filter() {
                         }    
                     </CommandList>
                 </Command>
+                </form>
             </PopoverContent>  
         </Popover>
     </>
