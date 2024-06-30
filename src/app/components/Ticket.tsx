@@ -1,4 +1,3 @@
-import React, {useState} from 'react'
 import DropArea from './DropArea'
 import {motion} from 'framer-motion'
 import { TagIcon } from '@heroicons/react/16/solid'
@@ -11,11 +10,8 @@ interface TicketProps {
     ticket: ITicket
 }
 
-export default function Ticket({filteredTickets, setFilteredTickets, index, ticket}: TicketProps) {
-    const [active, setActive] = useState(false)
-    const { tickets } = useDataContext()
+export default function Ticket({ticket}: TicketProps) {
 
-    const status = ticket.status
     let priorityColor
     if(ticket.priority.toLowerCase() === "high") {
         priorityColor = "bg-red-500"
