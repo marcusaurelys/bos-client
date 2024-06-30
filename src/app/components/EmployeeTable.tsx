@@ -105,7 +105,7 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
 
         getAllUsers().then((users) => {
            setUsers(JSON.parse(users))
-           
+           setFilteredUsers(JSON.parse(users))
         })
 
         getTickets().then((ticket) => {
