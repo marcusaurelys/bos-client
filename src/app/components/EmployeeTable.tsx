@@ -29,11 +29,11 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import { User, ITicket } from '@/types';
-import { refreshTicket } from "@/db/tickets";
+import { getTicket, getTickets, refreshTicket } from "@/db/tickets";
 import { getAllUsers } from "@/db/users";
-import { useDataContext } from '@/contexts/DataContext'
 
 import styled from 'styled-components';
+import { revalidatePath } from "next/cache";
 
 interface EmployeeTableProps {
     ticket: ITicket;
@@ -45,15 +45,16 @@ const CustomDialogContent = styled(DialogContent)`
   max-width: 100%;
 `;
 
+
 export default function EmployeeTable({ticket}: EmployeeTableProps) {
 
-    const { users, setUsers } = useDataContext();
+    const [users, setUsers] = useState<User[]>([]);
+    const [tickets, setTickets] = useState<ITicket[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [isOpen, setOpen] = useState(false);
-    const { loading, setLoading } = useDataContext();
     const [ticketToUpdate, updateTicket] = useState(ticket);
-    const { tickets, ticketsTrigger, setTicketsTrigger } = useDataContext()
-     
+    const [trigger, setTrigger] = useState(0)
+    
     const toggleUser = (user: User) => {
         const userId = user._id;
         const hasUser = ticketToUpdate.userIDs.includes(userId);
@@ -68,10 +69,11 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
     const updateUserIDs = async () => {
         try {
             refreshTicket(ticketToUpdate.id, {userIDs: ticketToUpdate.userIDs})
-            setTicketsTrigger(trigger => trigger + 1)
+            setTrigger((prev) => {return prev + 1})
         } catch (error) {
             console.error('Error updating user IDs:', error);
         }
+
     };
 
     const clearModal = () => {
@@ -90,14 +92,38 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
 
     useEffect(() => {
         setFilteredUsers(users)
-    }, [ticketsTrigger])
+    }, [])
+
+    useEffect(() => {
+        if(isOpen){
+        //ensure that the ticket has latest data when editing. this is set to any for now because our getTicket function is unhinged
+        getTicket(ticket.id).then((ticket: any) => {
+            if(ticket){
+                updateTicket(ticket)
+            }
+        })
+
+        getAllUsers().then((users) => {
+           setUsers(JSON.parse(users))
+           
+        })
+
+        getTickets().then((ticket) => {
+            setTickets(ticket)
+        })
+        }
+
+        return () => {
+            setUsers([])
+            setTickets([])
+            setTrigger(0)
+        }
+    }, [isOpen, trigger])
+    
         
-    if (loading) {
-        return <div>Loading...</div>;
-    }
 
     return (
-        <Dialog open={isOpen} onOpenChange={setOpen}>
+        <Dialog open={isOpen} onOpenChange={setOpen} >
             <DialogTrigger className="font-bold">Assign Ticket</DialogTrigger>
             <CustomDialogContent>
                 <DialogHeader>
