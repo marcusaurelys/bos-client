@@ -18,7 +18,7 @@ export default function Filter() {
 
     const router = useRouter()
 
-    const [filters, setFilters] = useState([])
+    const [filters, setFilters] = useState<string[]>([])
 
     const addFilter = (filter : string) => {
         setFilters((filters) => [...filters, filter])
@@ -36,7 +36,7 @@ export default function Filter() {
     useEffect(() => {
         if(filters.length > 0){
             let stringified = ''
-            filters.forEach((filter) => {stringified = stringified += `"${filter.toLowerCase()}",`})
+            filters.forEach((filter : string) => {stringified = stringified += `"${filter.toLowerCase()}",`})
             router.push(`?filters=[${stringified.slice(0, -1)}]`)
         }
         else{
