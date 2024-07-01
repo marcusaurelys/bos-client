@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
 export default async function middleware(request : any) {
 
-  const response = await fetch(`http://localhost:3000/api/users/verify`, {
+  const HOST = process.env.HOST
+
+  const response = await fetch(`http://${HOST}/api/users/verify`, {
     method: 'GET',
     headers: {
       cookie: request.cookies
@@ -15,7 +17,7 @@ export default async function middleware(request : any) {
         status: 307,
         headers: {
           'Set-Cookie': 'session=; Max-Age=-1; Path=/',
-          location: `http://localhost:3000/login`  
+          location: `http://${HOST}/login`  
         }
       })
   } else if (result['success']) {
