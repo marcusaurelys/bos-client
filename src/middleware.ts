@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 export default async function middleware(request : any) {
 
-  const response = await fetch(`http://localhost:3000/api/users/verify`, {
+  const response = await fetch(`http://flask.doomerang.org/api/users/verify`, {
     method: 'GET',
     headers: {
       cookie: request.cookies
@@ -15,7 +15,7 @@ export default async function middleware(request : any) {
         status: 307,
         headers: {
           'Set-Cookie': 'session=; Max-Age=-1; Path=/',
-          location: `http://localhost:3000/login`  
+          location: `http://flask.doomerang.org/login`  
         }
       })
   } else if (result['success']) {

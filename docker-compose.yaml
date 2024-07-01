@@ -1,0 +1,44 @@
+services:
+    cloudflared:
+        image: cloudflare/cloudflared:latest
+        container_name: cloudflared
+        restart: always
+        command: tunnel run --token ${TUNNEL_TOKEN}
+        networks:
+            - chat
+    next-app:
+        build:
+            context: .
+        container_name: next-app
+        restart: always
+        ports: 
+            - 3000:3000
+        networks:
+            - chat
+    flask-app:
+        build:
+            context: ./server
+        container_name: flask-app
+        restart: always
+        ports:
+            - 5000:5000
+        depends_on:
+            - chromadb
+        networks:
+            - chat
+    chromadb:
+        image: chromadb/chroma:latest
+        container_name: chromadb
+        volumes:
+            - ./chromadb:/chroma/chroma
+        environment:
+            - IS_PERSISTENT=TRUE
+            - PERSIST_DIRECTORY=/chroma/chroma
+        ports:
+            - 8000:8000
+        networks:
+            - chat
+
+networks:
+    chat:
+        driver: bridge
