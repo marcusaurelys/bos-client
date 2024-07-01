@@ -34,6 +34,8 @@ import { getAllUsers } from "@/db/users";
 
 import styled from 'styled-components';
 import { revalidatePath } from "next/cache";
+import { Skeleton } from "@/components/ui/skeleton"
+
 
 interface EmployeeTableProps {
     ticket: ITicket;
@@ -54,6 +56,7 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
     const [isOpen, setOpen] = useState(false);
     const [ticketToUpdate, updateTicket] = useState(ticket);
     const [trigger, setTrigger] = useState(0)
+    const [loading, setLoading] = useState(false)
     
     const toggleUser = (user: User) => {
         const userId = user._id;
@@ -95,23 +98,29 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
     }, [])
 
     useEffect(() => {
-        if(isOpen){
-        //ensure that the ticket has latest data when editing. this is set to any for now because our getTicket function is unhinged
-        getTicket(ticket.id).then((ticket: any) => {
-            if(ticket){
-                updateTicket(ticket)
+        const fetchData = async () => {
+            setLoading(true)
+            try{
+                const [ticketNow, tickets, users] = await Promise.all([getTicket(ticket.id), getTickets(), getAllUsers()])
+                if(ticketNow){
+                    updateTicket(ticketNow)
+                }
+                setUsers(JSON.parse(users))
+                setFilteredUsers(JSON.parse(users))
+                setTickets(tickets)
+            } catch(e) {
+                console.log(e)
+            } finally {
+                setLoading(false)
             }
-        })
-
-        getAllUsers().then((users) => {
-           setUsers(JSON.parse(users))
-           setFilteredUsers(JSON.parse(users))
-        })
-
-        getTickets().then((ticket) => {
-            setTickets(ticket)
-        })
+            
         }
+        if(isOpen){
+            fetchData()
+        }
+        //ensure that the ticket has latest data when editing. this is set to any for now because our getTicket function is unhinged
+
+        
 
         return () => {
             setUsers([])
@@ -126,6 +135,10 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
         <Dialog open={isOpen} onOpenChange={setOpen} >
             <DialogTrigger className="font-bold">Assign Ticket</DialogTrigger>
             <CustomDialogContent>
+                {loading ? 
+                <Loading/> 
+                :
+                <> 
                 <DialogHeader>
                     <DialogTitle>{ticket.title}</DialogTitle>
                 </DialogHeader>
@@ -187,7 +200,49 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
                     <Button variant="ghost" onClick={clearModal}>Clear Changes</Button>
                     <Button type="submit" onClick={updateUserIDs}>Confirm</Button>
                 </DialogFooter>
+            </>
+            }
             </CustomDialogContent>
         </Dialog>
+    );
+}
+
+
+function Loading() {
+    return (
+        <>
+            <Skeleton className="h-6 w-1/2 mb-4" />
+            <div className="flex flex-row justify-left items-center mb-4">
+                <Skeleton className="h-6 w-16 mr-2" />
+                <Skeleton className="h-6 w-16 mr-2" />
+                <Skeleton className="h-6 w-16" />
+            </div>
+            <Table className="w-[800px] rounded-lg">
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="w-[100px]"><Skeleton className="h-4 w-full" /></TableHead>
+                        <TableHead><Skeleton className="h-4 w-full" /></TableHead>
+                        <TableHead><Skeleton className="h-4 w-full" /></TableHead>
+                        <TableHead className="justify-end"><Skeleton className="h-4 w-full" /></TableHead>
+                        <TableHead className="justify-end"><Skeleton className="h-4 w-full" /></TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {Array(5).fill().map((_, index) => (
+                        <TableRow key={index} className="bg-slate-100">
+                            <TableCell><Skeleton className="h-4 w-full" /></TableCell>
+                            <TableCell><Skeleton className="h-4 w-full" /></TableCell>
+                            <TableCell><Skeleton className="h-4 w-full" /></TableCell>
+                            <TableCell><Skeleton className="h-4 w-full" /></TableCell>
+                            <TableCell><Skeleton className="h-4 w-full" /></TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+            <DialogFooter className="mt-4">
+                <Skeleton className="h-10 w-32 mr-2" />
+                <Skeleton className="h-10 w-32" />
+            </DialogFooter>
+        </>
     );
 }
