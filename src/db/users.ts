@@ -6,6 +6,7 @@ import { UserSession } from '@/types'
 import { cookies } from "next/headers";
 import { redirect } from 'next/navigation'
 import { UUID } from 'mongodb'
+import { revalidatePath } from "next/cache";
 
 interface UserCookie {
     _id : UUID,
@@ -37,7 +38,7 @@ export const getUser = async(email : string) => {
     return result
 }
 
-export const get_user_by_token = async(token) => {
+export const getUserByToken = async(token : string) => {
     const result = await users.findOne({token: token})
     return result
 }
@@ -82,6 +83,7 @@ export const register = async (formData : FormData) => {
         redirect('?failregister')
     }
 
+    /*
     cookies().set('session', token, {
         path: '/',
         httpOnly: true,
@@ -91,13 +93,14 @@ export const register = async (formData : FormData) => {
     })
     
     redirect('/')
-    
+    */
+   revalidatePath('/admin')
 }
 
     
-export const login = async(formData) => {
+export const login = async(formData : FormData) => {
     
-    let success = false
+    let success : Promise<boolean> | boolean = false
     const token = crypto.randomUUID()
     const expiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 21)
     const user = await users.findOne({email: formData.get('email')})
@@ -106,7 +109,7 @@ export const login = async(formData) => {
         redirect('fail')
     }
     
-    success = await bcrypt.compare(formData.get('password'), user.password)
+    success = await bcrypt.compare((formData.get('password') as string), user.password)
     
     if (!success) {
         redirect('fail')
@@ -139,7 +142,7 @@ export const logout = async() => {
 export const validateUser = async() => {
     
     const token = cookies().get('session')?.value || ''
-    const user = await get_user_by_token(token)
+    const user = await getUserByToken(token)
 
     return null
 }

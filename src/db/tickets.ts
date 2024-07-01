@@ -12,6 +12,35 @@ export const fuckNextTickets = async() => {
     
 }
 
+export const getTicketByStatus = async (status : string, filters: string[]) => {
+    let ticketsData : ITicket[] = []
+
+    const result = await tickets.find({status : status, priority_score: {$in: filters}}).toArray()
+
+    result.forEach((ticket) => {
+        try {
+            ticketsData.push({
+                id: ticket._id.toString(), 
+                title: ticket.name,
+                description: ticket.description,
+                status: ticket.status,
+                priority: ticket.priority_score,
+                userIDs: ticket.userIDs ?? [],
+                tags: ticket.tags,
+                dateCreated: ticket.date_created.toString()
+            })
+        }
+        catch(e) {
+            console.log("Invalid ticket")
+        }
+        
+    })
+
+   // console.log(status, filters, ticketsData)
+
+    return ticketsData
+}
+
 export const getTickets = async () => {
     let ticketsData: ITicket[] = []
     

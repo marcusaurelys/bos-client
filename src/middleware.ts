@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-export default async function middleware(request) {
+export default async function middleware(request : any) {
 
   const response = await fetch(`http://localhost:3000/api/users/verify`, {
     method: 'GET',
@@ -15,7 +15,7 @@ export default async function middleware(request) {
         status: 307,
         headers: {
           'Set-Cookie': 'session=; Max-Age=-1; Path=/',
-          location: `http://localhost:3000/login`
+          location: `http://localhost:3000/login`  
         }
       })
   } else if (result['success']) {

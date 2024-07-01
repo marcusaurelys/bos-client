@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "@/app/(home)/globals2.css";
 import NavBar from "../components/NavBar";
 import DataContextProvider from '@/contexts/DataContext'
 import { cookies } from 'next/headers'
@@ -18,20 +17,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-  const response = await get_user_by_token(cookies().get('session').value)
-  const user = {
-    name: response.name,
-    email: response.email,
-    role: response.role
-  }
   
   return ( 
   <>
-    <NavBar user={user}/>
-    <DataContextProvider>
+    <NavBar/>
       {children}
-    </DataContextProvider>
   </>
   );
   
