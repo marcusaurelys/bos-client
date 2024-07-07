@@ -50,39 +50,46 @@ export const getAllUsers = async() => {
     
 }
 
-export const register = async (formData : FormData) => {
+export const register = async (name: string, email: string, password: string, confirm: string, role: string, discord: string) => {
     let success = false
 
-    const name = formData.get('name') as string
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
-    const confirm = formData.get('confirm-pass') as string
-    const role = formData.get('role') as string
-    const discord = formData.get('discord') as string
- 
     const emailTaken = await users.findOne({email : email})
 
-    if (emailTaken) {
+    if (emailTaken){
         redirect('?failregister')
     }
 
     const passHash = await bcrypt.hash(password, 10)    
     const expiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 21)
     const token = crypto.randomUUID()
-    const result = await users.insertOne({
-        name : name, 
-        email : email, 
-        password : passHash, 
-        role : role,
-        discord : discord,
-        token: token,
-        tokenExpiry: expiry
-    })
 
-    if (!result) {
+    try {
+        const result = await users.insertOne({
+            name : name, 
+            email : email, 
+            password : passHash, 
+            role : role,
+            discord : discord,
+            token: token,
+            tokenExpiry: expiry
+        })
+        success = true
+        revalidatePath('/admin')
+        /*
+        if (!result) {
+            redirect('?failregister')
+        }
+            */
+    }
+    catch (error){
+        console.log("error in register users")
+        success = false
         redirect('?failregister')
     }
-
+    finally{
+        return success
+    }
+ 
     /*
     cookies().set('session', token, {
         path: '/',
@@ -94,7 +101,6 @@ export const register = async (formData : FormData) => {
     
     redirect('/')
     */
-   revalidatePath('/admin')
 }
 
     

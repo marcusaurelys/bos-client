@@ -27,9 +27,10 @@ import { ChatLayout } from "@/components/chat/chat-layout"
 import { cookies } from "next/headers";
 import { handleChangeStatus } from "@/contexts/actions";
 import { revalidatePath } from "next/cache";
+import UpdateStatusForm from "@/app/components/UpdateStatusForm";
   
   
-export default async function ticket({params}:{params:{ticketid:string}}) {
+export default async function Ticket({params}:{params:{ticketid:string}}) {
     const layout = cookies().get("react-resizable-panels:layout");
     const defaultLayout = layout ? JSON.parse(layout.value) : undefined;
     const ticket_info = await getTicket(params.ticketid)
@@ -135,23 +136,7 @@ export default async function ticket({params}:{params:{ticketid:string}}) {
                     <CardContent>
                         {ticket_info.description}
                     </CardContent>
-                    <form action={setStatus}>
-                    <CardFooter>
-                        <div className="flex flex-row w-full gap-2">
-                            <Select name='status'>
-                            <SelectTrigger className="w-2/3">
-                                <SelectValue placeholder={ticket_info.status.charAt(0).toUpperCase() + ticket_info.status.slice(1)} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="pending">Pending</SelectItem>
-                                <SelectItem value="open">Open</SelectItem>
-                                <SelectItem value="closed">Closed</SelectItem>
-                            </SelectContent>
-                            </Select>
-                            <Button className="w-1/3">Update</Button>
-                        </div>
-                    </CardFooter>
-                    </form>
+                    <UpdateStatusForm ticketInfo={ticket_info}/>
                 </Card> 
             </div>
         </div>
