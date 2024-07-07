@@ -97,10 +97,14 @@ export const changeStatus = async (id: string, status: string) => {
 }
 
 export const refreshTicket = async (id: string, params: {}) => {
-    await tickets.updateOne(
-        {_id: new ObjectId(id)}, 
-        {$set: {
-            ...params
-        }}
-    );
+    try {
+        await tickets.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { ...params } }
+        )
+        return true;
+      } catch (error) {
+        console.error(error)
+        return false
+      }
 }

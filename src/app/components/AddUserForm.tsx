@@ -27,14 +27,46 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from 'react'
 import { register } from '@/db/users'
-
-interface Props {
-    register : ((formData : FormData) => void)
-}
+import { useToast } from "@/components/ui/use-toast"
+import bcrypt from "bcryptjs"
 
 export default function AddUserForm(){
 
     const [isOpen, setOpen] = useState(false)
+    const { toast } = useToast()
+
+    const handleRegister = async (formData : FormData) => {
+        const name = formData.get('name') as string
+        const email = formData.get('email') as string
+        const password = formData.get('password') as string
+        const confirm = formData.get('confirm-pass') as string
+        const role = formData.get('role') as string
+        const discord = formData.get('discord') as string
+
+        try{
+            const response = await register(name, email, password, confirm, role, discord)
+
+            if (response){
+                toast({
+                    description: "Successfully registered " +  name + " as " + role
+                  })
+            }
+
+            else{
+                toast({
+                    variant: "destructive",
+                    description: "Failed to register"
+                  })
+            }
+        }
+        catch (error){
+            console.log(error)
+            toast({
+                variant: "destructive",
+                description: "Failed to register"
+              })
+        }
+    }
 
     return(
     <Dialog open={isOpen} onOpenChange={setOpen}>
@@ -43,7 +75,7 @@ export default function AddUserForm(){
     </DialogTrigger>
 
     <DialogContent>
-    <form action={register}>
+    <form action={handleRegister}>
         <DialogHeader>
             <DialogTitle className="text-2xl">
                 Add a User
