@@ -40,14 +40,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
             <p>Ticket returned null from database, check the id in the url</p>
         )
     }
-
-    async function setStatus(formData : FormData){
-        "use server"
-        const status = (formData.get('status') as string).toLowerCase()
-        handleChangeStatus(params.ticketid, status)
-        revalidatePath(`/ticket/${params.ticketid}`)
-    }
-    
+ 
     const chat_history = {
         "messages": [
           { "content": "Hi there, I'm experiencing some issues with one of our servers. It seems to be running slow and some services are unresponsive. Can you help?", "from": "user" },

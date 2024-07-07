@@ -78,7 +78,7 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
         const response = await refreshTicket(ticketToUpdate.id, {userIDs: ticketToUpdate.userIDs})
         if (response) {
             toast({
-                description: 'Ticket "' + ticket.title + '"' +  " updated."
+                description: 'The assignees of ticket "' + ticket.title + '"' +  " has been updated."
               })
             setTrigger((prev) => {return prev + 1})
             clearModal()
