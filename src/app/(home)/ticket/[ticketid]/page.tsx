@@ -1,3 +1,9 @@
+import { fuckNextDB } from '@/db/mongo'
+import { fuckNextTickets } from '@/db/tickets'
+import { fuckNextChat } from '@/db/chat'
+import { fuckNextUsers } from '@/db/users'
+import { FUCK } from '@/contexts/actions'
+
 import {
     Card,
     CardContent,
@@ -28,12 +34,23 @@ import { cookies } from "next/headers";
 import { handleChangeStatus } from "@/contexts/actions";
 import { revalidatePath } from "next/cache";
 import UpdateStatusForm from "@/app/components/UpdateStatusForm";
-  
-  
+import { Dialog } from "@/components/ui/dialog";
+import EditTicket from "@/app/components/EditTicket";
+import { validateUser } from "@/db/users";
+
 export default async function Ticket({params}:{params:{ticketid:string}}) {
+
+    fuckNextDB()
+    fuckNextTickets()
+    fuckNextChat()
+    fuckNextUsers()
+    FUCK()
+
     const layout = cookies().get("react-resizable-panels:layout");
     const defaultLayout = layout ? JSON.parse(layout.value) : undefined;
-    const ticket_info = await getTicket(params.ticketid)
+
+
+    const [ticket_info, user] = await Promise.all([getTicket(params.ticketid), validateUser()])
 
     if (!ticket_info) {
         return (
@@ -110,8 +127,9 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
             </div>
             <div className="w-1/3 m-2">
                 <Card>
-                    <CardHeader>
+                    <CardHeader className="flex flex-row justify-between">
                         <CardTitle>{ticket_info.title}</CardTitle>
+                        <EditTicket ticket={ticket_info} user={JSON.parse(user)}/>
                     </CardHeader>
                     <div className="flex gap-2 flex-wrap pl-6 pb-6 pr-6">
                         <div className={`flex flex-row rounded-md w-fit text-xs py-1 px-2 items-center gap-2 mb-1 text-white ${priorityColor}`}>

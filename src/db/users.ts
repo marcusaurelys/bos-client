@@ -150,6 +150,6 @@ export const validateUser = async() => {
     const token = cookies().get('session')?.value || ''
     const user = await getUserByToken(token)
 
-    return null
+    return JSON.stringify(user)
 }
 
