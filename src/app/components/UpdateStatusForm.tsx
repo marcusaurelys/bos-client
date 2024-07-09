@@ -19,6 +19,14 @@ const UpdateStatusForm = ({ticketInfo}: UpdateStatusForm) => {
 
     async function setStatus(formData : FormData){
         const status = (formData.get('status') as string).toLowerCase()
+        
+        if(status == '' || status == ticketInfo.status){
+            toast({
+                description: 'Nothing to update.'
+            })
+            return
+        }
+
        
         try{
             const response = await handleChangeStatus(ticketInfo.id, status)
@@ -50,7 +58,7 @@ const UpdateStatusForm = ({ticketInfo}: UpdateStatusForm) => {
             <div className="flex flex-row w-full gap-2">
                 <Select name='status'>
                 <SelectTrigger className="w-2/3">
-                    <SelectValue placeholder={ticketInfo.status.charAt(0).toUpperCase() + ticketInfo.status.slice(1)} />
+                    <SelectValue defaultValue={ticketInfo.status} placeholder={ticketInfo.status.charAt(0).toUpperCase() + ticketInfo.status.slice(1)} />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="pending">Pending</SelectItem>

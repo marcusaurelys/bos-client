@@ -50,6 +50,7 @@ import { fuckNextTickets } from '@/db/tickets'
 import { fuckNextUsers, getAllUsers } from '@/db/users'
 import { fuckNextDB } from '@/db/mongo'
 import { User } from '@/types'
+import EditUserForm from "@/app/components/EditUserForm"
 
 export default async function Page(){
 
@@ -61,7 +62,7 @@ export default async function Page(){
     fuckNextTickets()
 
         return (
-            <div className='h-screen w-screen pt-3'>
+            <div className='h-full pt-3 px-10'>
                 <h1 className="text-3xl font-bold text-center pb-3">Your Current team</h1>
                 
                 <Table className="bg-white b-black">
@@ -72,6 +73,7 @@ export default async function Page(){
                         <TableHead> Discord User ID </TableHead>
                         <TableHead>Role</TableHead>
                         </TableRow>
+                        
                     </TableHeader>
                     <TableBody>
                     {users.map((user : User) => (
@@ -81,6 +83,7 @@ export default async function Page(){
                         <TableCell>{user.email}</TableCell>
                         <TableCell>{user.discord}</TableCell>
                         <TableCell>{user.role} </TableCell>
+                        <TableCell><EditUserForm user={user}/></TableCell>
                         </TableRow>
                         
                     ))}

@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs"
 import { UserSession } from '@/types'
 import { cookies } from "next/headers";
 import { redirect } from 'next/navigation'
-import { UUID } from 'mongodb'
+import { ObjectId, UUID } from 'mongodb'
 import { revalidatePath } from "next/cache";
 
 interface UserCookie {
@@ -112,13 +112,13 @@ export const login = async(formData : FormData) => {
     const user = await users.findOne({email: formData.get('email')})
 
     if (!user) {
-        redirect('fail')
+        redirect('?wrongUsername')
     }
     
     success = await bcrypt.compare((formData.get('password') as string), user.password)
     
     if (!success) {
-        redirect('fail')
+        redirect('?wrongPassword')
     } 
 
     const response = await users.updateOne({email: user.email}, {$set: {token: token, tokenExpiry: expiry}})
@@ -153,3 +153,20 @@ export const validateUser = async() => {
     return JSON.stringify(user)
 }
 
+
+export const editUser = async (id : string, name : string, email : string, role : string, discord : string) => {
+    const user = await users.updateOne({_id : new ObjectId(id)}, {$set: {name : name, email : email, role: role, discord : discord}})
+    revalidatePath('/admin')
+    return user
+
+}
+
+export const changePasswordForUser = async(id : string, password: string, confirm: string) => {
+    if(password !== confirm){
+        return "Passwords do not match!"
+    }
+
+    const hash = await bcrypt.hash(password, 10)
+    const user = await users.updateOne({_id : new ObjectId(id)}, {$set : {password: hash}})
+    return user
+}

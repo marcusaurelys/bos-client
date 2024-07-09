@@ -12,6 +12,7 @@ import { cookies } from "next/headers"
 
 import { headers } from 'next/headers'
 import NavButtons from "./NavButtons"
+import { redirect } from "next/navigation"
 
 export default async function NavBar({}) {
 
@@ -19,6 +20,9 @@ export default async function NavBar({}) {
   console.log('url: ', headers().get('url'))
   
   const response = await getUserByToken(cookies().get('session')?.value || '')
+  if(!response){
+    redirect('/login')
+  }
   const user = {
     name: response?.name,
     email: response?.email,

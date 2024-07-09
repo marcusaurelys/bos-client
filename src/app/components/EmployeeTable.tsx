@@ -146,7 +146,11 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
     return (
         <Dialog open={isOpen} onOpenChange={setOpen}>
         <DialogTrigger className="font-bold">Assign Ticket</DialogTrigger>
-        <CustomDialogContent>
+        <CustomDialogContent className="min-h-[600px]">
+            {loading ? 
+            <Loading/>
+            :
+            <>
             <DialogHeader>
                 <DialogTitle>{ticket.title}</DialogTitle>
             </DialogHeader>
@@ -208,6 +212,9 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
                 <Button variant="ghost" onClick={clearModal}>Clear Changes</Button>
                 <Button type="submit" onClick={updateUserIDs}>Confirm</Button>
             </DialogFooter>
+            </>
+            }
+            
         </CustomDialogContent>
     </Dialog>
     );
@@ -223,10 +230,10 @@ function Loading() {
                 <Skeleton className="h-6 w-16 mr-2" />
                 <Skeleton className="h-6 w-16" />
             </div>
-            <Table className="w-[800px] rounded-lg">
+            <Table className="w-full rounded-lg">
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[100px]"><Skeleton className="h-4 w-full" /></TableHead>
+                        <TableHead className="w-full"><Skeleton className="h-4 w-full" /></TableHead>
                         <TableHead><Skeleton className="h-4 w-full" /></TableHead>
                         <TableHead><Skeleton className="h-4 w-full" /></TableHead>
                         <TableHead className="justify-end"><Skeleton className="h-4 w-full" /></TableHead>
@@ -234,7 +241,7 @@ function Loading() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {Array(5).fill().map((_, index) => (
+                    {Array(5).fill(5).map((_, index) => (
                         <TableRow key={index} className="bg-slate-100">
                             <TableCell><Skeleton className="h-4 w-full" /></TableCell>
                             <TableCell><Skeleton className="h-4 w-full" /></TableCell>
