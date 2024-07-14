@@ -34,7 +34,6 @@ import { cookies } from "next/headers";
 import Bot from "@/app/components/Bot";
   
   
-export default async function ticket({params}:{params:{ticketid:string}}) {
 import { handleChangeStatus } from "@/contexts/actions";
 import { revalidatePath } from "next/cache";
 import UpdateStatusForm from "@/app/components/UpdateStatusForm";
