@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers'
-import { get_user_by_token } from '@/db/users'
+import { getUserByToken } from '@/db/users'
 
 export async function GET() {
   const token = cookies().get('session')
@@ -12,7 +12,7 @@ export async function GET() {
     })
   }
   
-  const user = await get_user_by_token(token.value)
+  const user = await getUserByToken(token.value)
 
   if (!user) {
     return new Response(JSON.stringify({error: 'No user with that token found!'}), {

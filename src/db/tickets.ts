@@ -3,6 +3,9 @@
 import { useDB } from "@/db/mongo"
 import { ObjectId } from "mongodb"
 import { ITicket } from '@/types'
+import ticket from "@/app/(home)/ticket/page"
+import { revalidatePath } from "next/cache"
+import { validateUser } from "./users"
 
 const db = await useDB()
 const tickets = db.collection('tickets')
@@ -10,6 +13,35 @@ const tickets = db.collection('tickets')
 export const fuckNextTickets = async() => {
     
     
+}
+
+export const getTicketByStatus = async (status : string, filters: string[]) => {
+    let ticketsData : ITicket[] = []
+
+    const result = await tickets.find({status : status, priority_score: {$in: filters}}).toArray()
+
+    result.forEach((ticket) => {
+        try {
+            ticketsData.push({
+                id: ticket._id.toString(), 
+                title: ticket.name,
+                description: ticket.description,
+                status: ticket.status,
+                priority: ticket.priority_score,
+                userIDs: ticket.userIDs ?? [],
+                tags: ticket.tags,
+                dateCreated: ticket.date_created.toString()
+            })
+        }
+        catch(e) {
+            console.log("Invalid ticket")
+        }
+        
+    })
+
+   // console.log(status, filters, ticketsData)
+
+    return ticketsData
 }
 
 export const getTickets = async () => {
@@ -68,10 +100,25 @@ export const changeStatus = async (id: string, status: string) => {
 }
 
 export const refreshTicket = async (id: string, params: {}) => {
-    await tickets.updateOne(
-        {_id: new ObjectId(id)}, 
-        {$set: {
-            ...params
-        }}
-    );
+    const user = await validateUser()
+    console.log(params)
+
+    if(!user) {
+        return false
+    }
+
+    try {
+        await tickets.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { ...params } }
+        )
+        return true;
+      } catch (error) {
+        console.error(error)
+        return false
+      }
+}
+
+export const revalidateTicket = (id: string) => {
+    revalidatePath(`/ticket/${id}`)
 }

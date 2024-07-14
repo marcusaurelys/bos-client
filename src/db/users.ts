@@ -5,7 +5,8 @@ import bcrypt from "bcryptjs"
 import { UserSession } from '@/types'
 import { cookies } from "next/headers";
 import { redirect } from 'next/navigation'
-import { UUID } from 'mongodb'
+import { ObjectId, UUID } from 'mongodb'
+import { revalidatePath } from "next/cache";
 
 interface UserCookie {
     _id : UUID,
@@ -37,7 +38,7 @@ export const getUser = async(email : string) => {
     return result
 }
 
-export const get_user_by_token = async(token) => {
+export const getUserByToken = async(token : string) => {
     const result = await users.findOne({token: token})
     return result
 }
@@ -49,39 +50,47 @@ export const getAllUsers = async() => {
     
 }
 
-export const register = async (formData : FormData) => {
+export const register = async (name: string, email: string, password: string, confirm: string, role: string, discord: string) => {
     let success = false
 
-    const name = formData.get('name') as string
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
-    const confirm = formData.get('confirm-pass') as string
-    const role = formData.get('role') as string
-    const discord = formData.get('discord') as string
- 
     const emailTaken = await users.findOne({email : email})
 
-    if (emailTaken) {
+    if (emailTaken){
         redirect('?failregister')
     }
 
     const passHash = await bcrypt.hash(password, 10)    
     const expiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 21)
     const token = crypto.randomUUID()
-    const result = await users.insertOne({
-        name : name, 
-        email : email, 
-        password : passHash, 
-        role : role,
-        discord : discord,
-        token: token,
-        tokenExpiry: expiry
-    })
 
-    if (!result) {
+    try {
+        const result = await users.insertOne({
+            name : name, 
+            email : email, 
+            password : passHash, 
+            role : role,
+            discord : discord,
+            token: token,
+            tokenExpiry: expiry
+        })
+        success = true
+        revalidatePath('/admin')
+        /*
+        if (!result) {
+            redirect('?failregister')
+        }
+            */
+    }
+    catch (error){
+        console.log("error in register users")
+        success = false
         redirect('?failregister')
     }
-
+    finally{
+        return success
+    }
+ 
+    /*
     cookies().set('session', token, {
         path: '/',
         httpOnly: true,
@@ -91,25 +100,25 @@ export const register = async (formData : FormData) => {
     })
     
     redirect('/')
-    
+    */
 }
 
     
-export const login = async(formData) => {
+export const login = async(formData : FormData) => {
     
-    let success = false
+    let success : Promise<boolean> | boolean = false
     const token = crypto.randomUUID()
     const expiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 21)
     const user = await users.findOne({email: formData.get('email')})
 
     if (!user) {
-        redirect('fail')
+        redirect('?wrongUsername')
     }
     
-    success = await bcrypt.compare(formData.get('password'), user.password)
+    success = await bcrypt.compare((formData.get('password') as string), user.password)
     
     if (!success) {
-        redirect('fail')
+        redirect('?wrongPassword')
     } 
 
     const response = await users.updateOne({email: user.email}, {$set: {token: token, tokenExpiry: expiry}})
@@ -139,8 +148,25 @@ export const logout = async() => {
 export const validateUser = async() => {
     
     const token = cookies().get('session')?.value || ''
-    const user = await get_user_by_token(token)
+    const user = await getUserByToken(token)
 
-    return null
+    return JSON.stringify(user)
 }
 
+
+export const editUser = async (id : string, name : string, email : string, role : string, discord : string) => {
+    const user = await users.updateOne({_id : new ObjectId(id)}, {$set: {name : name, email : email, role: role, discord : discord}})
+    revalidatePath('/admin')
+    return user
+
+}
+
+export const changePasswordForUser = async(id : string, password: string, confirm: string) => {
+    if(password !== confirm){
+        return "Passwords do not match!"
+    }
+
+    const hash = await bcrypt.hash(password, 10)
+    const user = await users.updateOne({_id : new ObjectId(id)}, {$set : {password: hash}})
+    return user
+}

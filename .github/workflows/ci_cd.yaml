@@ -1,0 +1,41 @@
+name: Let's do it in one file because workflow_run fucking sucks
+
+on: 
+  push:
+    branches: [ "master" ]
+
+jobs:
+  ci_cd:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Login to Github Container Registry
+        run: |
+          docker login --username marcusaurelys --password ${{ secrets.docker_token }} ghcr.io
+
+      - name: Build the Next.js app
+        run: |
+          docker build . --tag ghcr.io/marcusaurelys/bos-next:latest
+          docker push ghcr.io/marcusaurelys/bos-next:latest  
+      
+      - name: Build the Flask app
+        run: |
+          docker build ./server --tag ghcr.io/marcusaurelys/bos-flask:latest
+          docker push ghcr.io/marcusaurelys/bos-flask:latest
+      
+      - name: Create SSH key
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.HOST }} > ~/.ssh/known_hosts
+
+      - name: Copy Docker Compose YAML to Production Instance
+        run: |
+          scp -i ~/.ssh/id_ed25519 docker-compose-prod.yaml ${{ secrets.USER_AND_HOST }}:~
+           
+      - name: Login using SSH then Spin down old instance and remove unused containers then Spin up containers defined in YAML
+        run: |
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.USER_AND_HOST }} 'docker login --username marcusaurelys --password ${{ secrets.docker_token }} ghcr.io && docker compose -f docker-compose-prod.yaml down --remove-orphans && docker compose -f docker-compose-prod.yaml up -d'
