@@ -6,11 +6,15 @@ import EmployeeTable from './EmployeeTable'
 import { useDataContext } from '@/contexts/DataContext'
 import Link from 'next/link'
 import { changeStatus } from '@/db/tickets'
+import { UserContext } from '@/contexts/UserContextProvider'
+import { useContext } from 'react'
 interface TicketProps {
     ticket: ITicket
 }
 
 export default function Ticket({ticket}: TicketProps) {
+
+    const user = useContext(UserContext)
 
     let priorityColor
     if(ticket.priority.toLowerCase() === "high") {
@@ -59,7 +63,7 @@ export default function Ticket({ticket}: TicketProps) {
 
         {/* ticket footer */}
         <div className="flex flex-row mt-auto">
-            <EmployeeTable ticket={ticket}/>
+            {user?.role === 'admin' && <EmployeeTable ticket={ticket}/>}
             <h1 className="text-xs text-primary/75 ml-auto">{ticket.dateCreated.slice(4,15)}</h1>
         </div>
 

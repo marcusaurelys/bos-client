@@ -2,11 +2,9 @@
 
 import React, { useEffect, useState } from 'react'
 import Ticket from './Ticket'
-import DropArea from './DropArea'
 import { motion } from 'framer-motion'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ITicket } from '../../types'
-import { useDataContext } from '@/contexts/DataContext'
 import { changeStatus } from '@/db/tickets'
 interface ColumnProps {
     title: string,

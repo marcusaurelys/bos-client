@@ -36,7 +36,7 @@ export default async function NavBar({}) {
         <span className="text-lg font-bold text-sky-600">OS</span>
       </Link>
       <nav className="hidden md:flex items-center gap-4">
-          <NavButtons user={user}/>
+          <NavButtons/>
         <Separator className="h-4" orientation="vertical" />
         {
           user 
