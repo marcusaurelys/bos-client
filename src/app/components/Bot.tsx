@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { get_chatbot_response } from '@/db/chat'
+import { ScrollArea } from "@/components/ui/scroll-area"
 import PlaceholderInput from '@/app/components/PlaceholderInput'
 
 export default function Bot() {
@@ -45,17 +46,37 @@ export default function Bot() {
 
   return (
   <>
-  <h3>Nicebot</h3>
-  <div>
-    <ul>
-      {chat.map((message, index) => (
-        <li key={index}>
-          <strong>{message['role']}: </strong> {message['content']}
-        </li>  
-      ))}
-    </ul>
+  <div className="flex flex-col h-full w-full p-4 relative">
+    <ScrollArea className="h-[calc(65dvh)]">
+      <ul>
+          {chat.map((message, index) => (
+            message['role'] == "user" 
+            ?
+            <div className="flex w-full justify-end pr-4">
+              <div className="flex flex-col m-2 p-2 rounded-lg bg-blue-100 w-fit max-w-xl">
+                <li key={index}>
+                  {message['content']}
+                </li>  
+              </div>
+            </div>
+            :
+            <div className="flex flex-col m-2 p-2 rounded-lg bg-stone-100 w-fit max-w-xl">
+                <li key={index}>
+                  {message['content']}
+                </li> 
+            </div>
+            // <div className="bg-accent p-3 rounded-md max-w-xs">
+            //   <li key={index}>
+            //     <strong>{message['role']}: </strong> {message['content']}
+            //   </li>  
+            // </div>
+          ))}
+        </ul>
+    </ScrollArea>
+    <div className="absolute bottom-3 w-full">
+      <PlaceholderInput send={generate_llama3_response}/>
+    </div>
   </div>
-  <PlaceholderInput send={generate_llama3_response}/>
   </>
   )
 

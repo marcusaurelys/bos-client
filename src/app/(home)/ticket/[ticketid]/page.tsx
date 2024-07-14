@@ -49,8 +49,6 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
 
     const layout = cookies().get("react-resizable-panels:layout");
     const defaultLayout = layout ? JSON.parse(layout.value) : undefined;
-
-
     const [ticket_info, user] = await Promise.all([getTicket(params.ticketid), validateUser()])
 
     if (!ticket_info) {
@@ -118,8 +116,9 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                 </TabsContent>
                 <TabsContent value="ai">
                     <main className="flex h-[calc(75dvh)] flex-col items-center justify-center">
-                        <div className="z-10 border rounded-lg max-w-5xl w-full h-full text-sm lg:flex">
-                            <ChatLayout defaultLayout={defaultLayout} navCollapsedSize={8} />
+                        <div className="z-10 rounded-lg w-full h-full text-sm lg:flex">
+                            {/* <ChatLayout defaultLayout={defaultLayout} navCollapsedSize={8} /> */}
+                            <Bot/>
                         </div>
                     </main>
                 </TabsContent>

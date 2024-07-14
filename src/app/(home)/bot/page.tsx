@@ -12,7 +12,9 @@ export default async function ChatPage() {
   fuckNextChat()
   
   return (
-     <Bot/>
+    <div className="rounded-lg w-full h-[calc(90dvh)]">
+      <Bot/>
+    </div>
   );
   
 }
