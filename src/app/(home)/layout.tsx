@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import NavBar from "../components/NavBar";
-import DataContextProvider from '@/contexts/DataContext'
 import { cookies } from 'next/headers'
-import { get_user_by_token } from '@/db/users'
+import { getUserByToken } from '@/db/users'
+import  UserContextProvider  from '@/contexts/UserContextProvider'
+import { redirect } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,10 +19,24 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   
+
+  const res = await getUserByToken(cookies().get('session')?.value || '')
+  if(!res){
+    redirect('/login')
+  }
+
+  const user = {
+    name : res.name,
+    email : res.email,
+    role : res.role,
+  }
+
   return ( 
   <>
+    <UserContextProvider user={user}>
     <NavBar/>
       {children}
+    </UserContextProvider>
   </>
   );
   

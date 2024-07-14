@@ -47,10 +47,12 @@ import {
 import AddUserForm from '@/app/components/AddUserForm'
 
 import { fuckNextTickets } from '@/db/tickets'
-import { fuckNextUsers, getAllUsers } from '@/db/users'
+import { fuckNextUsers, getAllUsers, getUserByToken } from '@/db/users'
 import { fuckNextDB } from '@/db/mongo'
 import { User } from '@/types'
 import EditUserForm from "@/app/components/EditUserForm"
+import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 
 export default async function Page(){
 
@@ -60,6 +62,9 @@ export default async function Page(){
     fuckNextDB()
     fuckNextUsers()
     fuckNextTickets()
+
+
+    const currUser = await getUserByToken(cookies().get('session')?.value || '')
 
         return (
             <div className='h-full pt-3 px-10'>
@@ -83,17 +88,21 @@ export default async function Page(){
                         <TableCell>{user.email}</TableCell>
                         <TableCell>{user.discord}</TableCell>
                         <TableCell>{user.role} </TableCell>
+                        {currUser?.role === 'admin' &&
                         <TableCell><EditUserForm user={user}/></TableCell>
+                        }
                         </TableRow>
                         
                     ))}
                     </TableBody>
                 </Table>
                 
-
+                {
+                    currUser?.role === 'admin' &&
                 <div className="flex items-center justify-center py-5    px-11">
                     <AddUserForm/>
                 </div>
+                }
             </div>
         )
         

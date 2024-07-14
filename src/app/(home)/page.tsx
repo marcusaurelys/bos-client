@@ -1,9 +1,11 @@
 import Board from "../components/Board";
 import { fuckNextTickets, getTicketByStatus } from '@/db/tickets'
-import { fuckNextUsers } from '@/db/users'
+import { fuckNextUsers, getUserByToken } from '@/db/users'
 import { fuckNextDB } from '@/db/mongo'
 import Column from '@/app/components/Column'
 import Filter from '@/app/components/Filter'
+import { UserContext } from "@/contexts/userContext";
+import { cookies } from "next/headers";
 
 function parseStringToArray(input: string): string[] {
   try {
@@ -21,7 +23,7 @@ function parseStringToArray(input: string): string[] {
       } else {
           throw new Error("Invalid array format");
       }
-  } catch (error) {
+  } catch (error : any) {
       console.error("Error parsing string to array:", error.message);
       return [];
   }
@@ -35,7 +37,7 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
 
   let filters = ['high', 'medium', 'low']
 
-  if(searchParams.filters){
+  if( typeof searchParams?.filters === "string" ){
     filters = parseStringToArray(searchParams.filters)
   }
   console.log(filters)
@@ -44,7 +46,6 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
   
 
   return (
-   <>
     <main className="w-full h-[calc(100vh-3rem)] flex justify-center">
       <div className="w-full flex flex-row">
       <div className="flex justify-center items-start w-full h-full">
@@ -61,7 +62,6 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
         </div>
       </div>    
    </main>
-   </>
   );
   
 }

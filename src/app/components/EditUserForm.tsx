@@ -146,6 +146,7 @@ export default function EditUserForm({ user } : EditUserFormProps){
                         </Label>
                         <Input
                         name="email"
+                        type="email"
                         placeholder="boris_victoria@dlsu.edu.ph"
                         className="col-span-3"
                         defaultValue={user.email}
