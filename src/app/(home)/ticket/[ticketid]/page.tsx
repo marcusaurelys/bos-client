@@ -31,6 +31,7 @@ import { Button } from "@/components/ui/button"
 import { Key } from "react"
 import { ChatLayout } from "@/components/chat/chat-layout"
 import { cookies } from "next/headers";
+import Bot from "@/app/components/Bot";
 import { handleChangeStatus } from "@/contexts/actions";
 import { revalidatePath } from "next/cache";
 import UpdateStatusForm from "@/app/components/UpdateStatusForm";
