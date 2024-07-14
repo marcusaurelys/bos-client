@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button"
 import { Key } from "react"
 import { ChatLayout } from "@/components/chat/chat-layout"
 import { cookies } from "next/headers";
+import Bot from "@/app/components/Bot";
   
   
 export default async function ticket({params}:{params:{ticketid:string}}) {
@@ -97,8 +98,9 @@ export default async function ticket({params}:{params:{ticketid:string}}) {
                 </TabsContent>
                 <TabsContent value="ai">
                     <main className="flex h-[calc(75dvh)] flex-col items-center justify-center">
-                        <div className="z-10 border rounded-lg max-w-5xl w-full h-full text-sm lg:flex">
-                            <ChatLayout defaultLayout={defaultLayout} navCollapsedSize={8} />
+                        <div className="z-10 rounded-lg w-full h-full text-sm lg:flex">
+                            {/* <ChatLayout defaultLayout={defaultLayout} navCollapsedSize={8} /> */}
+                            <Bot/>
                         </div>
                     </main>
                 </TabsContent>
