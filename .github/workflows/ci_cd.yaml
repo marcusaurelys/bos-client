@@ -38,4 +38,4 @@ jobs:
            
       - name: Login using SSH then Spin down old instance and remove unused containers then Spin up containers defined in YAML
         run: |
-          ssh -i ~/.ssh/id_ed25519 ${{ secrets.USER_AND_HOST }} 'docker login --username marcusaurelys --password ${{ secrets.docker_token }} ghcr.io && docker compose -f docker-compose-prod.yaml down --remove-orphans && docker compose -f docker-compose-prod.yaml up -d'
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.USER_AND_HOST }} 'docker login --username marcusaurelys --password ${{ secrets.docker_token }} ghcr.io && docker compose -f docker-compose-prod.yaml down --remove-orphans && docker compose -f docker-compose-prod.yaml up -d && docker system prune -f'
