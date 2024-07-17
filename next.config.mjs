@@ -6,6 +6,7 @@ const nextConfig = {
       static: 180,
     },
   },
+  reactStrictMode: false,
 }
  
 export default nextConfig
