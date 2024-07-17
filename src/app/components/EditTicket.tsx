@@ -35,11 +35,13 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [tags, setTags] = useState(ticket.tags)
 
-    useEffect(() => {
-        if(isOpen == true) {
-            setTags(ticket.tags)
-        }
-    }, [isOpen])
+    // check for unnecessary renders
+    // console.log("render called")
+    
+    const openChange = (open) => {
+        setIsOpen(open)
+        setTags(ticket.tags)
+    }
 
     const removeTag = (tag: string) => {
         setTags(t => t.filter((t) => t !== tag))
@@ -93,7 +95,7 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
     } else {
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog open={isOpen} onOpenChange={openChange}>
             <DialogTrigger>
                 <EditIcon className="stroke-1"/>
             </DialogTrigger>
