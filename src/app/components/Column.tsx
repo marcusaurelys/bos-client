@@ -31,8 +31,8 @@ export default function Column({title, status, tickets}: ColumnProps) {
         </motion.div>
 
         {/* column body */}
-        <ScrollArea>
-        <div className="h-full flex-auto gap-2 flex flex-col"> 
+        <ScrollArea data-test={`scrollarea-${title}`}>
+        <div className="h-full flex-auto gap-2 flex flex-col" data-test={`header-${title}`}> 
             {   // The handle drag and drop functions are inside ticket now
                 // Btw, consider moving these functions to a context if this gets refactored 
                 tickets.map((ticket, index) => {

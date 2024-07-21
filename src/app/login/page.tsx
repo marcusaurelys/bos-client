@@ -26,16 +26,16 @@ export default function Page(){
                     <div className="grid w-full items-center gap-4">
                         <div className="flex flex-col space-y-1.5">
                             <Label htmlFor="email">Email</Label>
-                            <Input name="email" type="email" placeholder="juandelacruz@gmail.com" />
+                            <Input name="email" data-test="login" type="email" placeholder="juandelacruz@gmail.com" />
                         </div>
                         <div className="flex flex-col space-y-1.5">
                             <Label htmlFor="password">Password</Label>
-                            <Input  name="password" type="password" placeholder="**********" />
+                            <Input  name="password" data-test="password" type="password" placeholder="**********" />
                         </div>
                     </div>    
                 </CardContent>
             <CardFooter className="flex justify-center">
-                <Button>Log In</Button>
+                <Button data-test="login-button">Log In</Button>
             </CardFooter>
             </form>
         </Card>
