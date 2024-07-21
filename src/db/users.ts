@@ -34,20 +34,34 @@ export const fuckNextUsers = async() => {
 }
 
 export const getUser = async(email : string) => {
-    const result = await users.findOne({email : email})
-    return result
+    try{
+        const result = await users.findOne({email : email});
+        return result;
+    }
+    catch (error){
+        console.error("getUser error: ",error);
+        redirect('/')
+    }
 }
 
 export const getUserByToken = async(token : string) => {
-    const result = await users.findOne({token: token})
-    return result
+    try {
+        const result = await users.findOne({token: token})
+        return result
+    } catch (error){
+        console.error("getUserByToken error: ",error)
+        redirect('/')
+    }
 }
 
 export const getAllUsers = async() => {
-
-    const result = await users.find({}).toArray()
-    return JSON.stringify(result)
-    
+    try{
+        const result = await users.find({}).toArray()
+        return JSON.stringify(result)
+    } catch (error){
+        console.error("getAllUsers error: ",error)
+        redirect('/')
+    }
 }
 
 export const register = async (name: string, email: string, password: string, confirm: string, role: string, discord: string) => {
@@ -102,7 +116,6 @@ export const register = async (name: string, email: string, password: string, co
     redirect('/')
     */
 }
-
     
 export const login = async(formData : FormData) => {
     
@@ -140,25 +153,36 @@ export const login = async(formData : FormData) => {
 }
     
 export const logout = async() => {
-    cookies().delete("session")
-    redirect('/login')
+    try{
+        cookies().delete("session")
+        redirect('/login')
+    } catch (error) {
+        console.error("logout error: ", error)
+        redirect('/')
+    }
 }
-
 
 export const validateUser = async() => {
+    try{
+        const token = cookies().get('session')?.value || ''
+        const user = await getUserByToken(token)
     
-    const token = cookies().get('session')?.value || ''
-    const user = await getUserByToken(token)
-
-    return JSON.stringify(user)
+        return JSON.stringify(user)
+    } catch (error){
+        console.error("validateUser error: ", error)
+        redirect('/')
+    }
 }
 
-
 export const editUser = async (id : string, name : string, email : string, role : string, discord : string) => {
-    const user = await users.updateOne({_id : new ObjectId(id)}, {$set: {name : name, email : email, role: role, discord : discord}})
-    revalidatePath('/admin')
-    return user
-
+    try{
+        const user = await users.updateOne({_id : new ObjectId(id)}, {$set: {name : name, email : email, role: role, discord : discord}})
+        revalidatePath('/admin')
+        return user
+    } catch (error){
+        console.error("editUser error: ",error)
+        redirect('/')
+    }
 }
 
 export const changePasswordForUser = async(id : string, password: string, confirm: string) => {
@@ -166,7 +190,12 @@ export const changePasswordForUser = async(id : string, password: string, confir
         return "Passwords do not match!"
     }
 
-    const hash = await bcrypt.hash(password, 10)
-    const user = await users.updateOne({_id : new ObjectId(id)}, {$set : {password: hash}})
-    return user
+    try {
+        const hash = await bcrypt.hash(password, 10)
+        const user = await users.updateOne({_id : new ObjectId(id)}, {$set : {password: hash}})
+        return user
+    } catch (error) {
+        console.error("changePasswordForUser error: ", error)
+        redirect('/')
+    }
 }
