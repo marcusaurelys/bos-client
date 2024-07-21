@@ -50,7 +50,7 @@ export default function Filter() {
     <>
         <Popover>
             <PopoverTrigger>
-                <div className="h-8 border-dashed shadow-sm bg-background text-sm my-2 flex flex-row items-center border border-primary/25 rounded p-3">
+                <div data-test="priority-button" className="h-8 border-dashed shadow-sm bg-background text-sm my-2 flex flex-row items-center border border-primary/25 rounded p-3">
                 <PlusCircleIcon className="h-4 stroke-1"/>
                 <h1 className="">Priority</h1>
                 {
@@ -74,7 +74,7 @@ export default function Filter() {
                             filterChoices.map((filter, index) => {
                                 const isSelected = selectedFilters.includes(filter)
 
-                                return <CommandItem className="m-1" key={filter} value={filter} onSelect={() => {
+                                return <CommandItem className="m-1" key={filter} value={filter} data-test={`filter-${filter}`}  onSelect={() => {
                                                 if (isSelected) {
                                                     removeFilter(filter)
                                                 }  

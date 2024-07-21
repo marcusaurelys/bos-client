@@ -55,18 +55,18 @@ const UpdateStatusForm = ({ticketInfo}: UpdateStatusForm) => {
   return (
     <form action={setStatus}>
         <CardFooter>
-            <div className="flex flex-row w-full gap-2">
+            <div data-test="ticket-update" className="flex flex-row w-full gap-2">
                 <Select name='status'>
                 <SelectTrigger className="w-2/3">
                     <SelectValue defaultValue={ticketInfo.status} placeholder={ticketInfo.status.charAt(0).toUpperCase() + ticketInfo.status.slice(1)} />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="open">Open</SelectItem>
-                    <SelectItem value="closed">Closed</SelectItem>
+                    <SelectItem data-test="pending-update" value="pending">Pending</SelectItem>
+                    <SelectItem data-test="open-update" value="open">Open</SelectItem>
+                    <SelectItem data-test="closed-update" value="closed">Closed</SelectItem>
                 </SelectContent>
                 </Select>
-                <Button className="w-1/3">Update</Button>
+                <Button data-test="update-button" className="w-1/3">Update</Button>
             </div>
         </CardFooter>
     </form>

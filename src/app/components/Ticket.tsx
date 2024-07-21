@@ -48,7 +48,7 @@ export default function Ticket({ticket}: TicketProps) {
 
         </div>
         
-        <Link href={`ticket/${ticket.id}`}>
+        <Link href={`ticket/${ticket.id}`} data-test={`ticket-${ticket.id}`}>
             {/* ticket description */}
         <div className="font-semibold">
                 <h1>{ticket.title}</h1>

@@ -18,7 +18,7 @@ export const fuckNextTickets = async() => {
 export const getTicketByStatus = async (status : string, filters: string[]) => {
     let ticketsData : ITicket[] = []
 
-    const result = await tickets.find({status : status, priority_score: {$in: filters}}).toArray()
+    const result = await tickets.find({status : status, priority_score: {$in: filters}}).sort({date_created : -1}).toArray()
 
     result.forEach((ticket) => {
         try {
