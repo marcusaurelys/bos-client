@@ -21,47 +21,58 @@ export const fuckNextChat = async() => {
 
 // Crisp Chat History
 export const getConversations = async(page_number: int) => {
-  const auth = Base64.encode(`${CRISP_API_ID}:${CRISP_API_KEY}`);
-  // console.log({ auth });
-  const crispRes = await fetch(`https://api.crisp.chat/v1/website/${CRISP_WEBSITE_ID}/conversations/${page_number}`, {
-    method: 'GET',
-    headers: {
-    Authorization: `Basic ${auth}`,
-      'X-Crisp-Tier': 'plugin',
-    },
-   });
-   const response = await crispRes.json()
-   return response
+  try {
+    const auth = Base64.encode(`${CRISP_API_ID}:${CRISP_API_KEY}`);
+  
+    const crispRes = await fetch(`https://api.crisp.chat/v1/website/${CRISP_WEBSITE_ID}/conversations/${page_number}`, {
+      method: 'GET',
+      headers: {
+      Authorization: `Basic ${auth}`,
+        'X-Crisp-Tier': 'plugin',
+      },
+    });
+    const response = await crispRes.json()
+    return response
+  } catch(error){
+    console.error("getConverstaions error: ",error);
+  }
 }
 
 export const getMessages = async(session_id: string) => {
-  const auth = Base64.encode(`${CRISP_API_ID}:${CRISP_API_KEY}`);
-  // console.log({ auth });
-  const crispRes = await fetch(`https://api.crisp.chat/v1/website/${CRISP_WEBSITE_ID}/conversation/${session_id}/messages`, {
-    method: 'GET',
-    headers: {
-    Authorization: `Basic ${auth}`,
-      'X-Crisp-Tier': 'plugin',
-    },
-   });
-   const response = await crispRes.json()
-   return response
+  try{
+    const auth = Base64.encode(`${CRISP_API_ID}:${CRISP_API_KEY}`);
+    
+    const crispRes = await fetch(`https://api.crisp.chat/v1/website/${CRISP_WEBSITE_ID}/conversation/${session_id}/messages`, {
+      method: 'GET',
+      headers: {
+      Authorization: `Basic ${auth}`,
+        'X-Crisp-Tier': 'plugin',
+      },
+    });
+    const response = await crispRes.json()
+    return response
+  } catch(error){
+    console.error("getMessages error: ",error);
+  }
 }
 
 // Chatbot Endpoints
-
 export const get_chatbot_response = async(prompt) => {
-  const response = await fetch(`${CHATBOT_URL}`, {
-    method: 'POST',
-    headers: {
-      "x-api-key": `${CHATBOT_API_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ prompt: prompt }),      
-  })
-  
-  const output = await response.json() 
-  return output 
+  try {
+    const response = await fetch(`${CHATBOT_URL}`, {
+      method: 'POST',
+      headers: {
+        "x-api-key": `${CHATBOT_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ prompt: prompt }),      
+    })
+    
+    const output = await response.json() 
+    return output 
+  } catch (error){
+    console.error("get_chatbot_response error: ",error);
+  }
 } 
 
 // Chatbot History 
@@ -80,45 +91,56 @@ Chat Object
 */
 
 export const get_chat_history_of_user = async() => {
-  const token = cookies().get('session')
-  const user = await get_user_by_token(token.value)
+  try{
+    const token = cookies().get('session')
+    const user = await get_user_by_token(token.value)
 
-  // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
-  const user_id = user._id
+    // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
+    const user_id = user._id
 
-  const response = await chats.find({user_id: user_id})
-  const result = await response.json()
-  return result 
+    const response = await chats.find({user_id: user_id})
+    const result = await response.json()
+    return result 
+  }catch(error){
+    console.error("get_chat_history_of_user",error)
+  }
 }
 
 export const get_chat_history_of_ticket = async(session_id: string) => {
-  const token = cookies().get('session')
-  const user = await get_user_by_token(token.value)
-
-  // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
-  const user_id = user._id
+  try{
+    const token = cookies().get('session')
+    const user = await get_user_by_token(token.value)
   
-  const response = await chats.findOne({user_id: user_id, session_id: session_id})
-  const result = await response.json()
-  return result
-
+    // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
+    const user_id = user._id
+    
+    const response = await chats.findOne({user_id: user_id, session_id: session_id})
+    const result = await response.json()
+    return result
+  }catch(error){
+    console.error("get_chat_history_of_ticket",error)
+  }
 }
 
 // Universal update, delete, patch, append. Pass an array here.
 export const update_chat_history_of_ticket = async(session_id: string, chats: Chat[]) => {
-  const token = cookies().get('session')
-  const user = await get_user_by_token(token.value)
+  try{
+    const token = cookies().get('session')
+    const user = await get_user_by_token(token.value)
 
-  // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
-  const user_id = user._id
+    // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
+    const user_id = user._id
 
-  const response = await chats.updateOne({user_id: user_id, session_id: session_id}, {
-    $set: {
-      chats: chats
-    }
-  })
-  const result = await response.json()
-  return result
+    const response = await chats.updateOne({user_id: user_id, session_id: session_id}, {
+      $set: {
+        chats: chats
+      }
+    })
+    const result = await response.json()
+    return result
+  } catch (error){
+    console.error("update_chat_history_of_ticket",error)
+  }
 }
 
 // TBD: Define initial ticket generation here
