@@ -4,6 +4,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
+    DialogClose,
     DialogTrigger,
 } from "@/components/ui/dialog";
 
@@ -25,19 +26,17 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Toggle } from "@/components/ui/toggle";
 import { User, ITicket } from '@/types';
 import { getTicket, getTickets, refreshTicket } from "@/db/tickets";
 import { getAllUsers } from "@/db/users";
-
 import styled from 'styled-components';
-import { revalidatePath } from "next/cache";
 import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
+import { compare } from "bcryptjs";
 
 
 
@@ -57,11 +56,10 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
     const [users, setUsers] = useState<User[]>([]);
     const [tickets, setTickets] = useState<ITicket[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-    const [isOpen, setOpen] = useState(false);
     const [ticketToUpdate, updateTicket] = useState(ticket);
-    const [trigger, setTrigger] = useState(0)
     const [loading, setLoading] = useState(false)
     const { toast } = useToast()
+
     
     const toggleUser = (user: User) => {
         const userId = user._id;
@@ -74,25 +72,45 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
         updateTicket({ ...ticketToUpdate, userIDs: updatedUserIDs });
     };
 
-    const updateUserIDs = async () => {
-        const response = await refreshTicket(ticketToUpdate.id, {userIDs: ticketToUpdate.userIDs})
-        if (response) {
-            toast({
-                description: 'The assignees of ticket "' + ticket.title + '"' +  " has been updated."
-              })
-            setTrigger((prev) => {return prev + 1})
-            clearModal()
-            setOpen(false)
-        } else {
-            toast({
-                variant: "destructive",
-                title: "Request failed."
-              })
-        }
-    };
+    const compareArrays = (a: string[], b: string[]) => {
 
-    const clearModal = () => {
-        updateTicket(ticket);
+        const sortedArr1 = a.slice().sort();
+        const sortedArr2 = b.slice().sort();
+
+        if (sortedArr1.length !== sortedArr2.length) return false
+        else {
+          // Comparing each element of your array
+          for (var i = 0; i < a.length; i++) {
+            if (sortedArr1[i] !== sortedArr2[i]) {
+              return false;
+            }
+          }
+          return true;
+        }
+      };
+
+    const updateUserIDs = async () => {
+        const isEqual = compareArrays(ticket.userIDs, ticketToUpdate.userIDs)
+
+        if (!isEqual){
+            const response = await refreshTicket(ticketToUpdate.id, {userIDs: ticketToUpdate.userIDs})
+            if (response) {
+                toast({
+                    description: 'The assignees of ticket "' + ticket.title + '"' +  " has been updated."
+                })
+            } else {
+                toast({
+                    variant: "destructive",
+                    description: "Request failed."
+                })
+            }
+        }
+        else{
+            toast({
+                description: "No changes made."
+            })
+        }
+        
     };
 
     const sortUsers = (newFilter: string) => {
@@ -105,47 +123,33 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
         setFilteredUsers(sortedUsers);
     };
 
-    useEffect(() => {
-        setFilteredUsers(users)
-    }, [])
+    const fetchData = async () => {
+        setLoading(true)
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true)
-            try{
-                const [ticketNow, tickets, users] = await Promise.all([getTicket(ticket.id), getTickets(), getAllUsers()])
-                if(ticketNow){
-                    updateTicket(ticketNow)
-                }
-                setUsers(JSON.parse(users))
-                setFilteredUsers(JSON.parse(users))
-                setTickets(tickets)
-            } catch(e) {
-                console.log(e)
-            } finally {
-                setLoading(false)
+        try{
+            const [ticketNow, tickets, users] = await Promise.all([getTicket(ticket.id), getTickets(), getAllUsers()])
+            if(ticketNow){
+                updateTicket(ticketNow)
             }
-            
+            setUsers(JSON.parse(users))
+            setFilteredUsers(JSON.parse(users))
+            setTickets(tickets)
+        } catch(e) {
+            console.log(e)
+            window.location.reload()
+            toast({
+                variant: "destructive",
+                title: "Error has occurred, refreshing page"
+              })
+        } finally {
+            setLoading(false)
         }
-        if(isOpen){
-            fetchData()
-        }
-        //ensure that the ticket has latest data when editing. this is set to any for now because our getTicket function is unhinged
-
         
-
-        return () => {
-            setUsers([])
-            setTickets([])
-            setTrigger(0)
-        }
-    }, [isOpen, trigger])
-    
-        
+    }
 
     return (
-        <Dialog open={isOpen} onOpenChange={setOpen}>
-        <DialogTrigger className="font-bold">Assign Ticket</DialogTrigger>
+        <Dialog>
+        <DialogTrigger onClick = {fetchData} className="font-bold">Assign Ticket</DialogTrigger>
         <CustomDialogContent className="min-h-[600px]">
             {loading ? 
             <Loading/>
@@ -209,8 +213,10 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
                 </ScrollArea>
             </Table>
             <DialogFooter>
-                <Button variant="ghost" onClick={clearModal}>Clear Changes</Button>
-                <Button type="submit" onClick={updateUserIDs}>Confirm</Button>
+                <Button variant="ghost" onClick={() => updateTicket(ticket)}>Clear Changes</Button>
+                <DialogClose asChild>
+                    <Button type="submit" onClick={updateUserIDs}>Confirm</Button>
+                </DialogClose>
             </DialogFooter>
             </>
             }
