@@ -112,6 +112,7 @@ export const refreshTicket = async (id: string, params: {}) => {
           { _id: new ObjectId(id) },
           { $set: { ...params } }
         )
+        revalidatePath(`/`)
         return true;
       } catch (error) {
         console.error(error)

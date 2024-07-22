@@ -26,7 +26,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { User, ITicket } from '@/types';
 import { getTicket, getTickets, refreshTicket } from "@/db/tickets";
@@ -36,7 +36,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
-import { compare } from "bcryptjs";
+import { revalidatePath } from "next/cache";
 
 
 
@@ -56,7 +56,7 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
     const [users, setUsers] = useState<User[]>([]);
     const [tickets, setTickets] = useState<ITicket[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-    const [ticketToUpdate, updateTicket] = useState(ticket);
+    const [ticketToUpdate, updateTicket] = useState<ITicket>(ticket);
     const [loading, setLoading] = useState(false)
     const { toast } = useToast()
 
@@ -90,6 +90,8 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
       };
 
     const updateUserIDs = async () => {
+        console.log(ticket.userIDs)
+        console.log(ticketToUpdate.userIDs)
         const isEqual = compareArrays(ticket.userIDs, ticketToUpdate.userIDs)
 
         if (!isEqual){
@@ -125,7 +127,6 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
 
     const fetchData = async () => {
         setLoading(true)
-
         try{
             const [ticketNow, tickets, users] = await Promise.all([getTicket(ticket.id), getTickets(), getAllUsers()])
             if(ticketNow){
@@ -146,6 +147,8 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
         }
         
     }
+
+    useEffect
 
     return (
         <Dialog>
