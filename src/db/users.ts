@@ -199,3 +199,14 @@ export const changePasswordForUser = async(id : string, password: string, confir
         redirect('/')
     }
 }
+
+export const deleteUser = async(_id : string) => {
+    try {
+        const res = users.deleteOne({_id : new ObjectId(_id)})
+        revalidatePath('/admin')
+        return res
+    } catch( error ){
+        console.error("delete user errror:", error)
+        redirect('/')
+    }
+}
