@@ -96,10 +96,10 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
 
     return (
         <Dialog open={isOpen} onOpenChange={openChange}>
-            <DialogTrigger>
+            <DialogTrigger data-test="edit-ticket-button">
                 <EditIcon className="stroke-1"/>
             </DialogTrigger>
-            <DialogContent aria-describedby={undefined}>
+            <DialogContent aria-describedby={undefined} data-test="edit-ticket-dialog">
                 <DialogHeader>
                     <DialogTitle>Edit Ticket</DialogTitle>
                 </DialogHeader>
@@ -115,7 +115,7 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
                                     <div className="flex flex-row rounded-md w-fit text-xs border py-1 px-2 items-center gap-2">
                                         <TagIcon className="h-4 fill-none stroke-primary/40"/>
                                         <h1>{tag.charAt(0).toUpperCase() + tag.slice(1)}</h1>
-                                        <XMarkIcon onClick={() => removeTag(tag)} className="h-4 stroke-[1px] stroke-primary/40 cursor-pointer" />
+                                        <XMarkIcon onClick={() => removeTag(tag)} className="h-4 stroke-[1px] stroke-primary/40 cursor-pointer" data-test={`close-${tag.charAt(0).toUpperCase() + tag.slice(1)}-tag`}/>
                                     </div>
                                     
                                 </div>
@@ -125,6 +125,7 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
                         </div>
                         <div>
                             <Input 
+                            data-test="add-tag-input"
                             className="col-span-3 h-6 text-xs" 
                             placeholder="+ Add a tag and press enter"
                             onKeyDown={(e) => checkEnter(e)}
@@ -143,6 +144,7 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
                                 Title
                             </Label>
                             <Input
+                            data-test="edit-title-input"
                             name="title"
                             className="col-span-3"
                             required
@@ -154,6 +156,7 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
                                 Description
                             </Label>
                             <Textarea 
+                            data-test="edit-description-input"
                             name="description"
                             className="col-span-3 h-32" 
                             defaultValue={ticket?.description}
@@ -165,14 +168,14 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
                                 Priority
                             </Label>
                             <Select name="priority" defaultValue={ticket.priority}>
-                                <SelectTrigger className="w-[180px]">
+                                <SelectTrigger className="w-[180px]" data-test="edit-priority">
                                     <SelectValue placeholder={ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1)} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                    <SelectItem value="high">High</SelectItem>
-                                    <SelectItem value="medium">Medium</SelectItem>
-                                    <SelectItem value="low">Low</SelectItem>
+                                    <SelectItem data-test="edit-priority-high" value="high">High</SelectItem>
+                                    <SelectItem data-test="edit-priority-medium" value="medium">Medium</SelectItem>
+                                    <SelectItem data-test="edit-priority-low"value="low">Low</SelectItem>
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
@@ -182,7 +185,7 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
                 
 
                 <DialogFooter>
-                    <Button type="submit" onClick={(e) => {setIsOpen(false)}}>Save</Button>
+                    <Button data-test="save-edit-button" type="submit" onClick={(e) => {setIsOpen(false)}}>Save</Button>
                 </DialogFooter>
                 </form>
             </DialogContent>
