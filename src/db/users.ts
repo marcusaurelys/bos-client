@@ -199,3 +199,21 @@ export const changePasswordForUser = async(id : string, password: string, confir
         redirect('/')
     }
 }
+
+export const deleteUser = async(_id : string) => {
+    try {
+        const res = await users.deleteOne({_id : new ObjectId(_id)})
+
+        await db.collection('tickets').updateMany(
+            {userIDs : _id},
+            {$pull : {'userIDs' : _id}}
+        )
+
+
+        revalidatePath('/admin')
+        return res
+    } catch( error ){
+        console.error("delete user errror:", error)
+        redirect('/')
+    }
+}

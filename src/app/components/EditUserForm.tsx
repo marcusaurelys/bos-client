@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useEffect, useRef, useState } from 'react'
-import { changePasswordForUser, editUser, register } from '@/db/users'
+import { changePasswordForUser, deleteUser, editUser, register } from '@/db/users'
 import { useToast } from "@/components/ui/use-toast"
 import bcrypt from "bcryptjs"
 import { User } from "@/types"
@@ -40,19 +40,6 @@ export default function EditUserForm({ user } : EditUserFormProps){
     const [isOpen, setOpen] = useState(false)
     const [form, setForm] = useState(false) //false means show edit user, true means change password
     const { toast } = useToast()
-    const [password, setPassword] = useState("")
-    const [confirm, setConfirm] = useState("")
-
-
-    useEffect( ()=> {
-
-        if(isOpen){
-            setPassword("")
-            setConfirm("")
-            setForm(false)
-            
-        }        
-    },[isOpen])
 
     const handleEdit = async(formData : FormData) => {
         const name = formData.get('name') as string
@@ -65,6 +52,7 @@ export default function EditUserForm({ user } : EditUserFormProps){
             toast({
                 description: `Nothing to update.`
             })
+            return
         }
         
         const res = await editUser(user._id, name, email, role, discord)
@@ -110,6 +98,22 @@ export default function EditUserForm({ user } : EditUserFormProps){
 
     }
 
+    const handleDelete = async(user : User) => {
+        const res = await deleteUser(user._id)
+
+        if(res.acknowledged){
+            toast({
+                description: 'successfully deleted user.'
+            })
+        }
+        else{
+            toast({
+                description: 'failed to delete user.'
+            })
+        }
+        setOpen(false)
+    }
+
     return(
         <Dialog open={isOpen} onOpenChange={setOpen}>
         <DialogTrigger asChild>
@@ -137,6 +141,7 @@ export default function EditUserForm({ user } : EditUserFormProps){
                         className="col-span-3"
                         defaultValue={user.name}
                         required
+                        key="name"
                         
                         />
                     </div>
@@ -151,6 +156,7 @@ export default function EditUserForm({ user } : EditUserFormProps){
                         className="col-span-3"
                         defaultValue={user.email}
                         required
+                        key="email"
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
@@ -163,6 +169,7 @@ export default function EditUserForm({ user } : EditUserFormProps){
                         className="col-span-3"
                         defaultValue={user.discord}
                         required
+                        key="discord"
                         />
                     </div>
                     
@@ -185,6 +192,7 @@ export default function EditUserForm({ user } : EditUserFormProps){
                     
                     </div>
                 <DialogFooter className="pt-4">
+                    <Button type="button" variant="destructive" onClick={(e) => handleDelete(user)}> Delete User </Button>
                     <Button type="button" onClick={(e) => {setForm(true)}}> Change Password </Button>
                     <Button type="submit" onClick={(e) => {setOpen(false)}}>Save Changes</Button>
                 </DialogFooter>
@@ -213,9 +221,8 @@ export default function EditUserForm({ user } : EditUserFormProps){
                     placeholder="********"
                     className="col-span-3"
                     type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                     required
+                    key="password"
                     />
                 </div>
 
@@ -228,9 +235,8 @@ export default function EditUserForm({ user } : EditUserFormProps){
                 placeholder="********"
                 className="col-span-3"
                 type="password"
-                value={confirm}
-                onChange={(e)=> setConfirm(e.target.value)}
                 required
+                key="confirm"
                 />
             </div>
         
