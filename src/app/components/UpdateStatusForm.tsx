@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { CardFooter } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { handleChangeStatus } from '@/contexts/actions'
+import { changeStatus } from '@/db/tickets'
 import { ITicket } from '@/types'
 import { revalidatePath } from 'next/cache'
 import React from 'react'
@@ -27,9 +27,8 @@ const UpdateStatusForm = ({ticketInfo}: UpdateStatusForm) => {
             return
         }
 
-       
         try{
-            const response = await handleChangeStatus(ticketInfo.id, status)
+            const response = await changeStatus(ticketInfo.id, status)
             if (response){
                 toast({
                     description: 'Ticket "' + ticketInfo.title + '"' +  " status updated."

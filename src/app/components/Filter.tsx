@@ -1,14 +1,17 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
+
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
 import React, { useEffect, useState } from 'react'
 import { PlusCircleIcon, CheckIcon } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Separator } from '@/components/ui/separator'
-import { useDataContext } from '@/contexts/DataContext'
 import { redirect, useRouter } from 'next/navigation'
+
+// consider removing unused code
+//import { useDataContext } from '@/contexts/DataContext'
+//import { Button } from '@/components/ui/button'
 
 const filterChoices =  ["High", "Medium", "Low"]
 

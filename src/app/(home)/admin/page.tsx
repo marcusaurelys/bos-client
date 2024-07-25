@@ -53,12 +53,23 @@ import { User } from '@/types'
 import EditUserForm from "@/app/components/EditUserForm"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import ClientToast from "@/app/components/ErrorToast"
 
 export default async function Page(){
 
-    let res = await getAllUsers()
-    const users : User[] = JSON.parse(res)
+    let errorMessage = ""
+    let users: User[] = []
 
+    try{
+        let res = await getAllUsers()
+        users = JSON.parse(res)
+    }
+    catch (error: any){
+        errorMessage = "An error occurred while fetching users, please reload the page"
+        revalidatePath('/')
+        console.log(errorMessage)
+    }
+    
     fuckNextDB()
     fuckNextUsers()
     fuckNextTickets()
@@ -97,12 +108,12 @@ export default async function Page(){
                     </TableBody>
                 </Table>
                 
-                {
-                    currUser?.role === 'admin' &&
-                <div className="flex items-center justify-center py-5    px-11">
-                    <AddUserForm/>
-                </div>
-                }
+                {currUser?.role === 'admin' && errorMessage == "" && (
+                    <div className="flex items-center justify-center py-5 px-11">
+                        <AddUserForm/>
+                    </div>
+                )}
+                <ClientToast errorMessage={errorMessage}/>
             </div>
         )
         

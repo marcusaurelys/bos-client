@@ -18,30 +18,32 @@ export const fuckNextTickets = async() => {
 export const getTicketByStatus = async (status : string, filters: string[]) => {
     let ticketsData : ITicket[] = []
 
-    const result = await tickets.find({status : status, priority_score: {$in: filters}}).sort({date_created : -1}).toArray()
-
-    result.forEach((ticket) => {
-        try {
-            ticketsData.push({
-                id: ticket._id.toString(), 
-                title: ticket.name,
-                description: ticket.description,
-                status: ticket.status,
-                priority: ticket.priority_score,
-                userIDs: ticket.userIDs ?? [],
-                tags: ticket.tags,
-                dateCreated: ticket.date_created.toString()
-            })
-        }
-        catch(e) {
-            console.log("Invalid ticket")
-        }
-        
-    })
-
-   // console.log(status, filters, ticketsData)
-
-    return ticketsData
+    try{
+        const result = await tickets.find({status : status, priority_score: {$in: filters}}).sort({date_created : -1}).toArray()
+        result.forEach((ticket) => {
+            try {
+                ticketsData.push({
+                    id: ticket._id.toString(), 
+                    title: ticket.name,
+                    description: ticket.description,
+                    status: ticket.status,
+                    priority: ticket.priority_score,
+                    userIDs: ticket.userIDs ?? [],
+                    tags: ticket.tags,
+                    dateCreated: ticket.date_created.toString()
+                })
+            }
+            catch(e) {
+                console.log("Invalid ticket")
+                return null
+            }
+            
+        })
+        return ticketsData
+    }
+    catch(e){
+        return null
+    }
 }
 
 export const getTickets = async () => {
@@ -96,7 +98,15 @@ export const getTicket = async(id: string) => {
 }
 
 export const changeStatus = async (id: string, status: string) => {
-    await tickets.updateOne({_id: new ObjectId(id)}, {$set: {status: status}})
+    try{
+        await tickets.updateOne({_id: new ObjectId(id)}, {$set: {status: status}})
+        revalidatePath(`/ticket/${id}`)
+        return true
+    }
+    catch(error){
+        console.log(error)
+        return false
+    }
 }
 
 export const refreshTicket = async (id: string, params: {}) => {

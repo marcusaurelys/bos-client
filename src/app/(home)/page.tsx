@@ -1,11 +1,16 @@
-import Board from "../components/Board";
 import { fuckNextTickets, getTicketByStatus } from '@/db/tickets'
 import { fuckNextUsers, getUserByToken } from '@/db/users'
 import { fuckNextDB } from '@/db/mongo'
 import Column from '@/app/components/Column'
 import Filter from '@/app/components/Filter'
-import { UserContext } from "@/contexts/userContext";
-import { cookies } from "next/headers";
+import ClientToast from '@/app/components/ErrorToast'
+import { revalidatePath } from 'next/cache'
+
+// Seems unused, please delete later if not needed
+//import { UserContext } from "@/contexts/userContext";
+//import { cookies } from "next/headers";
+//import { revalidatePath } from "next/cache";
+
 
 function parseStringToArray(input: string): string[] {
   try {
@@ -42,8 +47,20 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
   }
   console.log(filters)
   
-  const [pending, open, closed] = await Promise.all([getTicketByStatus('pending', filters), getTicketByStatus('open', filters), getTicketByStatus('closed', filters)])
-  
+
+  let pending: any[] | null = []
+  let open: any[] | null = []
+  let closed: any[] | null = []
+  let errorMessage: string | null = null;
+
+  try {
+    [pending, open, closed] = await Promise.all([getTicketByStatus('pending', filters), getTicketByStatus('open', filters), getTicketByStatus('closed', filters)]);
+  } 
+  catch (error: any) {
+    errorMessage = "An error occurred while fetching tickets"
+    revalidatePath('/')
+    console.error(error.message);
+  }
 
   return (
     <main className="w-full h-[calc(100vh-3rem)] flex justify-center">
@@ -61,6 +78,7 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
           </div>   
         </div>
       </div>    
+      <ClientToast errorMessage={errorMessage}/>
    </main>
   );
   

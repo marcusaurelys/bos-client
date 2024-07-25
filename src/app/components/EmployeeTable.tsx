@@ -36,7 +36,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
-import { revalidatePath } from "next/cache";
 
 
 
@@ -44,6 +43,7 @@ interface EmployeeTableProps {
     ticket: ITicket;
 }
 
+//Resizes the modal
 const CustomDialogContent = styled(DialogContent)`
   width: 800px !important; /* Ensure it overrides other styles */
   max-width: 50%;
@@ -53,14 +53,14 @@ const CustomDialogContent = styled(DialogContent)`
 
 export default function EmployeeTable({ticket}: EmployeeTableProps) {
 
-    const [users, setUsers] = useState<User[]>([]);
-    const [tickets, setTickets] = useState<ITicket[]>([]);
-    const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-    const [ticketToUpdate, updateTicket] = useState<ITicket>(ticket);
-    const [loading, setLoading] = useState(false)
+    const [users, setUsers] = useState<User[]>([]); //users to be assigned on the modal
+    const [tickets, setTickets] = useState<ITicket[]>([]); //needed to view what tickets a user is assigned to
+    const [filteredUsers, setFilteredUsers] = useState<User[]>([]); //separate state for filtered view
+    const [ticketToUpdate, updateTicket] = useState<ITicket>(ticket); //client-side ticket
+    const [loading, setLoading] = useState(false) //renders skeleton component when loading
     const { toast } = useToast()
 
-    
+    //Updates the client-side ticket with who they want to assign (Does not immediately update the ticket on the server)
     const toggleUser = (user: User) => {
         const userId = user._id;
         const hasUser = ticketToUpdate.userIDs.includes(userId);
@@ -72,8 +72,8 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
         updateTicket({ ...ticketToUpdate, userIDs: updatedUserIDs });
     };
 
+    //Helper function to compare the users of the client and server ticket
     const compareArrays = (a: string[], b: string[]) => {
-
         const sortedArr1 = a.slice().sort();
         const sortedArr2 = b.slice().sort();
 
@@ -88,19 +88,26 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
           return true;
         }
       };
-
+    
+    //Updates the ticket with the users on the client-side
     const updateUserIDs = async () => {
-        console.log(ticket.userIDs)
-        console.log(ticketToUpdate.userIDs)
         const isEqual = compareArrays(ticket.userIDs, ticketToUpdate.userIDs)
 
         if (!isEqual){
-            const response = await refreshTicket(ticketToUpdate.id, {userIDs: ticketToUpdate.userIDs})
-            if (response) {
+            try{
+                const response = await refreshTicket(ticketToUpdate.id, {userIDs: ticketToUpdate.userIDs})
+                if (response) {
                 toast({
-                    description: 'The assignees of ticket "' + ticket.title + '"' +  " has been updated."
-                })
-            } else {
+                        description: 'The assignees of ticket "' + ticket.title + '"' +  " has been updated."
+                    })
+                } else {
+                    toast({
+                        variant: "destructive",
+                        description: "Request failed."
+                    })
+                }
+            }
+            catch (e){
                 toast({
                     variant: "destructive",
                     description: "Request failed."
@@ -115,7 +122,9 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
         
     };
 
+    //Sort users by name or role
     const sortUsers = (newFilter: string) => {
+        //Shallow copy doesn't really matter too much for functionality, might change if needed
         let sortedUsers = [...users];
         if (newFilter === "Name") {
             sortedUsers.sort((a, b) => a.name.localeCompare(b.name));
@@ -125,6 +134,7 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
         setFilteredUsers(sortedUsers);
     };
 
+    //Fetches data from server, only occurs when modal is opened
     const fetchData = async () => {
         setLoading(true)
         try{
@@ -132,9 +142,9 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
             if(ticketNow){
                 updateTicket(ticketNow)
             }
-            setUsers(JSON.parse(users))
-            setFilteredUsers(JSON.parse(users))
-            setTickets(tickets)
+            setUsers(JSON.parse(users)) //sets the users that can be assigned
+            setFilteredUsers(JSON.parse(users)) //sets the initial filtered users
+            setTickets(tickets) //sets tickets
         } catch(e) {
             console.log(e)
             window.location.reload()
@@ -148,88 +158,85 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
         
     }
 
-    useEffect
-
     return (
         <Dialog>
-        <DialogTrigger onClick = {fetchData} className="font-bold">Assign Ticket</DialogTrigger>
-        <CustomDialogContent className="min-h-[600px]">
-            {loading ? 
-            <Loading/>
-            :
-            <>
-            <DialogHeader>
-                <DialogTitle>{ticket.title}</DialogTitle>
-            </DialogHeader>
-            <div className="flex flex-row justify-left items-center">
-                <div>Sort by:</div>
-                <Button variant="ghost" className="ml-2" onClick={() => sortUsers("Name")}>
-                    Name
-                </Button>
-                <Button variant="ghost" onClick={() => sortUsers("Role")}>
-                    Role
-                </Button>
-            </div>
-            <Table>
-                <ScrollArea className = "h-[400px]">
-                <TableHeader>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Role</TableHead>
-                </TableHeader>
-                <TableBody>
-                    {filteredUsers.map((user) => (
-                        <TableRow key={user._id} className={`${ticketToUpdate.userIDs.includes(user._id) ? 'bg-green-100' : 'bg-slate-100'}`}>
-                            <TableCell>{user.name}</TableCell>
-                            <TableCell>{user.email}</TableCell>
-                            <TableCell>{user.role}</TableCell>
-                            <TableCell>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger>View Tickets</DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuLabel>Tickets</DropdownMenuLabel>
-                                        <DropdownMenuSeparator />
-                                        {tickets.filter(ticket => ticket.userIDs.includes(user._id)).length > 0 ? (
-                                            tickets
-                                                .filter(ticket => ticket.userIDs.includes(user._id))
-                                                .map(ticket => (
-                                                    <DropdownMenuItem key={ticket.id}>
-                                                         <Link href={`ticket/${ticket.id}`}>
-                                                            {ticket.title}
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                ))
-                                        ) : (
-                                            <DropdownMenuItem>None</DropdownMenuItem>
-                                        )}
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </TableCell>
-                            <TableCell>
-                                <Button variant = "ghost" onClick={() => toggleUser(user)}>
-                                    {ticketToUpdate.userIDs.includes(user._id) ? 'Remove User' : 'Assign User'}
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-                </ScrollArea>
-            </Table>
-            <DialogFooter>
-                <Button variant="ghost" onClick={() => updateTicket(ticket)}>Clear Changes</Button>
-                <DialogClose asChild>
-                    <Button type="submit" onClick={updateUserIDs}>Confirm</Button>
-                </DialogClose>
-            </DialogFooter>
-            </>
-            }
-            
-        </CustomDialogContent>
-    </Dialog>
+            <DialogTrigger onClick = {fetchData} className="font-bold">Assign Ticket</DialogTrigger>
+            <CustomDialogContent className="min-h-[600px]">
+                {loading ? 
+                <Loading/>
+                :
+                <>
+                <DialogHeader>
+                    <DialogTitle>{ticket.title}</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-row justify-left items-center">
+                    <div>Sort by:</div>
+                    <Button variant="ghost" className="ml-2" onClick={() => sortUsers("Name")}>
+                        Name
+                    </Button>
+                    <Button variant="ghost" onClick={() => sortUsers("Role")}>
+                        Role
+                    </Button>
+                </div>
+                <Table>
+                    <ScrollArea className = "h-[400px]">
+                    <TableHeader>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Role</TableHead>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredUsers.map((user) => (
+                            <TableRow key={user._id} className={`${ticketToUpdate.userIDs.includes(user._id) ? 'bg-green-100' : 'bg-slate-100'}`}>
+                                <TableCell>{user.name}</TableCell>
+                                <TableCell>{user.email}</TableCell>
+                                <TableCell>{user.role}</TableCell>
+                                <TableCell>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger>View Tickets</DropdownMenuTrigger>
+                                        <DropdownMenuContent>
+                                            <DropdownMenuLabel>Tickets</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            {tickets.filter(ticket => ticket.userIDs.includes(user._id)).length > 0 ? (
+                                                tickets
+                                                    .filter(ticket => ticket.userIDs.includes(user._id))
+                                                    .map(ticket => (
+                                                        <DropdownMenuItem key={ticket.id}>
+                                                            <Link href={`ticket/${ticket.id}`}>
+                                                                {ticket.title}
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                    ))
+                                            ) : (
+                                                <DropdownMenuItem>None</DropdownMenuItem>
+                                            )}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                                <TableCell>
+                                    <Button variant = "ghost" onClick={() => toggleUser(user)}>
+                                        {ticketToUpdate.userIDs.includes(user._id) ? 'Remove User' : 'Assign User'}
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                    </ScrollArea>
+                </Table>
+                <DialogFooter>
+                    <Button variant="ghost" onClick={() => updateTicket(ticket)}>Clear Changes</Button>
+                    <DialogClose asChild>
+                        <Button type="submit" onClick={updateUserIDs}>Confirm</Button>
+                    </DialogClose>
+                </DialogFooter>
+                </>
+                }
+            </CustomDialogContent>
+        </Dialog>
     );
 }
 
-
+//Skeleton Code
 function Loading() {
     return (
         <>
