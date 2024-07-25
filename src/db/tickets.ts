@@ -15,6 +15,21 @@ export const fuckNextTickets = async() => {
     
 }
 
+let updateCount = 0
+
+export const getCount = async () => {
+    return updateCount
+}
+
+export const handleStale = async (count) => {
+    if (count != updateCount) {
+        revalidatePath('/', 'layout')
+        console.log("revalidate path: " + updateCount)
+    }
+
+    return updateCount
+}
+
 export const getTicketByStatus = async (status : string, filters: string[]) => {
     let ticketsData : ITicket[] = []
 
@@ -100,7 +115,9 @@ export const getTicket = async(id: string) => {
 export const changeStatus = async (id: string, status: string) => {
     try{
         await tickets.updateOne({_id: new ObjectId(id)}, {$set: {status: status}})
-        revalidatePath('/', 'page')
+        updateCount++
+        revalidatePath('/', 'layout')
+        console.log("change ticket status")
         return true
     }
     catch(error){
@@ -122,7 +139,9 @@ export const refreshTicket = async (id: string, params: {}) => {
           { _id: new ObjectId(id) },
           { $set: { ...params } }
         )
-        revalidatePath(`/`)
+        updateCount++
+        revalidatePath('/', 'layout')
+        console.log("refresh ticket")
         return true;
       } catch (error) {
         console.error(error)
