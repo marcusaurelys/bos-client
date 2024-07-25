@@ -100,7 +100,7 @@ export const getTicket = async(id: string) => {
 export const changeStatus = async (id: string, status: string) => {
     try{
         await tickets.updateOne({_id: new ObjectId(id)}, {$set: {status: status}})
-        revalidatePath(`/ticket/${id}`)
+        revalidatePath('/', 'page')
         return true
     }
     catch(error){
