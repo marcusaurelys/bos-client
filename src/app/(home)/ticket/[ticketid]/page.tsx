@@ -128,7 +128,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
             <div className="w-1/3 m-2">
                 <Card>
                     <CardHeader className="flex flex-row justify-between">
-                        <CardTitle>{ticket_info.title}</CardTitle>
+                        <CardTitle data-test={`${ticket_info.id}-title`}> {ticket_info.title}</CardTitle>
                         <EditTicket ticket={ticket_info} user={JSON.parse(user)}/>
                     </CardHeader>
                     <div className="flex gap-2 flex-wrap pl-6 pb-6 pr-6">
@@ -144,7 +144,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                             ))
                         }
                     </div>
-                    <CardContent>
+                    <CardContent data-test={`${ticket_info.id}-description`}>
                         {ticket_info.description}
                     </CardContent>
                     <UpdateStatusForm ticketInfo={ticket_info}/>
