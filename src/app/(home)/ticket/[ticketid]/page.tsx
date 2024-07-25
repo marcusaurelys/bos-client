@@ -2,7 +2,6 @@ import { fuckNextDB } from '@/db/mongo'
 import { fuckNextTickets } from '@/db/tickets'
 import { fuckNextChat } from '@/db/chat'
 import { fuckNextUsers } from '@/db/users'
-import { FUCK } from '@/contexts/actions'
 
 import {
     Card,
@@ -32,12 +31,13 @@ import { Key } from "react"
 import { ChatLayout } from "@/components/chat/chat-layout"
 import { cookies } from "next/headers";
 import Bot from "@/app/components/Bot";
-import { handleChangeStatus } from "@/contexts/actions";
 import { revalidatePath } from "next/cache";
 import UpdateStatusForm from "@/app/components/UpdateStatusForm";
 import { Dialog } from "@/components/ui/dialog";
 import EditTicket from "@/app/components/EditTicket";
 import { validateUser } from "@/db/users";
+import { ITicket } from '@/types'
+import ClientToast from '@/app/components/ErrorToast'
 
 export default async function Ticket({params}:{params:{ticketid:string}}) {
 
@@ -45,16 +45,33 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
     fuckNextTickets()
     fuckNextChat()
     fuckNextUsers()
-    FUCK()
 
     const layout = cookies().get("react-resizable-panels:layout");
     const defaultLayout = layout ? JSON.parse(layout.value) : undefined;
-    const [ticket_info, user] = await Promise.all([getTicket(params.ticketid), validateUser()])
 
-    if (!ticket_info) {
-        return (
-            <p>Ticket returned null from database, check the id in the url</p>
-        )
+    let ticket_info: ITicket | null
+    let user: String
+    let priorityColor: String
+    let errorMessage = ""
+    
+    try{
+        [ticket_info, user] = await Promise.all([getTicket(params.ticketid), validateUser()])
+        
+        if (ticket_info){
+            if(ticket_info.priority == "high") {
+                priorityColor = "bg-red-500"
+            }
+            if(ticket_info.priority == "medium") {
+                priorityColor = "bg-yellow-400"
+            }
+            if(ticket_info.priority == "low") {
+                priorityColor = "bg-green-500"
+            }
+        }
+    }
+    catch(error: any){
+        errorMessage = "An error occurred while fetching the ticket, please check the TicketID in the url"
+        console.log(errorMessage)
     }
  
     const chat_history = {
@@ -72,18 +89,15 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
     //     ]
     // }
 
-    let priorityColor
-    
-    if(ticket_info.priority == "high") {
-        priorityColor = "bg-red-500"
+    if (ticket_info == null) {
+        return (
+            <>
+            <p>Ticket returned null from database, check the id in the url</p>
+            <ClientToast errorMessage={errorMessage}/>
+            </>
+        )
     }
-    if(ticket_info.priority == "medium") {
-        priorityColor = "bg-yellow-400"
-    }
-    if(ticket_info.priority == "low") {
-        priorityColor = "bg-green-500"
-    }
-
+   
     return (<>
         <div className="flex flex-row m-4">
             <div className="w-2/3 border rounded-lg m-2">
@@ -98,15 +112,15 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                         {chat_history.messages.map((message, index) => (
                             message.from == "operator" 
                             ?
-                            <div className="flex flex-col m-2 border rounded-lg bg-blue-100">
-                                <div key={index} className="flex flex-col m-2">
+                            <div className="flex flex-col m-2 border rounded-lg bg-blue-100" key={index}>
+                                <div className="flex flex-col m-2">
                                     <strong>{message.from}</strong>
                                     <p>{message.content}</p>
                                 </div>
                             </div>
                             :
-                            <div className="flex flex-col m-2 border rounded-lg bg-stone-100">
-                                <div key={index} className="flex flex-col m-2">
+                            <div className="flex flex-col m-2 border rounded-lg bg-stone-100" key={index}>
+                                <div className="flex flex-col m-2">
                                     <strong>{message.from}</strong>
                                     <p>{message.content}</p>
                                 </div>

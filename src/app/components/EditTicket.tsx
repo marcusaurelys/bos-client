@@ -20,7 +20,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { ITicket, User } from '@/types'
 import { EditIcon } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { refreshTicket, revalidateTicket } from '@/db/tickets'
+import { refreshTicket} from '@/db/tickets'
 import { toast } from '@/components/ui/use-toast'
 import { getUserByToken } from '@/db/users'
 import { cookies } from 'next/headers'
@@ -61,7 +61,6 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
                 toast({
                     description: "Successfully edited ticket"
                 })
-                revalidateTicket(ticket.id)
             }
             else {
                 toast({

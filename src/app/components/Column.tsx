@@ -31,13 +31,6 @@ export default function Column({title, status, tickets}: ColumnProps) {
     if(node) observer.current.observe(node)
   }, [numberOfTickets])
 
-
-
-
-
-
-
-    
   return (
     <motion.div layout
         id={`#column-${title}`}

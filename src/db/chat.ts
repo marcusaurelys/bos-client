@@ -4,7 +4,8 @@ import { Base64 } from 'js-base64'
 import { ObjectID } from 'mongo'   
 import { cookies } from 'next/headers'
 import { useDB } from '@/db/mongo'
-import { get_user_by_token } from '@/db/users'
+import { getUserByToken } from '@/db/users'
+import { revalidatePath } from 'next/cache'
 
 const CRISP_WEBSITE_ID = process.env.CRISP_WEBSITE_ID
 const CRISP_API_ID = process.env.CRISP_API_ID
@@ -93,7 +94,7 @@ Chat Object
 export const get_chat_history_of_user = async() => {
   try{
     const token = cookies().get('session')
-    const user = await get_user_by_token(token.value)
+    const user = await getUserByToken(token.value)
 
     // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
     const user_id = user._id
@@ -109,7 +110,7 @@ export const get_chat_history_of_user = async() => {
 export const get_chat_history_of_ticket = async(session_id: string) => {
   try{
     const token = cookies().get('session')
-    const user = await get_user_by_token(token.value)
+    const user = await getUserByToken(token.value)
   
     // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
     const user_id = user._id
@@ -126,7 +127,7 @@ export const get_chat_history_of_ticket = async(session_id: string) => {
 export const update_chat_history_of_ticket = async(session_id: string, chats: Chat[]) => {
   try{
     const token = cookies().get('session')
-    const user = await get_user_by_token(token.value)
+    const user = await getUserByToken(token.value)
 
     // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
     const user_id = user._id
@@ -137,6 +138,7 @@ export const update_chat_history_of_ticket = async(session_id: string, chats: Ch
       }
     })
     const result = await response.json()
+    revalidatePath('/')
     return result
   } catch (error){
     console.error("update_chat_history_of_ticket",error)
