@@ -202,7 +202,14 @@ export const changePasswordForUser = async(id : string, password: string, confir
 
 export const deleteUser = async(_id : string) => {
     try {
-        const res = users.deleteOne({_id : new ObjectId(_id)})
+        const res = await users.deleteOne({_id : new ObjectId(_id)})
+
+        await db.collection('tickets').updateMany(
+            {userIDs : _id},
+            {$pull : {'userIDs' : _id}}
+        )
+
+
         revalidatePath('/admin')
         return res
     } catch( error ){
