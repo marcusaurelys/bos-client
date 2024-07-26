@@ -6,6 +6,7 @@ import { ITicket } from '@/types'
 import ticket from "@/app/(home)/ticket/page"
 import { revalidatePath } from "next/cache"
 import { validateUser } from "./users"
+import { sendMessage } from '@/app/api/listen/server'
 
 const db = await useDB()
 const tickets = db.collection('tickets')
@@ -13,21 +14,6 @@ const tickets = db.collection('tickets')
 export const fuckNextTickets = async() => {
     
     
-}
-
-let updateCount = 0
-
-export const getCount = async () => {
-    return updateCount
-}
-
-export const handleStale = async (count) => {
-    if (count != updateCount) {
-        revalidatePath('/', 'layout')
-        console.log("revalidate path: " + updateCount)
-    }
-
-    return updateCount
 }
 
 export const getTicketByStatus = async (status : string, filters: string[]) => {
@@ -115,9 +101,8 @@ export const getTicket = async(id: string) => {
 export const changeStatus = async (id: string, status: string) => {
     try{
         await tickets.updateOne({_id: new ObjectId(id)}, {$set: {status: status}})
-        updateCount++
-        revalidatePath('/', 'layout')
         console.log("change ticket status")
+        sendMessage()
         return true
     }
     catch(error){
@@ -139,9 +124,8 @@ export const refreshTicket = async (id: string, params: {}) => {
           { _id: new ObjectId(id) },
           { $set: { ...params } }
         )
-        updateCount++
-        revalidatePath('/', 'layout')
         console.log("refresh ticket")
+        sendMessage()
         return true;
       } catch (error) {
         console.error(error)
@@ -149,6 +133,6 @@ export const refreshTicket = async (id: string, params: {}) => {
       }
 }
 
-export const revalidateTicket = (id: string) => {
-    revalidatePath(`/ticket/${id}`)
+export const revalidateTicket = () => {
+    revalidatePath('/', 'layout')
 }

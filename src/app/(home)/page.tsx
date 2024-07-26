@@ -5,8 +5,7 @@ import Column from '@/app/components/Column'
 import Filter from '@/app/components/Filter'
 import ClientToast from '@/app/components/ErrorToast'
 import { revalidatePath } from 'next/cache'
-import Listener from '@/app/components/Listener'
-import { getCount } from '@/db/tickets'
+import Listener from '@/app/components/Listener' 
 
 // Seems unused, please delete later if not needed
 //import { UserContext } from "@/contexts/userContext";
@@ -49,8 +48,6 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
   }
   console.log(filters)
   
-  const initial = await getCount()
-  
   let pending: any[] | null = []
   let open: any[] | null = []
   let closed: any[] | null = []
@@ -82,7 +79,7 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
         </div>
       </div>    
       <ClientToast errorMessage={errorMessage}/>
-   <Listener initial={initial}/>
+   <Listener/>
    </main>
   );
   
