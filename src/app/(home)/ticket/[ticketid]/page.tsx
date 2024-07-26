@@ -38,6 +38,7 @@ import EditTicket from "@/app/components/EditTicket";
 import { validateUser } from "@/db/users";
 import { ITicket } from '@/types'
 import ClientToast from '@/app/components/ErrorToast'
+import Listener from '@/app/components/Listener'
 
 export default async function Ticket({params}:{params:{ticketid:string}}) {
 
@@ -165,6 +166,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                 </Card> 
             </div>
         </div>
+        <Listener/>
     </>
     );
   }
