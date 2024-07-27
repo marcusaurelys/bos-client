@@ -1,4 +1,11 @@
 import { NextResponse } from 'next/server'
+
+/**
+ * Middleware function to verify user session.
+ *
+ * @param {Request} request - The incoming request object.
+ * @returns {Promise<NextResponse>} A NextResponse object indicating whether the user is redirected or allowed to proceed.
+ */
 export default async function middleware(request : any) {
 
   const HOST = process.env.HOST
@@ -29,12 +36,12 @@ export default async function middleware(request : any) {
 
 export const config = {
   matcher: [
-    '/',
-   // '/admin',
-    '/bot',
-    '/chat',
-    '/ticket',
-    '/ticket/:path*',
+   '/',
+   '/admin',
+   '/bot',
+   '/chat',
+   '/ticket',
+   '/ticket/:path*',
   ]
 }
 

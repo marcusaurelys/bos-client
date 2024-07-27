@@ -1,11 +1,15 @@
 'use server'
 
-import {Db, MongoClient} from 'mongodb'
+import {MongoClient} from 'mongodb'
 
 const client = new MongoClient(process.env.MONGO_URI || '', {socketTimeoutMS: 5000, maxIdleTimeMS: 2000})
-let cache : Db | null = null
+let cache = null
 
-//okay this works kinda lets goo
+/**
+ * Uses the MongoDB database connection, caching the connection for reuse.
+ * 
+ * @returns {Promise<Object>} The MongoDB database connection.
+ */
 export async function useDB() {
   
   if (cache) {
@@ -19,6 +23,11 @@ export async function useDB() {
   return db
 }
 
+/**
+ * Empty function to as a workaround for https://github.com/vercel/next.js/issues/54282
+ * 
+ * @returns {Promise<void>}
+ */
 export const fuckNextDB = async() => {
   
 }

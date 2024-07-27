@@ -11,11 +11,23 @@ import { sendMessage } from '@/app/api/listen/server'
 const db = await useDB()
 const tickets = db.collection('tickets')
 
+/**
+ * Empty function to as a workaround for https://github.com/vercel/next.js/issues/54282
+ * 
+ * @returns {Promise<void>}
+ */
 export const fuckNextTickets = async() => {
     
     
 }
 
+/**
+ * Fetches tickets by status and filters them based on priority scores.
+ * 
+ * @param {string} status - The status of the tickets to retrieve.
+ * @param {string[]} filters - An array of priority scores to filter the tickets by.
+ * @returns {Promise<ITicket[] | null>} The filtered list of tickets or null if an error occurs.
+ */
 export const getTicketByStatus = async (status : string, filters: string[]) => {
     let ticketsData : ITicket[] = []
 
@@ -47,6 +59,11 @@ export const getTicketByStatus = async (status : string, filters: string[]) => {
     }
 }
 
+/**
+ * Fetches all tickets from the database.
+ * 
+ * @returns {Promise<ITicket[]>} The list of all tickets.
+ */
 export const getTickets = async () => {
     let ticketsData: ITicket[] = []
     
@@ -71,11 +88,15 @@ export const getTickets = async () => {
         
     })
 
-    //console.log(ticketsData)
-
     return ticketsData
 }
 
+/**
+ * Fetches a specific ticket by its ID.
+ * 
+ * @param {string} id - The ID of the ticket to retrieve.
+ * @returns {Promise<ITicket | null>} The ticket object or null if an error occurs.
+ */
 export const getTicket = async(id: string) => {
     const result = await tickets.findOne({_id: new ObjectId(id)})
     try {
@@ -98,6 +119,13 @@ export const getTicket = async(id: string) => {
     
 }
 
+/**
+ * Changes the status of a specific ticket.
+ * 
+ * @param {string} id - The ID of the ticket to update.
+ * @param {string} status - The new status to set for the ticket.
+ * @returns {Promise<boolean>} True if the update was successful, false otherwise.
+ */
 export const changeStatus = async (id: string, status: string) => {
     try{
         await tickets.updateOne({_id: new ObjectId(id)}, {$set: {status: status}})
@@ -111,6 +139,13 @@ export const changeStatus = async (id: string, status: string) => {
     }
 }
 
+/**
+ * Updates the properties of a specific ticket.
+ * 
+ * @param {string} id - The ID of the ticket to update.
+ * @param {Object} params - The new properties to set for the ticket.
+ * @returns {Promise<boolean>} True if the update was successful, false otherwise.
+ */
 export const refreshTicket = async (id: string, params: {}) => {
     const user = await validateUser()
     console.log(params)
@@ -133,6 +168,9 @@ export const refreshTicket = async (id: string, params: {}) => {
       }
 }
 
+/**
+ * Revalidates the ticket data on the specified path.
+ */
 export const revalidateTicket = () => {
     revalidatePath('/', 'layout')
 }

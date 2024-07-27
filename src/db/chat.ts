@@ -16,12 +16,22 @@ const CHATBOT_API_KEY = process.env.CHATBOT_API_KEY
 const db = await useDB()
 const chats = db.collection('chats')
 
+/**
+ * Empty function to as a workaround for https://github.com/vercel/next.js/issues/54282
+ * 
+ * @returns {Promise<void>}
+ */
 export const fuckNextChat = async() => {
   
 } 
 
-// Crisp Chat History
-export const getConversations = async(page_number: int) => {
+/**
+ * Fetches a list of conversations from the Crisp API.
+ * 
+ * @param {number} page_number - The page number of the conversations to retrieve.
+ * @returns {Promise<Object>} The response from the Crisp API containing the conversations.
+ */
+export const getConversations = async(page_number) => {
   try {
     const auth = Base64.encode(`${CRISP_API_ID}:${CRISP_API_KEY}`);
   
@@ -39,7 +49,13 @@ export const getConversations = async(page_number: int) => {
   }
 }
 
-export const getMessages = async(session_id: string) => {
+/**
+ * Fetches a response from a chatbot API based on a given prompt.
+ * 
+ * @param {string} prompt - The prompt to send to the chatbot.
+ * @returns {Promise<Object>} The response from the chatbot API.
+ */
+export const getMessages = async(session_id) => {
   try{
     const auth = Base64.encode(`${CRISP_API_ID}:${CRISP_API_KEY}`);
     
@@ -57,7 +73,12 @@ export const getMessages = async(session_id: string) => {
   }
 }
 
-// Chatbot Endpoints
+/**
+ * Fetches a response from a chatbot API based on a given prompt.
+ * 
+ * @param {string} prompt - The prompt to send to the chatbot.
+ * @returns {Promise<Object>} The response from the chatbot API.
+ */
 export const get_chatbot_response = async(prompt) => {
   try {
     const response = await fetch(`${CHATBOT_URL}`, {
@@ -76,8 +97,6 @@ export const get_chatbot_response = async(prompt) => {
   }
 } 
 
-// Chatbot History 
-
 /*
 Chat Object
   {
@@ -91,6 +110,11 @@ Chat Object
   }
 */
 
+/**
+ * Fetches the chat history of the current user.
+ * 
+ * @returns {Promise<Object>} The chat history of the user.
+ */
 export const get_chat_history_of_user = async() => {
   try{
     const token = cookies().get('session')
@@ -107,7 +131,13 @@ export const get_chat_history_of_user = async() => {
   }
 }
 
-export const get_chat_history_of_ticket = async(session_id: string) => {
+/**
+ * Fetches the chat history of a specific ticket for the current user.
+ * 
+ * @param {string} session_id - The session ID of the chat ticket.
+ * @returns {Promise<Object>} The chat history of the ticket.
+ */
+export const get_chat_history_of_ticket = async(session_id) => {
   try{
     const token = cookies().get('session')
     const user = await getUserByToken(token.value)
@@ -123,8 +153,14 @@ export const get_chat_history_of_ticket = async(session_id: string) => {
   }
 }
 
-// Universal update, delete, patch, append. Pass an array here.
-export const update_chat_history_of_ticket = async(session_id: string, chats: Chat[]) => {
+/**
+ * Updates the chat history of a specific ticket for the current user.
+ * 
+ * @param {string} session_id - The session ID of the chat ticket.
+ * @param {Chat[]} chats - An array of chat objects to update.
+ * @returns {Promise<Object>} The result of the update operation.
+ */
+export const update_chat_history_of_ticket = async(session_id, chats) => {
   try{
     const token = cookies().get('session')
     const user = await getUserByToken(token.value)

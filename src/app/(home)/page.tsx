@@ -7,12 +7,6 @@ import ClientToast from '@/app/components/ErrorToast'
 import { revalidatePath } from 'next/cache'
 import Listener from '@/app/components/Listener' 
 
-// Seems unused, please delete later if not needed
-//import { UserContext } from "@/contexts/userContext";
-//import { cookies } from "next/headers";
-//import { revalidatePath } from "next/cache";
-
-
 function parseStringToArray(input: string): string[] {
   try {
       // Remove any whitespace and check if the input string is a valid array format

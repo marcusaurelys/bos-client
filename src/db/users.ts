@@ -29,10 +29,21 @@ interface User {
 const db = await useDB()
 const users = db.collection('users')
 
+/**
+ * Empty function to as a workaround for https://github.com/vercel/next.js/issues/54282
+ * 
+ * @returns {Promise<void>}
+ */
 export const fuckNextUsers = async() => {
     
 }
 
+/**
+ * Fetches a user by their email.
+ * 
+ * @param {string} email - The email of the user to retrieve.
+ * @returns {Promise<Object | null>} The user object or null if an error occurs.
+ */
 export const getUser = async(email : string) => {
     try{
         const result = await users.findOne({email : email});
@@ -44,6 +55,13 @@ export const getUser = async(email : string) => {
     }
 }
 
+
+/**
+ * Fetches a user by their authentication token.
+ * 
+ * @param {string} token - The authentication token of the user.
+ * @returns {Promise<Object | null>} The user object or null if an error occurs.
+ */
 export const getUserByToken = async(token : string) => {
     try {
         const result = await users.findOne({token: token})
@@ -54,6 +72,11 @@ export const getUserByToken = async(token : string) => {
     }
 }
 
+/**
+ * Fetches all users from the database.
+ * 
+ * @returns {Promise<string>} A JSON string of all users.
+ */
 export const getAllUsers = async() => {
     try{
         const result = await users.find({}).toArray()
@@ -64,6 +87,17 @@ export const getAllUsers = async() => {
     }
 }
 
+/**
+ * Registers a new user.
+ * 
+ * @param {string} name - The name of the user.
+ * @param {string} email - The email of the user.
+ * @param {string} password - The password of the user.
+ * @param {string} confirm - The password confirmation.
+ * @param {string} role - The role of the user.
+ * @param {string} discord - The Discord username of the user.
+ * @returns {Promise<boolean>} True if registration was successful, false otherwise.
+ */
 export const register = async (name: string, email: string, password: string, confirm: string, role: string, discord: string) => {
     let success = false
 
@@ -116,7 +150,13 @@ export const register = async (name: string, email: string, password: string, co
     redirect('/')
     */
 }
-    
+
+/**
+ * Logs in a user.
+ * 
+ * @param {FormData} formData - The form data containing the user's email and password.
+ * @returns {Promise<void>}
+ */    
 export const login = async(formData : FormData) => {
     
     let success : Promise<boolean> | boolean = false
@@ -151,7 +191,12 @@ export const login = async(formData : FormData) => {
     redirect('/')
 
 }
-    
+
+/**
+ * Logs out a user by deleting their session cookie.
+ * 
+ * @returns {Promise<void>}
+ */
 export const logout = async() => {
     try{
         cookies().delete("session")
@@ -162,6 +207,11 @@ export const logout = async() => {
     }
 }
 
+/**
+ * Validates the current user's session.
+ * 
+ * @returns {Promise<string | null>} A JSON string of the user object or null if an error occurs.
+ */
 export const validateUser = async() => {
     try{
         const token = cookies().get('session')?.value || ''
@@ -174,6 +224,16 @@ export const validateUser = async() => {
     }
 }
 
+/**
+ * Edits a user's details.
+ * 
+ * @param {string} id - The ID of the user to edit.
+ * @param {string} name - The new name of the user.
+ * @param {string} email - The new email of the user.
+ * @param {string} role - The new role of the user.
+ * @param {string} discord - The new Discord username of the user.
+ * @returns {Promise<Object | null>} The updated user object or null if an error occurs.
+ */
 export const editUser = async (id : string, name : string, email : string, role : string, discord : string) => {
     try{
         const user = await users.updateOne({_id : new ObjectId(id)}, {$set: {name : name, email : email, role: role, discord : discord}})
@@ -185,6 +245,14 @@ export const editUser = async (id : string, name : string, email : string, role 
     }
 }
 
+/**
+ * Changes a user's password.
+ * 
+ * @param {string} id - The ID of the user.
+ * @param {string} password - The new password.
+ * @param {string} confirm - The password confirmation.
+ * @returns {Promise<Object | string>} The updated user object or an error message if passwords do not match.
+ */
 export const changePasswordForUser = async(id : string, password: string, confirm: string) => {
     if(password !== confirm){
         return "Passwords do not match!"
@@ -200,6 +268,12 @@ export const changePasswordForUser = async(id : string, password: string, confir
     }
 }
 
+/**
+ * Deletes a user and updates related tickets.
+ * 
+ * @param {string} _id - The ID of the user to delete.
+ * @returns {Promise<Object | null>} The result of the delete operation or null if an error occurs.
+ */
 export const deleteUser = async(_id : string) => {
     try {
         const res = await users.deleteOne({_id : new ObjectId(_id)})
