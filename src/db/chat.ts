@@ -260,13 +260,6 @@ export const seed_tickets_collection = async() => {
       
     })
   
-<<<<<<< Updated upstream
-}
-||||||| Stash base
-}
-=======
-}
-
 const ticket_generation_prompt = `You are given a JSON object containing a support conversation between a customer and a support agent. Your task is to generate a support ticket with the following fields:
 
 1. Name: A concise title summarizing the main issue discussed.
@@ -315,4 +308,3 @@ Output:
 Use the context and details provided in the messages to accurately fill out the support ticket fields. 
 
 Now, process the following conversation to generate a support ticket:`
->>>>>>> Stashed changes

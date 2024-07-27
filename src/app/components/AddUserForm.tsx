@@ -35,6 +35,12 @@ export default function AddUserForm(){
     const [isOpen, setOpen] = useState(false)
     const { toast } = useToast()
 
+    /**
+     * Handles user registration by extracting data from the form and calling the `register` function.
+     *
+     * @param {FormData} formData - The FormData object containing user registration information.
+     * @returns {Promise<void>} A promise that resolves when the registration process completes.
+     */
     const handleRegister = async (formData : FormData) => {
         const name = formData.get('name') as string
         const email = formData.get('email') as string
@@ -68,7 +74,8 @@ export default function AddUserForm(){
         }
     }
 
-    return(
+    return (
+        
     <Dialog open={isOpen} onOpenChange={setOpen}>
     <DialogTrigger asChild>
         <Button variant="default">Add User</Button>

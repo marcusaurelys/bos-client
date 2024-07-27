@@ -9,13 +9,7 @@ import { cn } from "@/lib/utils"
 import { Separator } from '@/components/ui/separator'
 import { redirect, useRouter } from 'next/navigation'
 
-// consider removing unused code
-//import { useDataContext } from '@/contexts/DataContext'
-//import { Button } from '@/components/ui/button'
-
 const filterChoices =  ["High", "Medium", "Low"]
-
-
 
 export default function Filter() {
 

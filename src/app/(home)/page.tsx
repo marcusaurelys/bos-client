@@ -7,6 +7,12 @@ import ClientToast from '@/app/components/ErrorToast'
 import { revalidatePath } from 'next/cache'
 import Listener from '@/app/components/Listener' 
 
+/**
+ * Parses a string representation of an array into an actual array of strings.
+ *
+ * @param {string} input - The input string to be parsed.
+ * @returns {string[]} The parsed array of strings. Returns an empty array if parsing fails or if the input is invalid.
+ */
 function parseStringToArray(input: string): string[] {
   try {
       // Remove any whitespace and check if the input string is a valid array format
@@ -41,7 +47,8 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
     filters = parseStringToArray(searchParams.filters)
   }
   console.log(filters)
-  
+
+  // What the fuck is this - Boris  
   let pending: any[] | null = []
   let open: any[] | null = []
   let closed: any[] | null = []
