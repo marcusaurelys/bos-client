@@ -25,7 +25,10 @@ export default function Chat() {
       const messages = messages_response.data
 
       // Note that we are specifically using bracket notation for a JSON object to maintain portability with the Flask server
-      messages_dict[session_id] = messages.map(message => [message.content, message.from])
+      messages_dict[session_id] = { 
+        messages: [],
+      }
+      messages_dict[session_id].messages = messages.map(message => { return {content: message.content, from: message.from}})
     }
 
     return messages_dict
@@ -40,14 +43,17 @@ export default function Chat() {
     const startFetching = async() => {
       const response = await fetchMessages()
       if (!abort) {
-         Object.entries(response).map(([sessionId, messages]) => {
-          console.log(sessionId)
-          messages.map(message => {
-            const sender = typeof message[1] === 'object' ? JSON.stringify(message[1]) : message[1]                    
-            const chat = typeof message[0] === 'object' ? JSON.stringify(message[0]) : message[0]
-            console.log(`${sender}: ${chat}`)
-          })
-          })
+        
+         Object.entries(response).map(([sessionId, conversation]) => {
+           console.log(sessionId)
+           console.log(conversation)
+           
+           conversation.messages.map(message => {
+               const sender = typeof message['from'] === 'object' ? JSON.stringify(message['from']) : message['from']                    
+               const chat = typeof message['content'] === 'object' ? JSON.stringify(message['content']) : message['content']
+           })
+         })
+          
         setMessagesDict(response)  
         
       }
@@ -66,13 +72,13 @@ export default function Chat() {
   {Object.keys(messagesDict).length === 0 ? (
       <p>Loading...</p>
     ) : (
-       Object.entries(messagesDict).map(([sessionId, messages]) => (
+       Object.entries(messagesDict).map(([sessionId, conversation]) => (
          <div key={sessionId}>
            <h3>Conversation {sessionId}</h3>
                <ul>
-                  {messages.map((message, index) => {
-                     const sender = typeof message[1] === 'object' ? JSON.stringify(message[1]) : message[1]                    
-                     const chat = typeof message[0] === 'object' ? JSON.stringify(message[0]) : message[0]
+                  {conversation.messages.map((message, index) => {
+                     const sender = typeof message['from'] === 'object' ? JSON.stringify(message['from']) : message['from']                    
+                     const chat = typeof message['content'] === 'object' ? JSON.stringify(message['content']) : message['content']
                      return (                                              
                        <li key={index}>
                          <strong>{sender}:</strong> {chat}
