@@ -259,7 +259,7 @@ export const seed_tickets_collection = async() => {
       }
       
     })
-  
+}
 const ticket_generation_prompt = `You are given a JSON object containing a support conversation between a customer and a support agent. Your task is to generate a support ticket with the following fields:
 
 1. Name: A concise title summarizing the main issue discussed.
