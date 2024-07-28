@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { redirect } from 'next/navigation'
 import { ObjectId, UUID } from 'mongodb'
 import { revalidatePath } from "next/cache";
+import { sendMessage } from "@/app/api/listen/server";
 
 interface UserCookie {
     _id : UUID,
@@ -101,6 +102,11 @@ export const getAllUsers = async() => {
 export const register = async (name: string, email: string, password: string, confirm: string, role: string, discord: string) => {
     let success = false
 
+    let valid = await validateUser()
+    if(!JSON.parse(valid)._id){
+        redirect('/login')
+    }
+
     const emailTaken = await users.findOne({email : email})
 
     if (emailTaken){
@@ -112,6 +118,7 @@ export const register = async (name: string, email: string, password: string, co
     const token = crypto.randomUUID()
 
     try {
+
         const result = await users.insertOne({
             name : name, 
             email : email, 
@@ -236,6 +243,12 @@ export const validateUser = async() => {
  */
 export const editUser = async (id : string, name : string, email : string, role : string, discord : string) => {
     try{
+
+        let valid = await validateUser()
+        if(!JSON.parse(valid)){
+            throw new Error('Invalid token!')
+        }
+
         const user = await users.updateOne({_id : new ObjectId(id)}, {$set: {name : name, email : email, role: role, discord : discord}})
         revalidatePath('/admin')
         return user
@@ -258,7 +271,14 @@ export const changePasswordForUser = async(id : string, password: string, confir
         return "Passwords do not match!"
     }
 
+
     try {
+    
+        let valid = await validateUser()
+        if(!JSON.parse(valid)){
+            throw new Error('Invalid token!')
+        }
+
         const hash = await bcrypt.hash(password, 10)
         const user = await users.updateOne({_id : new ObjectId(id)}, {$set : {password: hash}})
         return user
@@ -276,6 +296,12 @@ export const changePasswordForUser = async(id : string, password: string, confir
  */
 export const deleteUser = async(_id : string) => {
     try {
+
+        let valid = await validateUser()
+        if(!JSON.parse(valid)){
+            throw new Error('Invalid token!')
+        }
+
         const res = await users.deleteOne({_id : new ObjectId(_id)})
 
         await db.collection('tickets').updateMany(
@@ -283,11 +309,12 @@ export const deleteUser = async(_id : string) => {
             {$pull : {'userIDs' : _id}}
         )
 
-
+        sendMessage()
         revalidatePath('/admin')
         return res
     } catch( error ){
         console.error("delete user errror:", error)
         redirect('/')
     }
+    
 }

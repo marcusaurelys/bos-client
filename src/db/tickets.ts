@@ -7,6 +7,7 @@ import ticket from "@/app/(home)/ticket/page"
 import { revalidatePath } from "next/cache"
 import { validateUser } from "./users"
 import { sendMessage } from '@/app/api/listen/server'
+import { redirect } from "next/navigation"
 
 const db = await useDB()
 const tickets = db.collection('tickets')
@@ -33,7 +34,7 @@ export const getTicketByStatus = async (status : string, filters: string[]) => {
 
     try{
         const result = await tickets.find({status : status, priority_score: {$in: filters}}).sort({date_created : -1}).toArray()
-        result.forEach((ticket) => {
+        result.forEach((ticket : any) => {
             try {
                 ticketsData.push({
                     id: ticket._id.toString(), 
@@ -69,7 +70,7 @@ export const getTickets = async () => {
     
     const result = await tickets.find({}).toArray()
     
-    result.forEach((ticket) => {
+    result.forEach((ticket : any) => {
         try {
             ticketsData.push({
                 id: ticket._id.toString(), 
@@ -128,6 +129,12 @@ export const getTicket = async(id: string) => {
  */
 export const changeStatus = async (id: string, status: string) => {
     try{
+
+        let valid = await validateUser()
+        if(!JSON.parse(valid)){
+            throw new Error('Invalid token!')
+        }
+
         await tickets.updateOne({_id: new ObjectId(id)}, {$set: {status: status}})
         console.log("change ticket status")
         sendMessage()

@@ -103,7 +103,7 @@ export default function EditUserForm({ user } : EditUserFormProps){
     const handleDelete = async(user : User) => {
         const res = await deleteUser(user._id)
 
-        if(res.acknowledged){
+        if(res){
             toast({
                 description: 'successfully deleted user.'
             })
