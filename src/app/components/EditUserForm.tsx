@@ -58,12 +58,14 @@ export default function EditUserForm({ user } : EditUserFormProps){
         const res = await editUser(user._id, name, email, role, discord)
 
         if (res){
+            setOpen(false)
             toast({
                 description: `Successfully edited ${user.name}`
               })
         }
 
         else {
+            setOpen(false)
             toast({
                 variant: 'destructive',
                 description: 'Failed to update User' 
@@ -247,7 +249,7 @@ export default function EditUserForm({ user } : EditUserFormProps){
 
         <DialogFooter className="pt-4">
             <Button type="button" onClick={(e) => {setForm(false)}}> Edit Details </Button>
-            <Button type="submit" onClick={(e) => {setOpen(false)}}>Change Password</Button>
+            <Button type="submit">Change Password</Button>
         </DialogFooter>
         </form>
 

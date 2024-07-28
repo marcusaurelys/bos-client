@@ -56,9 +56,11 @@ export default function AddUserForm(){
                 toast({
                     description: "Successfully registered " +  name + " as " + role
                   })
+                setOpen(false)
             }
 
             else{
+                setOpen(false)
                 toast({
                     variant: "destructive",
                     description: "Failed to register"
@@ -111,6 +113,7 @@ export default function AddUserForm(){
                 name="email"
                 placeholder="boris_victoria@dlsu.edu.ph"
                 className="col-span-3"
+                type="email"
                 required
                 />
             </div>
@@ -170,7 +173,7 @@ export default function AddUserForm(){
         </div>
     
         <DialogFooter>
-            <Button type="submit" onClick={(e) => {setOpen(false)}}>Add User</Button>
+            <Button type="submit">Add User</Button>
         </DialogFooter>
     </form>
     </DialogContent>
