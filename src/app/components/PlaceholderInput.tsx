@@ -2,15 +2,17 @@
 
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from "@/components/ui/button"
-import { useState } from 'react';
+import { ChangeEvent, TextareaHTMLAttributes, useState } from 'react';
 import { SendHorizontal } from 'lucide-react';
 
+interface IInputCompnent {
+  send: (string: string) => void
+}
 
-
-export default function InputComponent({send}) {
+export default function InputComponent({send}: IInputCompnent) {
   const [input, setInput] = useState('');
 
-  const handle_change = (input_event) => {
+  const handle_change = (input_event: ChangeEvent<HTMLTextAreaElement>) => {
     setInput(input_event.target.value);
   };
 

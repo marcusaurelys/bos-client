@@ -1,11 +1,11 @@
 'use server'
 
-import { Base64 } from 'js-base64'
-import { ObjectID } from 'mongo'   
+import { Base64 } from 'js-base64'  
 import { cookies } from 'next/headers'
 import { useDB } from '@/db/mongo'
 import { getUserByToken } from '@/db/users'
 import { revalidatePath } from 'next/cache'
+import { Db } from 'mongodb'
 
 const CRISP_WEBSITE_ID = process.env.CRISP_WEBSITE_ID
 const CRISP_API_ID = process.env.CRISP_API_ID
@@ -32,7 +32,7 @@ export const fuckNextChat = async() => {
  * @param {number} page_number - The page number of the conversations to retrieve.
  * @returns {Promise<Object>} The response from the Crisp API containing the conversations.
  */
-export const getConversations = async(page_number) => {
+export const getConversations = async(page_number: number) => {
   try {
     const auth = Base64.encode(`${CRISP_API_ID}:${CRISP_API_KEY}`);
   
@@ -56,7 +56,7 @@ export const getConversations = async(page_number) => {
  * @param {string} prompt - The prompt to send to the chatbot.
  * @returns {Promise<Object>} The response from the chatbot API.
  */
-export const getMessages = async(session_id) => {
+export const getMessages = async(session_id: string) => {
   try{
     const auth = Base64.encode(`${CRISP_API_ID}:${CRISP_API_KEY}`);
     
@@ -80,7 +80,7 @@ export const getMessages = async(session_id) => {
  * @param {string} prompt - The prompt to send to the chatbot.
  * @returns {Promise<Object>} The response from the chatbot API.
  */
-export const get_chatbot_response = async(prompt) => {
+export const get_chatbot_response = async(prompt: string) => {
   try {
     const response = await fetch(`${CHATBOT_URL}`, {
       method: 'POST',
@@ -118,12 +118,12 @@ Chat Object
 export const get_chat_history_of_user = async() => {
   try{
     const token = cookies().get('session')
-    const user = await getUserByToken(token.value)
+    const user = await getUserByToken(token? token.value : '')
 
     // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
     const user_id = user._id
 
-    const response = await chats.find({user_id: user_id})
+    const response = await chat.find({user_id: user_id})
     const result = await response.json()
     return result 
   }catch(error){
@@ -137,15 +137,15 @@ export const get_chat_history_of_user = async() => {
  * @param {string} session_id - The session ID of the chat ticket.
  * @returns {Promise<Object>} The chat history of the ticket.
  */
-export const get_chat_history_of_ticket = async(session_id) => {
+export const get_chat_history_of_ticket = async(session_id: string) => {
   try{
     const token = cookies().get('session')
-    const user = await getUserByToken(token.value)
+    const user = await getUserByToken(token? token.value : '')
   
     // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
     const user_id = user._id
     
-    const response = await chats.findOne({user_id: user_id, session_id: session_id})
+    const response = await chat.findOne({user_id: user_id, session_id: session_id})
     const result = await response.json()
     return result
   }catch(error){
@@ -160,15 +160,15 @@ export const get_chat_history_of_ticket = async(session_id) => {
  * @param {Chat[]} chats - An array of chat objects to update.
  * @returns {Promise<Object>} The result of the update operation.
  */
-export const update_chat_history_of_ticket = async(session_id, chats) => {
+export const update_chat_history_of_ticket = async(session_id: string, chats: any[]) => {
   try{
     const token = cookies().get('session')
-    const user = await getUserByToken(token.value)
+    const user = await getUserByToken(token? token.value : '')
 
     // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
     const user_id = user._id
 
-    const response = await chats.updateOne({user_id: user_id, session_id: session_id}, {
+    const response = await chat.updateOne({user_id: user_id, session_id: session_id}, {
       $set: {
         chats: chats
       }
@@ -182,7 +182,7 @@ export const update_chat_history_of_ticket = async(session_id, chats) => {
 
 // TBD: Define initial ticket generation here
 
-export const seed_chat = async( session_id, messages ) => {
+export const seed_chat = async( session_id: string, messages: any ) => {
 
   const response = await chat.insertOne({
     chat_id: session_id,
@@ -191,7 +191,7 @@ export const seed_chat = async( session_id, messages ) => {
  
 }
 
-export const seed_ticket = async(params) => {
+export const seed_ticket = async(params: any) => {
 
   const response = await tickets.insertOne({
     ...params,
@@ -201,7 +201,7 @@ export const seed_ticket = async(params) => {
 
 export const seed_tickets_collection = async() => {
 
-    const messages_dict = {}
+    const messages_dict: any = {}
     let page_number = 1;
     console.log("page_number: " + page_number)
     console.log("seeding")
@@ -224,7 +224,7 @@ export const seed_tickets_collection = async() => {
         messages_dict[session_id] = { 
           messages: [],
         }
-        messages_dict[session_id].messages = messages.map(message => { return {content: message.content, from: message.from}})
+        messages_dict[session_id].messages = messages.map((message: any) => { return {content: message.content, from: message.from}})
 
       }
 
@@ -232,11 +232,11 @@ export const seed_tickets_collection = async() => {
       console.log("page_number: " + page_number)
     }
 
-    Object.entries(messages_dict).map(async([session_id, conversation]) => {
+    Object.entries(messages_dict).map(async([session_id, conversation]: [string, any]) => {
       console.log(session_id)
       console.log(conversation)
 
-      conversation.messages.forEach(message => {
+      conversation.messages.forEach((message: any) => {
         message['from'] = typeof message['from'] === 'object' ? JSON.stringify(message['from']) : message['from']                    
         message['content'] = typeof message['content'] === 'object' ? JSON.stringify(message['content']) : message['content']
       })

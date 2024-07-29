@@ -3,6 +3,10 @@
 import { useState, useEffect } from 'react'
 import { getConversations, getMessages } from '@/db/chat'
 
+interface IMessagesDict {
+  session_id: string
+}
+
 export default function Chat() {
   const [messagesDict, setMessagesDict] = useState({})
   
@@ -10,7 +14,7 @@ export default function Chat() {
     
     // Right now, we are only going to fetch the first page since we only have a limited amount of API calls.
     let page_number = 1;
-    const messages_dict = {}
+    const messages_dict: any = {}
 
     // while (true) {
     const conversations_response = await getConversations(page_number)
@@ -28,7 +32,7 @@ export default function Chat() {
       messages_dict[session_id] = { 
         messages: [],
       }
-      messages_dict[session_id].messages = messages.map(message => { return {content: message.content, from: message.from}})
+      messages_dict[session_id].messages = messages.map((message: any) => { return {content: message.content, from: message.from}})
     }
 
     return messages_dict
@@ -44,11 +48,11 @@ export default function Chat() {
       const response = await fetchMessages()
       if (!abort) {
         
-         Object.entries(response).map(([sessionId, conversation]) => {
+         Object.entries(response).map(([sessionId, conversation]: [string, any]) => {
            console.log(sessionId)
            console.log(conversation)
            
-           conversation.messages.map(message => {
+           conversation.messages.map((message: any) => {
                const sender = typeof message['from'] === 'object' ? JSON.stringify(message['from']) : message['from']                    
                const chat = typeof message['content'] === 'object' ? JSON.stringify(message['content']) : message['content']
            })
@@ -72,11 +76,11 @@ export default function Chat() {
   {Object.keys(messagesDict).length === 0 ? (
       <p>Loading...</p>
     ) : (
-       Object.entries(messagesDict).map(([sessionId, conversation]) => (
+       Object.entries(messagesDict).map(([sessionId, conversation]: [string, any]) => (
          <div key={sessionId}>
            <h3>Conversation {sessionId}</h3>
                <ul>
-                  {conversation.messages.map((message, index) => {
+                  {conversation.messages.map((message: any, index: number) => {
                      const sender = typeof message['from'] === 'object' ? JSON.stringify(message['from']) : message['from']                    
                      const chat = typeof message['content'] === 'object' ? JSON.stringify(message['content']) : message['content']
                      return (                                              

@@ -23,3 +23,23 @@ export interface ITicket {
     userIDs: string[],
     dateCreated: string
 }
+
+export interface ITicketDocument {
+    _id: string,
+    name: string,
+    description: string,
+    status: string,
+    priority_score: string,
+    userIDs: string[],
+    tags: string[],
+    date_created: string
+}
+
+export interface IClient {
+    id: string,
+    writer: WritableStreamDefaultWriter
+}
+
+export interface IChatbotResponse {
+    response: string
+}
