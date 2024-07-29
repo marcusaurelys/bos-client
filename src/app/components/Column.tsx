@@ -5,6 +5,9 @@ import Ticket from './Ticket'
 import { motion } from 'framer-motion'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ITicket } from '../../types'
+import { changeStatus } from '@/db/tickets'
+import { Button } from '@/components/ui/button'
+import Sort from './Sort'
 interface ColumnProps {
     title: string,
     status: string,
@@ -40,6 +43,11 @@ export default function Column({title, status, tickets}: ColumnProps) {
         <motion.div layout className="flex flex-row gap-2 items-center my-1 h-7">
             <h1 className="font-semibold">{title}</h1>
             <p className="text-primary/50 text-sm">{tickets.length}</p>
+            <div className="ml-auto">
+                <Sort column={title}/>
+            </div>
+            
+            
         </motion.div>
 
         {/* column body */}
