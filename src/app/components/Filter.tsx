@@ -53,7 +53,9 @@ export default function Filter() {
         console.log("FILTER USE EFFECT")
         if(filters.length > 0){
             let stringified = ''
-            filters.forEach((filter : string) => {stringified = stringified += `"${filter.toLowerCase()}",`})
+            const temp = filters.map(filter => filter)
+            const sortedFilters = temp.sort()
+            sortedFilters.forEach((filter : string) => {stringified = stringified += `"${filter.toLowerCase()}",`})
             router.push('?' + createQueryString('filters',`[${stringified.slice(0, -1)}]`))
         }
         else{
