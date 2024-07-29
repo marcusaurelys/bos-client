@@ -36,7 +36,7 @@ export default function Column({title, status, tickets}: ColumnProps) {
         }
     })
     if(node) observer.current.observe(node)
-  }, [numberOfTickets])
+  }, [numberOfTickets, tickets.length])
 
   return (
     <motion.div layout

@@ -51,16 +51,16 @@ export default function Bot() {
           {chat.map((message, index) => (
             message['role'] == "user" 
             ?
-            <div className="flex w-full justify-end pr-4">
+            <div className="flex w-full justify-end pr-4" key={index}>
               <div className="flex flex-col m-2 p-2 rounded-lg bg-blue-100 w-fit max-w-xl">
-                <li key={index}>
+                <li>
                   {message['content']}
                 </li>  
               </div>
             </div>
             :
-            <div className="flex flex-col m-2 p-2 rounded-lg bg-stone-100 w-fit max-w-xl">
-                <li key={index}>
+            <div key={index} className="flex flex-col m-2 p-2 rounded-lg bg-stone-100 w-fit max-w-xl">
+                <li>
                   {message['content']}
                 </li> 
             </div>

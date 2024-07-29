@@ -12,7 +12,7 @@ export default function Seed() {
   return (
     <>
       <Button onClick={handleClick}>
-        It's time to seed
+        {"It's time to seed"}
       </Button>
     </>
   );

@@ -9,8 +9,12 @@ import { validateUser } from "./users"
 import { sendMessage } from '@/app/api/listen/server'
 import { redirect } from "next/navigation"
 
-const db = await useDB()
-const tickets = db.collection('tickets')
+const Tickets = async () => {
+    const db = await useDB()
+    const tickets = db.collection('tickets')
+    return tickets
+}
+
 
 /**
  * Empty function to as a workaround for https://github.com/vercel/next.js/issues/54282
@@ -31,6 +35,7 @@ export const fuckNextTickets = async() => {
  */
 export const getTicketByStatus = async (status : string, filters: string[], sort: string[] | undefined) => {
     let ticketsData : ITicket[] = []
+    const tickets = await Tickets()
 
     try{
         let result
@@ -91,6 +96,7 @@ export const getTicketByStatus = async (status : string, filters: string[], sort
  */
 export const getTickets = async () => {
     let ticketsData: ITicket[] = []
+    const tickets = await Tickets()
     
     const result = await tickets.find({}).toArray()
     
@@ -123,6 +129,8 @@ export const getTickets = async () => {
  * @returns {Promise<ITicket | null>} The ticket object or null if an error occurs.
  */
 export const getTicket = async(id: string) => {
+    const tickets = await Tickets()
+
     const result = await tickets.findOne({_id: new ObjectId(id)})
     try {
         const ticket = {
@@ -152,6 +160,8 @@ export const getTicket = async(id: string) => {
  * @returns {Promise<boolean>} True if the update was successful, false otherwise.
  */
 export const changeStatus = async (id: string, status: string) => {
+    const tickets = await Tickets()
+
     try{
 
         let valid = await validateUser()
@@ -178,6 +188,8 @@ export const changeStatus = async (id: string, status: string) => {
  * @returns {Promise<boolean>} True if the update was successful, false otherwise.
  */
 export const refreshTicket = async (id: string, params: {}) => {
+
+    const tickets = await Tickets()
     const user = await validateUser()
     console.log(params)
 
@@ -207,6 +219,8 @@ export const revalidateTicket = () => {
 }
 
 export const deleteTicket = async (id: string) => {
+    const tickets = await Tickets()
+
     const user = await validateUser()
     if(!user) {
         return false

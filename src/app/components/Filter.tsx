@@ -31,23 +31,26 @@ export default function Filter() {
     }
     const selectedFilters = [...filters]
 
-    const createQueryString = (name: string, value: string) => {
-        const params = new URLSearchParams(searchParams.toString())
-        console.log(params.toString())
-        params.set(name, value)
-        params.sort()
-        return params.toString()
-    }
+    const createQueryString = useCallback(
+        (name: string, value: string) => {
+            const params = new URLSearchParams(searchParams.toString())
+            console.log(params.toString())
+            params.set(name, value)
+            params.sort()
+            return params.toString()
+        }, [searchParams])
 
-    const deleteQueryParam = (name: string) => {
+    const deleteQueryParam = useCallback(
+        (name: string) => {
         const params = new URLSearchParams(searchParams.toString())
         params.delete(name)
         console.log('clearing')
 
         return params.toString()
-    }
+    }, [searchParams])
 
     useEffect(() => {
+        console.log("FILTER USE EFFECT")
         if(filters.length > 0){
             let stringified = ''
             filters.forEach((filter : string) => {stringified = stringified += `"${filter.toLowerCase()}",`})
@@ -58,7 +61,7 @@ export default function Filter() {
 
             router.push('?' + deleteQueryParam('filters'))
         }
-    }, [filters])
+    }, [filters, createQueryString, deleteQueryParam, router])
 
 
 
