@@ -27,8 +27,22 @@ interface User {
     name : string,
 }
 
-const db = await useDB()
-const users = db.collection('users')
+const Users = async () => {
+    const db = await useDB()
+    const users = db.collection('users')
+
+    return users
+}
+
+const Tickets = async () => {
+    const db = await useDB()
+    const tickets = db.collection('tickets')
+
+    return tickets
+}
+
+
+
 
 /**
  * Empty function to as a workaround for https://github.com/vercel/next.js/issues/54282
@@ -46,6 +60,7 @@ export const fuckNextUsers = async() => {
  * @returns {Promise<Object | null>} The user object or null if an error occurs.
  */
 export const getUser = async(email : string) => {
+    const users = await Users()
     try{
         const result = await users.findOne({email : email});
         return result;
@@ -64,6 +79,7 @@ export const getUser = async(email : string) => {
  * @returns {Promise<Object | null>} The user object or null if an error occurs.
  */
 export const getUserByToken = async(token : string) => {
+    const users = await Users()
     try {
         const result = await users.findOne({token: token})
         return result
@@ -79,6 +95,7 @@ export const getUserByToken = async(token : string) => {
  * @returns {Promise<string>} A JSON string of all users.
  */
 export const getAllUsers = async() => {
+    const users = await Users()
     try{
         const result = await users.find({}).toArray()
         return JSON.stringify(result)
@@ -100,6 +117,7 @@ export const getAllUsers = async() => {
  * @returns {Promise<boolean>} True if registration was successful, false otherwise.
  */
 export const register = async (name: string, email: string, password: string, confirm: string, role: string, discord: string) => {
+    const users = await Users()
     let success = false
 
     let valid = await validateUser()
@@ -165,6 +183,7 @@ export const register = async (name: string, email: string, password: string, co
  * @returns {Promise<void>}
  */    
 export const login = async(formData : FormData) => {
+    const users = await Users()
     
     let success : Promise<boolean> | boolean = false
     const token = crypto.randomUUID()
@@ -242,6 +261,7 @@ export const validateUser = async() => {
  * @returns {Promise<Object | null>} The updated user object or null if an error occurs.
  */
 export const editUser = async (id : string, name : string, email : string, role : string, discord : string) => {
+    const users = await Users()
     try{
 
         let valid = await validateUser()
@@ -267,6 +287,7 @@ export const editUser = async (id : string, name : string, email : string, role 
  * @returns {Promise<Object | string>} The updated user object or an error message if passwords do not match.
  */
 export const changePasswordForUser = async(id : string, password: string, confirm: string) => {
+    const users = await Users()
     if(password !== confirm){
         return "Passwords do not match!"
     }
@@ -295,6 +316,8 @@ export const changePasswordForUser = async(id : string, password: string, confir
  * @returns {Promise<Object | null>} The result of the delete operation or null if an error occurs.
  */
 export const deleteUser = async(_id : string) => {
+    const users = await Users()
+    const tickets = await Tickets()
     try {
 
         let valid = await validateUser()
@@ -304,7 +327,7 @@ export const deleteUser = async(_id : string) => {
 
         const res = await users.deleteOne({_id : new ObjectId(_id)})
 
-        await db.collection('tickets').updateMany(
+        tickets.updateMany(
             {userIDs : _id},
             {$pull : {'userIDs' : _id}}
         )

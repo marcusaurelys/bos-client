@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb"
+
 export interface User {
     _id: string,
     email : string,
@@ -43,3 +45,24 @@ export interface IClient {
 export interface IChatbotResponse {
     response: string
 }
+
+export interface IChat
+  {
+    id: ObjectId // irrelevant in this case
+    chat_id: string // 'session_id' of conversation in Crisp
+    messages: IMessage[]
+  }
+
+
+  export interface IMessage {
+    content: string,
+    from: string,
+  }
+
+  export interface IMessageDict {
+    [session_id: string]: IConversation
+  }
+
+  export interface IConversation {
+    messages: IMessage[]
+  }

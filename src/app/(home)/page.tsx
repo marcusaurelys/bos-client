@@ -14,7 +14,7 @@ import { ITicket } from '@/types'
  * @param {string} input - The input string to be parsed.
  * @returns {string[]} The parsed array of strings. Returns an empty array if parsing fails or if the input is invalid.
  */
-export function parseStringToArray(input: string): string[] {
+function parseStringToArray(input: string): string[] {
   try {
       // Remove any whitespace and check if the input string is a valid array format
       const trimmedInput = input.trim();

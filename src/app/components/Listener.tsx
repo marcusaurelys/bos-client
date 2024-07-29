@@ -38,7 +38,7 @@ export default function Listener() {
     return () => {
       eventSource.close()
     }
-  }, [])
+  }, [router])
 
   return null
 }

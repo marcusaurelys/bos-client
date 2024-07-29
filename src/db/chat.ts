@@ -6,6 +6,7 @@ import { useDB } from '@/db/mongo'
 import { getUserByToken } from '@/db/users'
 import { revalidatePath } from 'next/cache'
 import { Db } from 'mongodb'
+import { IChat, IConversation, IMessage, IMessageDict } from '@/types'
 
 const CRISP_WEBSITE_ID = process.env.CRISP_WEBSITE_ID
 const CRISP_API_ID = process.env.CRISP_API_ID
@@ -13,9 +14,20 @@ const CRISP_API_KEY = process.env.CRISP_API_KEY
 const CHATBOT_URL = process.env.CHATBOT_URL
 const CHATBOT_API_KEY = process.env.CHATBOT_API_KEY
 
-const db = await useDB()
-const chat = db.collection('chat')
-const tickets = db.collection('tickets')
+
+const Chat = async () => {
+  const db = await useDB()
+  const chat = db.collection('chat')
+
+  return chat
+
+}
+
+const Tickets = async () => {
+  const db = await useDB()
+  const tickets = db.collection('tickets')
+  return tickets
+} 
 
 /**
  * Empty function to as a workaround for https://github.com/vercel/next.js/issues/54282
@@ -116,6 +128,8 @@ Chat Object
  * @returns {Promise<Object>} The chat history of the user.
  */
 export const get_chat_history_of_user = async() => {
+  const chat = await Chat()
+
   try{
     const token = cookies().get('session')
     const user = await getUserByToken(token? token.value : '')
@@ -138,6 +152,7 @@ export const get_chat_history_of_user = async() => {
  * @returns {Promise<Object>} The chat history of the ticket.
  */
 export const get_chat_history_of_ticket = async(session_id: string) => {
+  const chat = await Chat()
   try{
     const token = cookies().get('session')
     const user = await getUserByToken(token? token.value : '')
@@ -160,7 +175,8 @@ export const get_chat_history_of_ticket = async(session_id: string) => {
  * @param {Chat[]} chats - An array of chat objects to update.
  * @returns {Promise<Object>} The result of the update operation.
  */
-export const update_chat_history_of_ticket = async(session_id: string, chats: any[]) => {
+export const update_chat_history_of_ticket = async(session_id: string, chats: IChat) => {
+  const chat = await Chat()
   try{
     const token = cookies().get('session')
     const user = await getUserByToken(token? token.value : '')
@@ -182,7 +198,8 @@ export const update_chat_history_of_ticket = async(session_id: string, chats: an
 
 // TBD: Define initial ticket generation here
 
-export const seed_chat = async( session_id: string, messages: any ) => {
+export const seed_chat = async( session_id: string, messages: IMessage[] ) => {
+  const chat = await Chat()
 
   const response = await chat.insertOne({
     chat_id: session_id,
@@ -191,7 +208,8 @@ export const seed_chat = async( session_id: string, messages: any ) => {
  
 }
 
-export const seed_ticket = async(params: any) => {
+export const seed_ticket = async(params: {}) => {
+  const tickets = await Tickets()
 
   const response = await tickets.insertOne({
     ...params,
@@ -201,7 +219,7 @@ export const seed_ticket = async(params: any) => {
 
 export const seed_tickets_collection = async() => {
 
-    const messages_dict: any = {}
+    const messages_dict: IMessageDict = {}
     let page_number = 1;
     console.log("page_number: " + page_number)
     console.log("seeding")
@@ -224,7 +242,7 @@ export const seed_tickets_collection = async() => {
         messages_dict[session_id] = { 
           messages: [],
         }
-        messages_dict[session_id].messages = messages.map((message: any) => { return {content: message.content, from: message.from}})
+        messages_dict[session_id].messages = messages.map((message: IMessage) => { return {content: message.content, from: message.from}})
 
       }
 
@@ -232,11 +250,11 @@ export const seed_tickets_collection = async() => {
       console.log("page_number: " + page_number)
     }
 
-    Object.entries(messages_dict).map(async([session_id, conversation]: [string, any]) => {
+    Object.entries(messages_dict).map(async([session_id, conversation]: [string, IConversation]) => {
       console.log(session_id)
       console.log(conversation)
 
-      conversation.messages.forEach((message: any) => {
+      conversation.messages.forEach((message: IMessage) => {
         message['from'] = typeof message['from'] === 'object' ? JSON.stringify(message['from']) : message['from']                    
         message['content'] = typeof message['content'] === 'object' ? JSON.stringify(message['content']) : message['content']
       })
