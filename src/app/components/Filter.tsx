@@ -7,7 +7,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { PlusCircleIcon, CheckIcon } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Separator } from '@/components/ui/separator'
-import { useDataContext } from '@/contexts/DataContext'
 import { redirect, useRouter, useSearchParams } from 'next/navigation'
 
 const filterChoices =  ["High", "Medium", "Low"]
@@ -32,27 +31,21 @@ export default function Filter() {
     }
     const selectedFilters = [...filters]
 
-    const createQueryString = useCallback(
-        (name: string, value: string) => {
-          const params = new URLSearchParams(searchParams.toString())
-          console.log(params.toString())
-          params.set(name, value)
-          params.sort()
-          return params.toString()
-        },
-        [searchParams]
-      )
+    const createQueryString = (name: string, value: string) => {
+        const params = new URLSearchParams(searchParams.toString())
+        console.log(params.toString())
+        params.set(name, value)
+        params.sort()
+        return params.toString()
+    }
 
-    const deleteQueryParam = useCallback(
-        (name: string) => {
-            const params = new URLSearchParams(searchParams.toString())
-            params.delete(name)
-            console.log('clearing')
+    const deleteQueryParam = (name: string) => {
+        const params = new URLSearchParams(searchParams.toString())
+        params.delete(name)
+        console.log('clearing')
 
-            return params.toString()
-        },
-        [searchParams]
-    )
+        return params.toString()
+    }
 
     useEffect(() => {
         if(filters.length > 0){

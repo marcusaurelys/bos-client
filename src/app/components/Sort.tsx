@@ -26,24 +26,16 @@ function Sort({column}: SortProps) {
 
     function handleSelectSort (property: string, direction: string) {
       setSort({property: property, direction: direction})
+      router.push(pathname + '?' + createQueryString(`sort${column}`, `${property} ${direction}`))
     }
 
-    const createQueryString = useCallback(
-        (name: string, value: string) => {
-          const params = new URLSearchParams(searchParams.toString())
-          console.log(params.toString())
-          params.set(name, value)
-          params.sort()
-          return params.toString()
-        },
-        [searchParams]
-      )
-
-    useEffect(() => {
-        if(sort) {
-            router.push(pathname + '?' + createQueryString(`sort${column}`, `${sort.property} ${sort.direction}`))
-        }
-    }, [sort])
+    const createQueryString = (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      console.log(params.toString())
+      params.set(name, value)
+      params.sort()
+      return params.toString()
+    }
 
 
   return (
