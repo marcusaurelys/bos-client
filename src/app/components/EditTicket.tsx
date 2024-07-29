@@ -20,10 +20,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { ITicket, User } from '@/types'
 import { EditIcon } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { refreshTicket} from '@/db/tickets'
+import { deleteTicket, refreshTicket} from '@/db/tickets'
 import { toast } from '@/components/ui/use-toast'
 import { getUserByToken } from '@/db/users'
 import { cookies } from 'next/headers'
+import { useRouter } from 'next/navigation'
 
 interface EditTicketProps {
     ticket: ITicket,
@@ -33,12 +34,15 @@ interface EditTicketProps {
 const EditTicket = ({ticket, user}: EditTicketProps) => {
 
     const [isOpen, setIsOpen] = useState(false)
+    const [confirmDelete, setConfirmDelete] = useState(false)
     const [tags, setTags] = useState(ticket.tags)
+
+    const router = useRouter()
 
     // check for unnecessary renders
     // console.log("render called")
     
-    const openChange = (open) => {
+    const openChange = (open: boolean) => {
         setIsOpen(open)
         setTags(ticket.tags)
     }
@@ -46,13 +50,37 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
     const removeTag = (tag: string) => {
         setTags(t => t.filter((t) => t !== tag))
     } 
+
+    const handleDelete = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault()
+        console.log("DELETING")
+        try {
+            const res = await deleteTicket(ticket.id)
+            if(res) {
+                router.push('/')
+                toast({
+                    description: 'Successfully deleted ticket'
+                })
+            }
+            else {
+                toast({
+                    description: 'Failed to delete ticket',
+                    variant: 'destructive'
+                })
+            }
+        } catch(e) {
+            console.error(e)
+            toast({
+                description: 'Failed to delete ticket',
+                variant: 'destructive'
+            })
+        }
+    }
     
     const handleSave = async (formData: FormData) => {
         const title = formData.get('title') as string
         const description = formData.get('description') as string
         const priority = formData.get('priority') as string
-
-        console.log(title + description + priority + tags)
 
         try {
             const response = await refreshTicket(ticket.id, {name: title, description: description, priority_score: priority, tags: tags})
@@ -184,7 +212,29 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
                 
 
                 <DialogFooter>
-                    <Button data-test="save-edit-button" type="submit" onClick={(e) => {setIsOpen(false)}}>Save</Button>
+                    {
+                        confirmDelete 
+                        ? <div className='flex flex-col items-center gap-2'>
+
+                            <h1 className='text-sm'>Are you sure? This action cannot be undone.</h1>
+                            <div className='flex flex-row gap-2 justify-end w-full'>
+                                <Button onClick={(e) => {
+                                    e.preventDefault 
+                                    setConfirmDelete(false)
+                                }}>No</Button>
+                                <Button variant="destructive" onClick={(e) => handleDelete(e)}>Yes</Button>
+                            </div>
+                            
+                            
+                        </div>
+                        : <>   
+                        <Button variant="destructive" onClick={(e) => {e.preventDefault; setConfirmDelete(true)}}>Delete</Button>
+                        <Button data-test="save-edit-button" variant="default" type="submit" onClick={(e) => {setIsOpen(false)}}>Save</Button>
+                        </> 
+                        
+                    }
+                    
+                    
                 </DialogFooter>
                 </form>
             </DialogContent>
