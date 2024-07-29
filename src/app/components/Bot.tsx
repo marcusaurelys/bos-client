@@ -29,14 +29,13 @@ export default function Bot() {
     input = `${string_dialogue}User: ${prompt}\n\nAssistant: `
     console.log(input)
     
-    output = await get_chatbot_response(input)
-    output = output['response']
+    output = (await get_chatbot_response(input))['response']
     console.log(output)
 
-    output = [{"role": "user", "content": `${prompt}`},{"role": "assistant", "content": `${output}`}]
+    const newChat = [{"role": "user", "content": `${prompt}`},{"role": "assistant", "content": `${output}`}]
 
     // This shallow copies the chat but I see no reason for a deep copy since we won't allow modification to previous messages anyway.
-    setChat([...chat, ...output])
+    setChat([...chat, ...newChat])
     
   }
 

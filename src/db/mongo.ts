@@ -1,9 +1,9 @@
 'use server'
 
-import {MongoClient} from 'mongodb'
+import {Db, MongoClient} from 'mongodb'
 
 const client = new MongoClient(process.env.MONGO_URI || '', {socketTimeoutMS: 5000, maxIdleTimeMS: 2000})
-let cache = null
+let cache: any = null
 
 /**
  * Uses the MongoDB database connection, caching the connection for reuse.

@@ -2,7 +2,7 @@
 
 import { useDB } from "@/db/mongo"
 import { ObjectId, WithId } from "mongodb"
-import { ITicket } from '@/types'
+import { ITicket, ITicketDocument } from '@/types'
 import ticket from "@/app/(home)/ticket/page"
 import { revalidatePath } from "next/cache"
 import { validateUser } from "./users"
@@ -58,7 +58,7 @@ export const getTicketByStatus = async (status : string, filters: string[], sort
             result = await tickets.find({status : status, priority_score: {$in: filters}}).sort({date_created: -1}).toArray()
         }
 
-        result.forEach((ticket : any) => {
+        result.forEach((ticket: ITicketDocument) => {
             try {
                 ticketsData.push({
                     id: ticket._id.toString(), 
@@ -94,7 +94,7 @@ export const getTickets = async () => {
     
     const result = await tickets.find({}).toArray()
     
-    result.forEach((ticket : any) => {
+    result.forEach((ticket: ITicketDocument) => {
         try {
             ticketsData.push({
                 id: ticket._id.toString(), 

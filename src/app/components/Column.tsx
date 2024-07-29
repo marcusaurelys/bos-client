@@ -11,7 +11,7 @@ import Sort from './Sort'
 interface ColumnProps {
     title: string,
     status: string,
-    tickets: ITicket[]
+    tickets: ITicket[] | null
 }
 
 // allTickets -> not filtered
@@ -22,6 +22,10 @@ export default function Column({title, status, tickets}: ColumnProps) {
 
   const [numberOfTickets, setNumber] = useState(4)
   const observer = useRef<IntersectionObserver>()
+
+  if(tickets === null) {
+    tickets = []
+  }
   
   const trigger = useCallback((node : HTMLElement | null) => {
     if(observer.current) observer.current.disconnect()

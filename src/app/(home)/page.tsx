@@ -6,6 +6,7 @@ import Filter from '@/app/components/Filter'
 import ClientToast from '@/app/components/ErrorToast'
 import { revalidatePath } from 'next/cache'
 import Listener from '@/app/components/Listener' 
+import { ITicket } from '@/types'
 
 /**
  * Parses a string representation of an array into an actual array of strings.
@@ -63,9 +64,9 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
   console.log(filters)
 
   // What the fuck is this - Boris  
-  let pending: any[] | null = []
-  let open: any[] | null = []
-  let closed: any[] | null = []
+  let pending: ITicket[] | null = []
+  let open: ITicket[] | null = []
+  let closed: ITicket[] | null = []
   let errorMessage: string | null = null;
 
   try {

@@ -50,10 +50,10 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
     const layout = cookies().get("react-resizable-panels:layout");
     const defaultLayout = layout ? JSON.parse(layout.value) : undefined;
 
-    let ticket_info: ITicket | null
-    let user: String
-    let priorityColor: String
-    let errorMessage = ""
+    let ticket_info: ITicket | null = null
+    let user: string = ''
+    let priorityColor: string = ''
+    let errorMessage = ''
     
     try{
         [ticket_info, user] = await Promise.all([getTicket(params.ticketid), validateUser()])

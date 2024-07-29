@@ -1,9 +1,8 @@
-import DropArea from './DropArea'
+
 import {motion} from 'framer-motion'
 import { TagIcon } from '@heroicons/react/16/solid'
 import {User, ITicket} from "../../types"
 import EmployeeTable from './EmployeeTable'
-import { useDataContext } from '@/contexts/DataContext'
 import Link from 'next/link'
 import { changeStatus } from '@/db/tickets'
 import { UserContext } from '@/contexts/UserContextProvider'

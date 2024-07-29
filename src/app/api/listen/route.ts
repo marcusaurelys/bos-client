@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server'
 import { updateObject, addClient, removeClient } from '@/app/api/listen/server'
 export const dynamic = 'force-dynamic' // Required because Next.js caches the response, wasted 5 hours on this btw
 
-export async function GET(req) {
+export async function GET(req: Request) {
   const { readable, writable } = new TransformStream()
   const writer = writable.getWriter()
   const encoder = new TextEncoder()
