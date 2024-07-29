@@ -181,3 +181,21 @@ export const refreshTicket = async (id: string, params: {}) => {
 export const revalidateTicket = () => {
     revalidatePath('/', 'layout')
 }
+
+export const deleteTicket = async (id: string) => {
+    const user = await validateUser()
+    if(!user) {
+        return false
+    }
+
+    try {
+        await tickets.deleteOne(
+            { _id: new ObjectId(id)}
+        )
+        sendMessage()
+        return true
+    } catch (error) {
+        console.error(error)
+        return false
+    }
+}
