@@ -210,7 +210,7 @@ export const login = async(formData : FormData) => {
         path: '/',
         httpOnly: true,
         sameSite: 'strict',
-        secure: process.env.NODE_ENV === 'production',
+        secure: false, // set to when we begin using process.env.NODE_ENV === 'production',
         maxAge: 60 * 60 * 24 * 21,
     })
 
