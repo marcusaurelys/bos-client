@@ -1,5 +1,5 @@
 import { fuckNextTickets, getTicketByStatus } from '@/db/tickets'
-import { fuckNextUsers, getUserByToken } from '@/db/users'
+import { fuckNextUsers } from '@/db/users'
 import { fuckNextDB } from '@/db/mongo'
 import Column from '@/app/components/Column'
 import Filter from '@/app/components/Filter'
@@ -13,7 +13,7 @@ import Listener from '@/app/components/Listener'
  * @param {string} input - The input string to be parsed.
  * @returns {string[]} The parsed array of strings. Returns an empty array if parsing fails or if the input is invalid.
  */
-function parseStringToArray(input: string): string[] {
+export function parseStringToArray(input: string): string[] {
   try {
       // Remove any whitespace and check if the input string is a valid array format
       const trimmedInput = input.trim();
@@ -35,7 +35,7 @@ function parseStringToArray(input: string): string[] {
   }
 }
 
-export default async function Home({ searchParams } : { searchParams?: { [key: string]: string | string[] | undefined }}) {
+export default async function Home({ searchParams } : { searchParams?: { [key: string]: string | undefined }}) {
 
   fuckNextDB()
   fuckNextUsers()
@@ -46,6 +46,20 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
   if( typeof searchParams?.filters === "string" ){
     filters = parseStringToArray(searchParams.filters)
   }
+
+  // ?sortOpen=date+asc&sortClosed=
+
+  let sortPending, sortOpen, sortClosed
+  
+  // sortX[0] --> property
+  // sortX[1] --> direction
+  
+  sortPending = searchParams?.sortPending?.split(' ')
+  sortOpen = searchParams?.sortOpen?.split(' ')
+  sortClosed = searchParams?.sortClosed?.split(' ')
+
+
+  console.log(sortPending, sortOpen, sortClosed)
   console.log(filters)
 
   // What the fuck is this - Boris  
@@ -55,7 +69,7 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
   let errorMessage: string | null = null;
 
   try {
-    [pending, open, closed] = await Promise.all([getTicketByStatus('pending', filters), getTicketByStatus('open', filters), getTicketByStatus('closed', filters)]);
+    [pending, open, closed] = await Promise.all([getTicketByStatus('pending', filters, sortPending), getTicketByStatus('open', filters, sortOpen), getTicketByStatus('closed', filters, sortClosed)]);
   } 
   catch (error: any) {
     errorMessage = "An error occurred while fetching tickets"

@@ -1,7 +1,7 @@
 'use server'
 
 import { useDB } from "@/db/mongo"
-import { ObjectId } from "mongodb"
+import { ObjectId, WithId } from "mongodb"
 import { ITicket } from '@/types'
 import ticket from "@/app/(home)/ticket/page"
 import { revalidatePath } from "next/cache"
@@ -29,11 +29,35 @@ export const fuckNextTickets = async() => {
  * @param {string[]} filters - An array of priority scores to filter the tickets by.
  * @returns {Promise<ITicket[] | null>} The filtered list of tickets or null if an error occurs.
  */
-export const getTicketByStatus = async (status : string, filters: string[]) => {
+export const getTicketByStatus = async (status : string, filters: string[], sort: string[] | undefined) => {
     let ticketsData : ITicket[] = []
 
     try{
-        const result = await tickets.find({status : status, priority_score: {$in: filters}}).sort({date_created : -1}).toArray()
+        let result
+        if(sort) {
+            const priorityOrder = ["low", "medium", "high"]
+            const direction = sort[1] == "desc" ? -1 : 1
+            
+            const m = {$match: {status : status, priority_score: {$in: filters}}}
+            const a = {$addFields: {__order: {$indexOfArray: [priorityOrder, "$priority_score"]}}}
+            let s
+            if(sort[0] == "priority") {
+                s = {$sort: {__order: direction}}
+            }
+            else if(sort[0] == "date") {
+                s = {$sort: {date_created: direction}}
+            }
+            else {
+                s = {$sort: {date_created: -1}}
+            }
+
+            result = await tickets.aggregate([m, a, s]).toArray()
+
+        }
+        else {
+            result = await tickets.find({status : status, priority_score: {$in: filters}}).sort({date_created: -1}).toArray()
+        }
+
         result.forEach((ticket : any) => {
             try {
                 ticketsData.push({

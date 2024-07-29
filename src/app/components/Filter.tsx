@@ -3,17 +3,19 @@
 
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { PlusCircleIcon, CheckIcon } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Separator } from '@/components/ui/separator'
-import { redirect, useRouter } from 'next/navigation'
+import { useDataContext } from '@/contexts/DataContext'
+import { redirect, useRouter, useSearchParams } from 'next/navigation'
 
 const filterChoices =  ["High", "Medium", "Low"]
 
 export default function Filter() {
 
     const router = useRouter()
+    const searchParams = useSearchParams()
 
     const [filters, setFilters] = useState<string[]>([])
 
@@ -30,14 +32,38 @@ export default function Filter() {
     }
     const selectedFilters = [...filters]
 
+    const createQueryString = useCallback(
+        (name: string, value: string) => {
+          const params = new URLSearchParams(searchParams.toString())
+          console.log(params.toString())
+          params.set(name, value)
+          params.sort()
+          return params.toString()
+        },
+        [searchParams]
+      )
+
+    const deleteQueryParam = useCallback(
+        (name: string) => {
+            const params = new URLSearchParams(searchParams.toString())
+            params.delete(name)
+            console.log('clearing')
+
+            return params.toString()
+        },
+        [searchParams]
+    )
+
     useEffect(() => {
         if(filters.length > 0){
             let stringified = ''
             filters.forEach((filter : string) => {stringified = stringified += `"${filter.toLowerCase()}",`})
-            router.push(`?filters=[${stringified.slice(0, -1)}]`)
+            router.push('?' + createQueryString('filters',`[${stringified.slice(0, -1)}]`))
         }
         else{
-            router.push('/')
+            
+
+            router.push('?' + deleteQueryParam('filters'))
         }
     }, [filters])
 
