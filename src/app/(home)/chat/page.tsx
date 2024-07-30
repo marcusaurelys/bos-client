@@ -12,7 +12,7 @@ export default async function ChatPage() {
   fuckNextChat()
   
   return (
-     <Chat/>
+     <Chat session="all"/>
   );
   
 }

@@ -7,7 +7,11 @@ interface IMessagesDict {
   session_id: string
 }
 
-export default function Chat() {
+interface Chat{
+  session: String
+}
+
+export default function Chat({session}:Chat) {
   const [messagesDict, setMessagesDict] = useState({})
   
   const fetchMessages = async() => {
@@ -23,6 +27,8 @@ export default function Chat() {
       return {}
     }
 
+    console.log(conversations.length)
+
     for (const conversation of conversations) {
       const session_id = conversation.session_id
       const messages_response = await getMessages(session_id)
@@ -36,10 +42,10 @@ export default function Chat() {
     }
 
     return messages_dict
-
     // }
-   
   }
+
+  const messagesArray = messagesDict[session];
   
   useEffect(() => {
     let abort = false

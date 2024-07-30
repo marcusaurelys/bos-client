@@ -28,7 +28,6 @@ import {
 import { getTicket } from "@/db/tickets";
 import { Button } from "@/components/ui/button"
 import { Key } from "react"
-import { ChatLayout } from "@/components/chat/chat-layout"
 import { cookies } from "next/headers";
 import Bot from "@/app/components/Bot";
 import { revalidatePath } from "next/cache";
@@ -39,6 +38,18 @@ import { validateUser } from "@/db/users";
 import { ITicket } from '@/types'
 import ClientToast from '@/app/components/ErrorToast'
 import Listener from '@/app/components/Listener'
+import  Loading  from './loading'
+
+function getChatHistory(){
+    return {
+        "messages": [
+          { "content": "Hi there, I'm experiencing some issues with one of our servers. It seems to be running slow and some services are unresponsive. Can you help?", "from": "user" },
+          { "content": "Hello! Thank you for reaching out. I'm sorry to hear about the server troubles. We'll get that sorted out for you. Could you please provide the server name or any specific details?", "from": "operator" },
+          { "content": "Sure, it's our main production server named 'ProdServer01'. It really needs a restart to clear things up.", "from": "user" },
+          { "content": "Got it, 'ProdServer01.' We'll initiate a restart right away to address the performance issues. We'll keep you updated on the progress. Thanks for bringing this to our attention!", "from": "operator" }
+        ]
+    }
+}
 
 export default async function Ticket({params}:{params:{ticketid:string}}) {
 
@@ -75,25 +86,14 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
         console.log(errorMessage)
     }
  
-    const chat_history = {
-        "messages": [
-          { "content": "Hi there, I'm experiencing some issues with one of our servers. It seems to be running slow and some services are unresponsive. Can you help?", "from": "user" },
-          { "content": "Hello! Thank you for reaching out. I'm sorry to hear about the server troubles. We'll get that sorted out for you. Could you please provide the server name or any specific details?", "from": "operator" },
-          { "content": "Sure, it's our main production server named 'ProdServer01'. It really needs a restart to clear things up.", "from": "user" },
-          { "content": "Got it, 'ProdServer01.' We'll initiate a restart right away to address the performance issues. We'll keep you updated on the progress. Thanks for bringing this to our attention!", "from": "operator" }
-        ]
-    }
-
-    // const ai_recomm = {
-    //     "recs": [
-    //       { "content": "lorem ipsum" },
-    //     ]
-    // }
+    const chat_history = getChatHistory();
 
     if (ticket_info == null) {
         return (
             <>
-            <p>Ticket returned null from database, check the id in the url</p>
+            <div>
+                Ticket not found
+            </div>
             <ClientToast errorMessage={errorMessage}/>
             </>
         )
@@ -111,28 +111,27 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                 <TabsContent value="chat">
                     <div className="flex flex-col m-2">
                         {chat_history.messages.map((message, index) => (
-                            message.from == "operator" 
-                            ?
-                            <div className="flex flex-col m-2 border rounded-lg bg-blue-100" key={index}>
-                                <div className="flex flex-col m-2">
-                                    <strong>{message.from}</strong>
-                                    <p>{message.content}</p>
+                                message.from == "operator" 
+                                ?
+                                <div className="flex flex-col m-2 border rounded-lg bg-blue-100" key={index}>
+                                    <div className="flex flex-col m-2">
+                                        <strong>{message.from}</strong>
+                                        <p>{message.content}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            :
-                            <div className="flex flex-col m-2 border rounded-lg bg-stone-100" key={index}>
-                                <div className="flex flex-col m-2">
-                                    <strong>{message.from}</strong>
-                                    <p>{message.content}</p>
+                                :
+                                <div className="flex flex-col m-2 border rounded-lg bg-stone-100" key={index}>
+                                    <div className="flex flex-col m-2">
+                                        <strong>{message.from}</strong>
+                                        <p>{message.content}</p>
+                                    </div>
                                 </div>
-                            </div>
                         ))}
                     </div>
                 </TabsContent>
                 <TabsContent value="ai">
                     <main className="flex h-[calc(75dvh)] flex-col items-center justify-center">
                         <div className="z-10 rounded-lg w-full h-full text-sm lg:flex">
-                            {/* <ChatLayout defaultLayout={defaultLayout} navCollapsedSize={8} /> */}
                             <Bot/>
                         </div>
                     </main>
