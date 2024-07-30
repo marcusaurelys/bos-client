@@ -14,7 +14,6 @@ const CRISP_API_KEY = process.env.CRISP_API_KEY
 const CHATBOT_URL = process.env.CHATBOT_URL
 const CHATBOT_API_KEY = process.env.CHATBOT_API_KEY
 
-
 const Chat = async () => {
   const db = await useDB()
   const chat = db.collection('chat')
@@ -27,7 +26,12 @@ const Tickets = async () => {
   const db = await useDB()
   const tickets = db.collection('tickets')
   return tickets
-} 
+}
+ 
+const db = await useDB()
+const chat = db.collection('chat')
+const tickets = db.collection('tickets')
+const fail = db.collection('fail')
 
 /**
  * Empty function to as a workaround for https://github.com/vercel/next.js/issues/54282
@@ -205,6 +209,8 @@ export const seed_chat = async( session_id: string, messages: IMessage[] ) => {
     chat_id: session_id,
     messages: messages,
   })
+
+  return 'success'
  
 }
 
@@ -221,10 +227,56 @@ export const seed_tickets_collection = async() => {
 
     const messages_dict: IMessageDict = {}
     let page_number = 1;
-    console.log("page_number: " + page_number)
-    console.log("seeding")
+    const chats = await chat.find({}).toArray()
 
-    while (true) {
+    chats.map((chat) => {
+      messages_dict[chat.chat_id] = {
+        messages: []
+      }
+      messages_dict[chat.chat_id].messages = chat.messages
+      console.log(messages_dict[chat.chat_id])
+    })
+
+    const ticket_fails = {}
+    
+    Object.entries(messages_dict).map(async([session_id, conversation]) => {
+    //  console.log(session_id)
+    //  console.log(conversation)
+
+      conversation.messages.forEach(message => {
+        message['from'] = typeof message['from'] === 'object' ? JSON.stringify(message['from']) : message['from']                    
+        message['content'] = typeof message['content'] === 'object' ? JSON.stringify(message['content']) : message['content']
+      })
+
+     const input = ticket_generation_prompt + JSON.stringify(conversation)
+     console.log(input)
+     const response = await get_chatbot_response(input)
+     const output = response['response']
+
+      try {
+        const ticket = JSON.parse(output)
+        ticket['status'] = 'closed'
+        ticket['date_created'] = new Date().toISOString()
+        ticket['chat_id'] = session_id
+
+        console.log(`Printing valid JSON:`, ticket)
+        await seed_ticket(ticket)
+      } catch (error) {
+        console.log(`Printing string: ${JSON.stringify(response)}`)
+        await fail.insertOne({session_id: session_id, response: response['response']})
+        
+      } 
+
+      
+    })
+}
+
+export const seed_tickets_collection_1 = async() => {
+
+    const messages_dict = {}
+    let page_number = 18;
+
+    while (page_number === 18) {
       const conversations_response = await getConversations(page_number)
       const conversations = conversations_response.data
       console.log(conversations)
@@ -237,6 +289,7 @@ export const seed_tickets_collection = async() => {
         const session_id = conversation.session_id
         const messages_response = await getMessages(session_id)
         const messages = messages_response.data
+        console.log(messages)
         
         // Note that we are specifically using bracket notation for a JSON object to maintain portability with the Flask server
         messages_dict[session_id] = { 
@@ -261,6 +314,8 @@ export const seed_tickets_collection = async() => {
 
       await seed_chat(session_id, conversation.messages)
 
+      return 
+      
       const input = ticket_generation_prompt + JSON.stringify(conversation)
       const response = await get_chatbot_response(input)
       const response_json = await response.json()
@@ -278,6 +333,7 @@ export const seed_tickets_collection = async() => {
       
     })
 }
+
 const ticket_generation_prompt = `You are given a JSON object containing a support conversation between a customer and a support agent. Your task is to generate a support ticket with the following fields:
 
 1. Name: A concise title summarizing the main issue discussed.
@@ -323,6 +379,7 @@ Output:
  "tags": ["Game", "Server"]
 }
 
-Use the context and details provided in the messages to accurately fill out the support ticket fields. 
+Use the context and details provided in the messages to accurately fill out the support ticket fields. Your only response should be a JSON object.
 
-Now, process the following conversation to generate a support ticket:`
+Now, process the following conversation to generate a support ticket: \n`
+

@@ -1,4 +1,4 @@
 python-dotenv
 flask
-chromadb
+chromadb==0.5.4
 requests

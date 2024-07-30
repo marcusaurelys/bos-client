@@ -22,7 +22,7 @@ services:
             - chat
         env_file: './server/.env'
     chromadb:
-        image: chromadb/chroma:latest
+        image: chromadb/chroma:0.5.4
         container_name: chromadb
         volumes:
             - ./chromadb:/chroma/chroma

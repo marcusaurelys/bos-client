@@ -224,6 +224,7 @@ export const login = async(formData : FormData) => {
  * @returns {Promise<void>}
  */
 export const logout = async() => {
+    console.log("in logout")
     try{
         cookies().delete("session")
         redirect('/login')
