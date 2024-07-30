@@ -39,6 +39,23 @@ export const fuckNextChat = async() => {
 } 
 
 /**
+ * Retrieves the chat history from MongoDB based on the given chat ID
+ * 
+ * @param id    string (expected to be retrieved from the URL of the page)
+ * @returns     document with the interface IChat as declared in types.ts, empty array if not found
+ */
+export const getChatHistory = async (id : string) => {
+  try {
+      const chatHistory = await chat.findOne({ chat_id: id })
+
+      return chatHistory;
+  } catch (e) {
+      console.error("Chat history not found", e);
+      return [];
+  }
+}
+
+/**
  * Fetches a list of conversations from the Crisp API.
  * 
  * @param {number} page_number - The page number of the conversations to retrieve.

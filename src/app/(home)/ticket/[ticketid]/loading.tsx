@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-function ChatHistorySkeleton() {
+export function ChatHistorySkeleton() {
   return (
     <div className="flex flex-col m-2">
       {Array(5).fill(3).map((_, index) => (
@@ -17,7 +17,7 @@ function ChatHistorySkeleton() {
   );
 }
 
-function AISkeleton() {
+export function AISkeleton() {
   return (
     <main className="flex h-[calc(75dvh)] flex-col items-center justify-center">
       <div className="z-10 border rounded-lg max-w-5xl w-full h-full text-sm lg:flex">
@@ -27,7 +27,7 @@ function AISkeleton() {
   );
 }
 
-function TicketSkeleton() {
+export function TicketSkeleton() {
   return (
     <Card>
       <CardHeader className="flex flex-row justify-between">

@@ -6,7 +6,6 @@ import { fuckNextUsers } from '@/db/users'
 import {
     Card,
     CardContent,
-    CardFooter,
     CardHeader,
     CardTitle,
   } from "@/components/ui/card"
@@ -17,39 +16,20 @@ import {
     TabsList,
     TabsTrigger,
   } from "@/components/ui/tabs"
-  import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select"
 
 import { getTicket } from "@/db/tickets";
-import { Button } from "@/components/ui/button"
 import { Key } from "react"
 import { cookies } from "next/headers";
 import Bot from "@/app/components/Bot";
-import { revalidatePath } from "next/cache";
 import UpdateStatusForm from "@/app/components/UpdateStatusForm";
-import { Dialog } from "@/components/ui/dialog";
 import EditTicket from "@/app/components/EditTicket";
 import { validateUser } from "@/db/users";
-import { ITicket } from '@/types'
+import { IChat, IMessage, ITicket } from '@/types'
 import ClientToast from '@/app/components/ErrorToast'
 import Listener from '@/app/components/Listener'
-import  Loading  from './loading'
-
-function getChatHistory(){
-    return {
-        "messages": [
-          { "content": "Hi there, I'm experiencing some issues with one of our servers. It seems to be running slow and some services are unresponsive. Can you help?", "from": "user" },
-          { "content": "Hello! Thank you for reaching out. I'm sorry to hear about the server troubles. We'll get that sorted out for you. Could you please provide the server name or any specific details?", "from": "operator" },
-          { "content": "Sure, it's our main production server named 'ProdServer01'. It really needs a restart to clear things up.", "from": "user" },
-          { "content": "Got it, 'ProdServer01.' We'll initiate a restart right away to address the performance issues. We'll keep you updated on the progress. Thanks for bringing this to our attention!", "from": "operator" }
-        ]
-    }
-}
+import  { TicketSkeleton }  from './loading'
+import { getChatHistory } from '@/db/chat'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 export default async function Ticket({params}:{params:{ticketid:string}}) {
 
@@ -62,9 +42,12 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
     const defaultLayout = layout ? JSON.parse(layout.value) : undefined;
 
     let ticket_info: ITicket | null = null
+    let chat_history: IChat
     let user: string = ''
     let priorityColor: string = ''
     let errorMessage = ''
+    let chatError = "An error occurred while fetching the chat history, please check the TicketID in the url"
+    let chatAndTicketError = "An error occurred while fetching the ticket and chat history, please check the TicketID in the url"
     
     try{
         [ticket_info, user] = await Promise.all([getTicket(params.ticketid), validateUser()])
@@ -85,16 +68,74 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
         errorMessage = "An error occurred while fetching the ticket, please check the TicketID in the url"
         console.log(errorMessage)
     }
- 
-    const chat_history = getChatHistory();
 
+    chat_history = await getChatHistory(params.ticketid)
+ 
     if (ticket_info == null) {
         return (
             <>
-            <div>
-                Ticket not found
+            <div className="flex flex-row m-4">
+                <div className="w-2/3 border rounded-lg m-2">
+                    <Tabs defaultValue="chat" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="chat">Chat History</TabsTrigger>
+                        <TabsTrigger value="ai">AI Recommendations</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="chat">
+                        <ScrollArea className="h-[calc(75dvh)]">
+                            <div className="flex flex-col m-2">
+                                {
+                                    chat_history == null ?
+                                        <div className="text-xs m-2 justify-self-end"> No chat history available. </div>
+                                    :
+                                    chat_history.messages.map((message, index) => (
+                                        message.from == "operator" 
+                                        ?
+                                        <div className="flex flex-col m-2 border rounded-lg bg-blue-100" key={index}>
+                                            <div className="flex flex-col m-2">
+                                                <strong>{message.from}</strong>
+                                                <p>{message.content}</p>
+                                            </div>
+                                        </div>
+                                        :
+                                        <div className="flex flex-col m-2 border rounded-lg bg-stone-100" key={index}>
+                                            <div className="flex flex-col m-2">
+                                                <strong>{message.from}</strong>
+                                                <p>{message.content}</p>
+                                            </div>
+                                        </div>
+                                    ))
+                                }   
+                            </div>
+                            {
+                                chat_history == null ?
+                                <div><ClientToast errorMessage={chatError}/></div>
+                                :
+                                <div className="text-xs m-2 justify-self-end">End of chat history.</div> 
+                            }
+                        </ScrollArea>
+                    </TabsContent>
+                    <TabsContent value="ai">
+                        <main className="flex h-[calc(75dvh)] flex-col items-center justify-center">
+                            <div className="z-10 rounded-lg w-full h-full text-sm lg:flex">
+                                <Bot/>
+                            </div>
+                        </main>
+                    </TabsContent>
+                    </Tabs>
+
+                </div>
+                <div className="w-1/3 m-2">
+                    <TicketSkeleton />
+                </div>
             </div>
-            <ClientToast errorMessage={errorMessage}/>
+            <Listener/>
+            {
+                chat_history == null ?
+                <div><ClientToast errorMessage={chatAndTicketError}/></div>
+                :
+                <div><ClientToast errorMessage={errorMessage}/></div>  
+            }
             </>
         )
     }
@@ -109,25 +150,36 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                     <TabsTrigger value="ai">AI Recommendations</TabsTrigger>
                 </TabsList>
                 <TabsContent value="chat">
-                    <div className="flex flex-col m-2">
-                        {chat_history.messages.map((message, index) => (
-                                message.from == "operator" 
-                                ?
-                                <div className="flex flex-col m-2 border rounded-lg bg-blue-100" key={index}>
-                                    <div className="flex flex-col m-2">
-                                        <strong>{message.from}</strong>
-                                        <p>{message.content}</p>
-                                    </div>
+                    <div className="flex flex-col h-[calc(75dvh)] m-2">
+                    {
+                        chat_history == null ?
+                            <div className="text-xs m-2 justify-self-end"> No chat history available. </div>
+                        :
+                        chat_history.messages.map((message, index) => (
+                            message.from == "operator" 
+                            ?
+                            <div className="flex flex-col m-2 border rounded-lg bg-blue-100" key={index}>
+                                <div className="flex flex-col m-2">
+                                    <strong>{message.from}</strong>
+                                    <p>{message.content}</p>
                                 </div>
-                                :
-                                <div className="flex flex-col m-2 border rounded-lg bg-stone-100" key={index}>
-                                    <div className="flex flex-col m-2">
-                                        <strong>{message.from}</strong>
-                                        <p>{message.content}</p>
-                                    </div>
+                            </div>
+                            :
+                            <div className="flex flex-col m-2 border rounded-lg bg-stone-100" key={index}>
+                                <div className="flex flex-col m-2">
+                                    <strong>{message.from}</strong>
+                                    <p>{message.content}</p>
                                 </div>
-                        ))}
+                            </div>
+                        ))
+                    }
                     </div>
+                    {
+                        chat_history == null ?
+                        <div><ClientToast errorMessage={chatError}/></div>
+                        :
+                        <div className="text-xs m-2 justify-self-end"> End of chat history. </div>
+                    }  
                 </TabsContent>
                 <TabsContent value="ai">
                     <main className="flex h-[calc(75dvh)] flex-col items-center justify-center">
