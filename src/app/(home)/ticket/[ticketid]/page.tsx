@@ -43,9 +43,9 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
 
     let ticket_info: ITicket | null = null
     let chat_history: IChat
-    let user: string = ''
-    let priorityColor: string = ''
-    let errorMessage = ''
+    let user: string = ""
+    let priorityColor: string = ""
+    let errorMessage = ""
     let chatError = "An error occurred while fetching the chat history, please check the TicketID in the url"
     let chatAndTicketError = "An error occurred while fetching the ticket and chat history, please check the TicketID in the url"
     
