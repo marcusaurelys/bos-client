@@ -28,10 +28,11 @@ const Tickets = async () => {
   return tickets
 }
  
-const db = await useDB()
-const chat = db.collection('chat')
-const tickets = db.collection('tickets')
-const fail = db.collection('fail')
+const Fail = async() => {
+  const db = await useDB()
+  const fail = db.collection('fail')
+  return fail
+}
 
 /**
  * Empty function to as a workaround for https://github.com/vercel/next.js/issues/54282
@@ -227,6 +228,7 @@ export const seed_tickets_collection = async() => {
 
     const messages_dict: IMessageDict = {}
     let page_number = 1;
+    const chat = await Chat()
     const chats: IChat[]  = await chat.find({}).toArray()
 
     chats.map((chat) => {
@@ -263,6 +265,7 @@ export const seed_tickets_collection = async() => {
         await seed_ticket(ticket)
       } catch (error) {
         console.log(`Printing string: ${JSON.stringify(response)}`)
+        const fail = await Fail()
         await fail.insertOne({session_id: session_id, response: response['response']})
         
       } 
@@ -273,7 +276,7 @@ export const seed_tickets_collection = async() => {
 
 export const seed_tickets_collection_1 = async() => {
 
-    const messages_dict = {}
+    const messages_dict: IMessageDict = {}
     let page_number = 18;
 
     while (page_number === 18) {
