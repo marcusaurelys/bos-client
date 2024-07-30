@@ -45,6 +45,8 @@ export const fuckNextChat = async() => {
  * @returns     document with the interface IChat as declared in types.ts, empty array if not found
  */
 export const getChatHistory = async (id : string) => {
+  const chat = await Chat()
+
   try {
       const chatHistory = await chat.findOne({ chat_id: id })
 

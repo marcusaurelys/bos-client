@@ -44,8 +44,6 @@ export default function Chat({session}:Chat) {
     return messages_dict
     // }
   }
-
-  const messagesArray = messagesDict[session];
   
   useEffect(() => {
     let abort = false

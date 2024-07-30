@@ -14,7 +14,7 @@ export default function Bot() {
   const generate_llama3_response = async(prompt: string) => {
     let string_dialogue = "You are a helpful asssistant. You do not respond as 'User'. You only respond once as 'Assistant' \n\n"
     let input = ""
-    let output = ""
+    let output = []
 
     if (prompt.length === 0) {
        return
