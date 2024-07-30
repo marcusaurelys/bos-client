@@ -227,7 +227,7 @@ export const seed_tickets_collection = async() => {
 
     const messages_dict: IMessageDict = {}
     let page_number = 1;
-    const chats = await chat.find({}).toArray()
+    const chats: IChat[]  = await chat.find({}).toArray()
 
     chats.map((chat) => {
       messages_dict[chat.chat_id] = {
