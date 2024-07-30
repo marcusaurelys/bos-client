@@ -48,7 +48,7 @@ export interface IChatbotResponse {
 
 export interface IChat
   {
-    id: ObjectId // irrelevant in this case
+    id: string // irrelevant in this case
     chat_id: string // 'session_id' of conversation in Crisp
     messages: IMessage[]
   }
