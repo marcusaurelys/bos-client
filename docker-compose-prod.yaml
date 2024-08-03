@@ -6,8 +6,7 @@ services:
         restart: always
         ports: 
             - 3000:3000
-        networks:
-            - chat
+        network_mode: 'host'
         env_file: '.env'
     flask-app:
         image: ghcr.io/marcusaurelys/bos-flask:latest
