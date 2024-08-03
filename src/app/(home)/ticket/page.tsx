@@ -1,10 +1,9 @@
-import { getTickets } from "@/db/tickets";  
-import { Toaster } from "@/components/ui/toaster";
-import Seed from '@/app/components/Seed'
-import { fuckNextDB } from '@/db/mongo'
-import { fuckNextTickets } from '@/db/tickets'
-import { fuckNextChat } from '@/db/chat'
-import { fuckNextUsers } from '@/db/users'
+import { getTickets } from "@/db/tickets";
+import Seed from '@/app/components/Seed';
+import { fuckNextDB } from '@/db/mongo';
+import { fuckNextTickets } from '@/db/tickets';
+import { fuckNextChat } from '@/db/chat';
+import { fuckNextUsers } from '@/db/users';
 
 export default async function ticket() {
 
