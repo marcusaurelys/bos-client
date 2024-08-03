@@ -18,6 +18,7 @@
             ps.pymongo
             ps.chromadb
             ps.flask
+            ps.openai
           ]))
           nodejs
           cloudflared

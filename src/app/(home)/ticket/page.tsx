@@ -11,7 +11,7 @@ export default async function ticket() {
     fuckNextTickets()
     fuckNextChat()
     fuckNextUsers()
-    // await seed_tickets_collection()
+//    await seed_tickets_collection()
     const tickets = await getTickets()
 
     return (

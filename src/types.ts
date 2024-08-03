@@ -23,7 +23,8 @@ export interface ITicket {
     priority: string,
     tags: string[],
     userIDs: string[],
-    dateCreated: string
+    dateCreated: string,
+    chat_id: string,
 }
 
 export interface ITicketDocument {
@@ -34,7 +35,8 @@ export interface ITicketDocument {
     priority_score: string,
     userIDs: string[],
     tags: string[],
-    date_created: string
+    date_created: string,
+    chat_id: string,
 }
 
 export interface IClient {
@@ -65,4 +67,12 @@ export interface IChat
 
   export interface IConversation {
     messages: IMessage[]
+  }
+
+  export interface IDevChat {
+    _id: string,
+    chat_id: string,
+    problem_statement: string,
+    solution_statement: string,
+    messages: IMessage[],
   }

@@ -1,4 +1,5 @@
 python-dotenv
 flask
-chromadb==0.5.4
+chromadb
 requests
+openai

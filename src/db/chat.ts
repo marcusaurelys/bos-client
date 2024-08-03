@@ -1,5 +1,6 @@
 'use server'
 
+import { ObjectId } from 'mongodb'
 import { Base64 } from 'js-base64'  
 import { cookies } from 'next/headers'
 import { useDB } from '@/db/mongo'
@@ -34,6 +35,25 @@ const Fail = async() => {
   return fail
 }
 
+const DevChat = async() => {
+  const db = await useDB()
+  const devchat = db.collection('devchat')
+  return devchat
+}
+
+/*
+  {
+    ticket_id: 
+    messages: [
+      {
+        content:
+        from:
+      }
+    ]
+  }
+
+*/
+
 /**
  * Empty function to as a workaround for https://github.com/vercel/next.js/issues/54282
  * 
@@ -54,13 +74,48 @@ export const getChatHistory = async (id : string) => {
 
   try {
       const chatHistory = await chat.findOne({ chat_id: id })
-
       return chatHistory;
   } catch (e) {
       console.error("Chat history not found", e);
       return [];
   }
 }
+
+export const add_dev_chat = async(params: any) => {
+  const devchat = await DevChat()
+  const response = await devchat.insertOne({
+    ...params
+  })
+  
+}
+
+export const get_dev_chat = async(chat_id: string) => {
+  const devchat = await DevChat()
+  const response = await devchat.findOne({
+    chat_id: chat_id
+  })
+
+  if (response === null) {
+    return null
+  }
+  response._id = response._id.toString()
+  return response
+}
+
+export const update_dev_chat = async(dev: any) => {
+  const devchat = await DevChat()
+  const response = await devchat.updateOne(
+    {_id: new ObjectId(dev._id)},
+    {
+      $set: {
+        messages: dev.messages
+      }
+    }
+  )
+  return response
+}
+
+
 
 /**
  * Fetches a list of conversations from the Crisp API.
@@ -116,15 +171,16 @@ export const getMessages = async(session_id: string) => {
  * @param {string} prompt - The prompt to send to the chatbot.
  * @returns {Promise<Object>} The response from the chatbot API.
  */
-export const get_chatbot_response = async(prompt: string) => {
+export const get_chatbot_response = async(chat_logs: string, problem_statement: string) => {
   try {
-    const response = await fetch(`${CHATBOT_URL}`, {
-      method: 'POST',
-      headers: {
-        "x-api-key": `${CHATBOT_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ prompt: prompt }),      
+
+    const formData = new FormData()
+    formData.append('chat_logs', chat_logs)
+    formData.append('problem_statement', problem_statement)
+    
+    const response = await fetch(`http://localhost:5000/api/betterInference`, {
+        method: 'POST',
+        body: formData
     })
     
     const output = await response.json() 
@@ -134,6 +190,24 @@ export const get_chatbot_response = async(prompt: string) => {
   }
 } 
 
+export const get_chatbot_response_custom = async(chat_logs: string) => {
+  try {
+
+    const formData = new FormData()
+    formData.append('instruct', ticket_generation_prompt)
+    formData.append('chat_logs', chat_logs)
+    
+    const response = await fetch(`http://localhost:5000/api/generateTicket`, {
+        method: 'POST',
+        body: formData
+    })
+    
+    const output = await response.json() 
+    return output 
+  } catch (error){
+    console.error("get_chatbot_response_custom error: ",error);
+  }
+} 
 /*
 Chat Object
   {
@@ -242,11 +316,35 @@ export const seed_ticket = async(params: {}) => {
     userIDs: [],
   })
 }
+/**
+ * Fetches a response from a chatbot API based on a given prompt.
+ * 
+ * @param {string} prompt - The prompt to send to the chatbot.
+ * @returns {Promise<Object>} The response from the chatbot API.
+ */
+export const get_chatbot_response_old = async(prompt: string) => {
+  try {
+    const response = await fetch(`${CHATBOT_URL}`, {
+      method: 'POST',
+      headers: {
+        "x-api-key": `${CHATBOT_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ prompt: prompt }),      
+    })
+    
+    const output = await response.json() 
+    return output 
+  } catch (error){
+    console.error("get_chatbot_response error: ",error);
+  }
+} 
 
 export const seed_tickets_collection = async() => {
 
+    return
+    
     const messages_dict: IMessageDict = {}
-    let page_number = 1;
     const chat = await Chat()
     const chats: IChat[]  = await chat.find({}).toArray()
 
@@ -255,12 +353,11 @@ export const seed_tickets_collection = async() => {
         messages: []
       }
       messages_dict[chat.chat_id].messages = chat.messages
-      console.log(messages_dict[chat.chat_id])
     })
 
     const ticket_fails = {}
     
-    Object.entries(messages_dict).map(async([session_id, conversation]) => {
+    for (const [session_id, conversation] of Object.entries(messages_dict)) {
     //  console.log(session_id)
     //  console.log(conversation)
 
@@ -269,10 +366,28 @@ export const seed_tickets_collection = async() => {
         message['content'] = typeof message['content'] === 'object' ? JSON.stringify(message['content']) : message['content']
       })
 
-     const input = ticket_generation_prompt + JSON.stringify(conversation)
-     console.log(input)
-     const response = await get_chatbot_response(input)
-     const output = response['response']
+      console.log("waiting")
+      await new Promise(resolve => setTimeout(resolve, 5000))
+
+      let chat_logs = ""
+    
+      for (const message of conversation.messages) {
+
+        if (message['content'] === `{"namespace":"state:resolved"}`) {
+          continue
+        } 
+  
+        if (message['from'] === "user") {
+          chat_logs += "User: " + message['content'] + "\n"
+        } else {
+          chat_logs += "Operator: " + message['content'] + "\n"
+        } 
+      }
+
+
+      const input = ticket_generation_prompt + chat_logs + "\n\n" + "Now, give your response in a valid JSON format"
+      const response = await get_chatbot_response_old(input)
+      const output = response['response']
 
       try {
         const ticket = JSON.parse(output)
@@ -283,14 +398,13 @@ export const seed_tickets_collection = async() => {
         console.log(`Printing valid JSON:`, ticket)
         await seed_ticket(ticket)
       } catch (error) {
-        console.log(`Printing string: ${JSON.stringify(response)}`)
-        const fail = await Fail()
-        await fail.insertOne({session_id: session_id, response: response['response']})
-        
+          console.log(`Printing string: ${output}`)
+          const fail = await Fail()
+          await fail.insertOne({session_id: session_id, response: response['response']})
       } 
 
       
-    })
+    }
 }
 
 export const seed_tickets_collection_1 = async() => {
@@ -335,73 +449,21 @@ export const seed_tickets_collection_1 = async() => {
       })
 
       await seed_chat(session_id, conversation.messages)
-
-      return 
-      
-      const input = ticket_generation_prompt + JSON.stringify(conversation)
-      const response = await get_chatbot_response(input)
-      const response_json = await response.json()
-
-      try {
-        const ticket = JSON.parse(response_json['response'])
-        ticket['status'] = 'closed'
-        ticket['date_created'] = new Date().toISOString()
-
-        console.log(`Printing valid JSON:`, ticket)
-        await seed_ticket(ticket)
-      } catch (error) {
-        console.log(`Printing string: ${response_json['response']}`)
-      }
       
     })
 }
 
-const ticket_generation_prompt = `You are given a JSON object containing a support conversation between a customer and a support agent. Your task is to generate a support ticket with the following fields:
+const ticket_generation_prompt = `You are given a support conversation between a customer and a support agent. Your task is to generate a support ticket in the form of a JSON object with the following fields:
 
-1. Name: A concise title summarizing the main issue discussed.
-2. Description: A detailed explanation of the issue.
-3. Priority Score: One of the following three values: 'high', 'medium', or 'low'.
-4. Tags: A list of relevant keywords or topics related to the issue.
-
-Use the context of the conversation to determine these fields. Ensure that the ticket accurately reflects the problem or request made by the user. The JSON object will be formatted as follows:
-
-Input Format:
 {
-  "messages": [
-    { "content": "Good morning!", "from": "Charlie" },
-    { "content": "How are you?", "from": "Dana" }
-  ]
+"name": "[A concise title summarizing the main issue discussed]",
+"description": "[A detailed explanation of the issue]",
+"priority_score": "[One of 'high', 'medium', or 'low']",
+"tags": ["[List of relevant keywords or topics related to the issue]"]
 }
 
-Output Format:
-{
-  "name": string,
-  "description": string,
-  "priority_score": Enum(high, medium, low),
-  "tags": [string]
-}
+You must remember to respond only in valid JSON format. Now, process the following conversation:
 
-Example:
-Input:
-{
- "messages": [
-   { "content": "Good morning!", "from": "Charlie" },
-   { "content": "How are you?", "from": "Dana" },
-   { "content": "I need help with increasing the size of the server RAM for an upcoming game test.", "from": "Charlie" },
-   { "content": "Sure, when do you need this done?", "from": "Dana" },
-   { "content": "By the end of the week, if possible.", "from": "Charlie" }
- ]
-}
+Conversation:
 
-Output:
-{
- "name": "Increase size of game server RAM for upcoming test",
- "description": "The user wants to increase the size of the server RAM for his game",
- "priority_score": "high",
- "tags": ["Game", "Server"]
-}
-
-Use the context and details provided in the messages to accurately fill out the support ticket fields. Your only response should be a JSON object.
-
-Now, process the following conversation to generate a support ticket: \n`
-
+`

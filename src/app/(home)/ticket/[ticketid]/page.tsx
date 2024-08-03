@@ -24,19 +24,65 @@ import Bot from "@/app/components/Bot";
 import UpdateStatusForm from "@/app/components/UpdateStatusForm";
 import EditTicket from "@/app/components/EditTicket";
 import { validateUser } from "@/db/users";
-import { IChat, IMessage, ITicket } from '@/types'
+import { IChat, IMessage, ITicket, IConversation, IDevChat } from '@/types'
 import ClientToast from '@/app/components/ErrorToast'
 import Listener from '@/app/components/Listener'
 import  { TicketSkeleton }  from './loading'
-import { getChatHistory } from '@/db/chat'
+import { getChatHistory, add_dev_chat, get_dev_chat } from '@/db/chat'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 export default async function Ticket({params}:{params:{ticketid:string}}) {
-
+    
     fuckNextDB()
     fuckNextTickets()
     fuckNextChat()
     fuckNextUsers()
+
+  const generate_problem_statement = async(chat_history: IConversation) => {
+     
+     if (chat_history === null) {
+       throw new Error('BRUH THE CHATS ARE NULL')
+     }
+
+     if (!ticket_info) 
+         throw new Error("Ticket does not exist")
+
+     let chat_logs = ""
+     
+     for (const message of chat_history.messages) {
+        if (message.from == "user") {
+          chat_logs += "User: "
+        } else {
+          chat_logs += "Operator: "
+        }
+
+        chat_logs += message.content + "\n"
+      
+     }
+
+     console.log(chat_logs)
+     
+     const formData = new FormData()
+     formData.append('chat_logs', chat_logs)
+     formData.append('sessionID', ticket_info.chat_id )
+     
+     const response = await fetch('http://localhost:5000/api/storeChatLogs', {
+       method: "POST",
+       body: formData,
+     }) 
+     const json = await response.json()
+     const problem_statement = json.problem_statement
+     const solution_statement = json.solution_statement
+
+     const devchat: any = {}
+     devchat.problem_statement = problem_statement
+     devchat.solution_statement = solution_statement
+     devchat.chat_id = ticket_info.chat_id
+     devchat.messages = []
+
+     await add_dev_chat(devchat)
+     
+  }
 
     const layout = cookies().get("react-resizable-panels:layout");
     const defaultLayout = layout ? JSON.parse(layout.value) : undefined;
@@ -69,7 +115,23 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
         console.log(errorMessage)
     }
 
-    chat_history = await getChatHistory(params.ticketid)
+    if (!ticket_info) 
+        throw new Error("Ticket does not exist")
+        
+    chat_history = await getChatHistory(ticket_info.chat_id)
+    
+    let devchat = await get_dev_chat(ticket_info.id)
+
+    if (devchat === null) {
+        console.log("Devchat is null, generating problem statement")
+        await generate_problem_statement(chat_history)
+        devchat = await get_dev_chat(ticket_info.chat_id)
+        console.log(devchat)
+
+        if (devchat === null) {
+            throw new Error("DEVCHAT IS NULL!")
+        }  
+    }
  
     if (ticket_info == null) {
         return (
@@ -118,7 +180,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                     <TabsContent value="ai">
                         <main className="flex h-[calc(75dvh)] flex-col items-center justify-center">
                             <div className="z-10 rounded-lg w-full h-full text-sm lg:flex">
-                                <Bot/>
+                    
                             </div>
                         </main>
                     </TabsContent>
@@ -184,7 +246,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                 <TabsContent value="ai">
                     <main className="flex h-[calc(75dvh)] flex-col items-center justify-center">
                         <div className="z-10 rounded-lg w-full h-full text-sm lg:flex">
-                            <Bot/>
+                            <Bot chat_id={ticket_info.chat_id} ticket_id={ticket_info.id} devchat={devchat}/>
                         </div>
                     </main>
                 </TabsContent>

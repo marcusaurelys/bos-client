@@ -1,0 +1,71 @@
+[32mINFO[0m:     [31-07-2024 00:02:43] Set chroma_server_nofile to 65535
+[32mINFO[0m:     [31-07-2024 00:02:43] Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+[36mDEBUG[0m:    [31-07-2024 00:02:43] Starting component System
+[36mDEBUG[0m:    [31-07-2024 00:02:43] Starting component OpenTelemetryClient
+[36mDEBUG[0m:    [31-07-2024 00:02:43] Starting component SqliteDB
+[36mDEBUG[0m:    [31-07-2024 00:02:43] Starting component QuotaEnforcer
+[36mDEBUG[0m:    [31-07-2024 00:02:43] Starting component Posthog
+[36mDEBUG[0m:    [31-07-2024 00:02:43] Starting component LocalSegmentManager
+[36mDEBUG[0m:    [31-07-2024 00:02:43] Starting component SegmentAPI
+[32mINFO[0m:     [31-07-2024 00:02:43] Started server process [[36m120573[0m]
+[32mINFO[0m:     [31-07-2024 00:02:43] Waiting for application startup.
+[32mINFO[0m:     [31-07-2024 00:02:43] Application startup complete.
+[32mINFO[0m:     [31-07-2024 00:02:43] Uvicorn running on [1mhttp://localhost:8000[0m (Press CTRL+C to quit)
+[32mINFO[0m:     [31-07-2024 00:02:47] ::1:47468 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:02:47] ::1:47468 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:02:48] ::1:47478 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:07:37] ::1:58862 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:07:37] ::1:58862 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 00:07:37] Collection problems_statements already exists, returning existing collection.
+[32mINFO[0m:     [31-07-2024 00:07:37] ::1:58876 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:13:58] ::1:32822 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:13:58] ::1:32822 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 00:13:58] Collection problems_statements already exists, returning existing collection.
+[32mINFO[0m:     [31-07-2024 00:13:58] ::1:32838 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:23:30] ::1:47180 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:23:30] ::1:47180 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 00:23:30] Collection problems_statements already exists, returning existing collection.
+[32mINFO[0m:     [31-07-2024 00:23:30] ::1:47192 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:33:20] ::1:43474 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:33:20] ::1:43474 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 00:33:20] Collection problems_statements already exists, returning existing collection.
+[32mINFO[0m:     [31-07-2024 00:33:20] ::1:43478 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:35:47] ::1:37910 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:35:47] ::1:37910 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 00:35:47] Collection problems_statements already exists, returning existing collection.
+[32mINFO[0m:     [31-07-2024 00:35:47] ::1:37926 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:37:58] ::1:59036 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:37:58] ::1:59036 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 00:37:58] Collection problems_statements already exists, returning existing collection.
+[32mINFO[0m:     [31-07-2024 00:37:58] ::1:59042 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:41:06] ::1:43180 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:41:06] ::1:43180 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 00:41:06] Collection problems_statements already exists, returning existing collection.
+[32mINFO[0m:     [31-07-2024 00:41:06] ::1:43194 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:42:56] ::1:52454 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:42:56] ::1:52454 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 00:42:56] Collection problems_statements already exists, returning existing collection.
+[32mINFO[0m:     [31-07-2024 00:42:56] ::1:52466 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:44:59] ::1:34870 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:44:59] ::1:34870 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 00:44:59] Collection problems_statements already exists, returning existing collection.
+[32mINFO[0m:     [31-07-2024 00:44:59] ::1:34878 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:50:15] ::1:48382 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:50:15] ::1:48382 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 00:50:16] Collection problems_statements already exists, returning existing collection.
+[32mINFO[0m:     [31-07-2024 00:50:16] ::1:48394 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:58:18] ::1:38006 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 00:58:18] ::1:38006 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 00:58:18] Collection problems_statements already exists, returning existing collection.
+[32mINFO[0m:     [31-07-2024 00:58:18] ::1:38022 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 01:06:16] ::1:46908 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 01:06:16] ::1:46908 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 01:06:16] Collection problems_statements already exists, returning existing collection.
+[32mINFO[0m:     [31-07-2024 01:06:16] ::1:46912 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 01:40:32] ::1:39766 - "GET /api/v1/tenants/default_tenant HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 01:40:32] ::1:39766 - "GET /api/v1/databases/default_database?tenant=default_tenant HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 01:40:32] Collection problems_statements already exists, returning existing collection.
+[32mINFO[0m:     [31-07-2024 01:40:32] ::1:39780 - "POST /api/v1/collections?tenant=default_tenant&database=default_database HTTP/1.1" 200
+[32mINFO[0m:     [31-07-2024 03:34:34] ::1:43540 - "GET /api/v1/pre-flight-checks HTTP/1.1" 200
+[36mDEBUG[0m:    [31-07-2024 03:34:34] Starting component PersistentLocalHnswSegment
+[32mINFO[0m:     [31-07-2024 03:34:34] ::1:43540 - "POST /api/v1/collections/23f43aa3-1bbd-4e13-b722-558355306d59/upsert HTTP/1.1" 200

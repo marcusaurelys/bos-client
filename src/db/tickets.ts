@@ -72,6 +72,7 @@ export const getTicketByStatus = async (status : string, filters: string[], sort
                     status: ticket.status,
                     priority: ticket.priority_score,
                     userIDs: ticket.userIDs ?? [],
+                    chat_id: ticket.chat_id,
                     tags: ticket.tags,
                     dateCreated: ticket.date_created.toString()
                 })
@@ -82,6 +83,7 @@ export const getTicketByStatus = async (status : string, filters: string[], sort
             }
             
         })
+        await getTickets()
         return ticketsData
     }
     catch(e){
@@ -109,16 +111,26 @@ export const getTickets = async () => {
                 status: ticket.status,
                 priority: ticket.priority_score,
                 userIDs: ticket.userIDs ?? [],
+                chat_id: ticket.chat_id,
                 tags: ticket.tags,
                 dateCreated: ticket.date_created.toString()
             })
+
+            if (ticket.status !== 'open' && ticket.status !== 'closed' && ticket.status !== 'pending') {
+                console.log(ticket)
+            }
+
+            if (ticket.priority_score !== 'low' && ticket.priority_score !== 'medium' && ticket.priority_score !== 'high') {
+                console.log(ticket)
+            }
+            
+            
         }
         catch(e) {
             console.log("Invalid ticket")
         }
         
     })
-
     return ticketsData
 }
 
@@ -140,6 +152,7 @@ export const getTicket = async(id: string) => {
             status: result.status ?? "open",
             priority: result.priority_score ?? "high",
             userIDs: result.userIDs ?? [],
+            chat_id: result.chat_id,
             tags: result.tags ?? [],
             dateCreated: result.date_created.toString() ?? "You should crash at this point"
         }
