@@ -12,7 +12,7 @@ import chromadb.utils.embedding_functions as embedding_functions
 load_dotenv()
 openAI_client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
-chroma_client = chromadb.HttpClient(host='localhost', port=8000)
+chroma_client = chromadb.HttpClient(host='chromadb', port=8000)
 openai_ef = embedding_functions.OpenAIEmbeddingFunction(
                 api_key=os.getenv('OPENAI_API_KEY'),
                 model_name="text-embedding-3-small"
