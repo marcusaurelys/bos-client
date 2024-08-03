@@ -5,7 +5,6 @@ import { fuckNextDB } from '@/db/mongo'
 import { fuckNextTickets } from '@/db/tickets'
 import { fuckNextChat } from '@/db/chat'
 import { fuckNextUsers } from '@/db/users'
-import { seed_tickets_collection } from '@/db/chat'
 
 export default async function ticket() {
 

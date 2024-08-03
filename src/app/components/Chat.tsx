@@ -3,9 +3,6 @@
 import { useState, useEffect } from 'react'
 import { getConversations, getMessages } from '@/db/chat'
 
-interface IMessagesDict {
-  session_id: string
-}
 
 interface Chat{
   session: String

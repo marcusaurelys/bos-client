@@ -2,7 +2,7 @@
 
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from "@/components/ui/button"
-import { ChangeEvent, TextareaHTMLAttributes, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { SendHorizontal } from 'lucide-react';
 
 interface IInputCompnent {

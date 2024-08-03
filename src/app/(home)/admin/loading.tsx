@@ -7,7 +7,6 @@ import {
     TableHead,
     TableRow,
 } from "@/components/ui/table"
-import { DialogFooter } from "@/components/ui/dialog"
 
 function LoadingSkeleton() {
     return (

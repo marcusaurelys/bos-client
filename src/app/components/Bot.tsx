@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { get_chatbot_response } from '@/db/chat'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import PlaceholderInput from '@/app/components/PlaceholderInput'

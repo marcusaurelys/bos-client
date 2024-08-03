@@ -3,11 +3,6 @@
 import  Link  from "next/link"
 import { usePathname } from "next/navigation"
 
-interface User {
-    role: string,
-    email: string,
-    name : string
-}
 
 export default function NavButtons(){
     const pathName = usePathname()

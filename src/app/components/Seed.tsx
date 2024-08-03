@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { useState } from 'react';
 import { seed_tickets_collection } from '@/db/chat'
 export default function Seed() {
   

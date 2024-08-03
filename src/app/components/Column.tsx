@@ -5,8 +5,7 @@ import Ticket from './Ticket'
 import { motion } from 'framer-motion'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ITicket } from '../../types'
-import { changeStatus } from '@/db/tickets'
-import { Button } from '@/components/ui/button'
+
 import Sort from './Sort'
 interface ColumnProps {
     title: string,
@@ -20,7 +19,7 @@ interface ColumnProps {
 
 export default function Column({title, status, tickets}: ColumnProps) {
 
-  const [numberOfTickets, setNumber] = useState(4)
+  const [numberOfTickets, setNumber] = useState(20)
   const observer = useRef<IntersectionObserver>()
 
   if(tickets === null) {
@@ -29,10 +28,10 @@ export default function Column({title, status, tickets}: ColumnProps) {
   
   const trigger = useCallback((node : HTMLElement | null) => {
     if(observer.current) observer.current.disconnect()
-
     observer.current = new IntersectionObserver(entries => {
         if(numberOfTickets < tickets.length && entries[0].isIntersecting){
-            setNumber(prev => prev+4)
+            setNumber(prev => prev+10)
+            console.log('test test test')
         }
     })
     if(node) observer.current.observe(node)
@@ -57,15 +56,18 @@ export default function Column({title, status, tickets}: ColumnProps) {
         {/* column body */}
         <ScrollArea data-test={`scrollarea-${title}`}>
         <div className="h-full flex-auto gap-2 flex flex-col" data-test={`header-${title}`}> 
-            {   // The handle drag and drop functions are inside ticket now
-                // Btw, consider moving these functions to a context if this gets refactored 
+
+            { 
                 tickets.slice(0, numberOfTickets).map((ticket, index) => {
-                 
+                  if(index == tickets.length - 1){}
                    return <Ticket ticket={ticket} key={ticket.id}/>
                            
                 })
             }
-            <div ref={trigger}/>
+            {
+            numberOfTickets < tickets.length &&
+            <div ref={trigger}> Loading More Tickets... </div>
+            }
         </div>
         </ScrollArea>
 

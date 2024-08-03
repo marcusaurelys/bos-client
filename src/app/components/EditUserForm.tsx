@@ -7,8 +7,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogClose
+    DialogTrigger
 } from "@/components/ui/dialog"
 
 import {
@@ -24,12 +23,10 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useEffect, useRef, useState } from 'react'
-import { changePasswordForUser, deleteUser, editUser, register } from '@/db/users'
+import { useState } from 'react'
+import { changePasswordForUser, deleteUser, editUser } from '@/db/users'
 import { useToast } from "@/components/ui/use-toast"
-import bcrypt from "bcryptjs"
 import { User } from "@/types"
-import { revalidatePath } from "next/cache"
 
 interface EditUserFormProps {
     user : User

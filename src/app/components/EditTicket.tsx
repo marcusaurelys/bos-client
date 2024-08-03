@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { PlusIcon, TagIcon, XMarkIcon } from '@heroicons/react/16/solid'
+import { TagIcon, XMarkIcon } from '@heroicons/react/16/solid'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
 import {
@@ -9,7 +9,6 @@ import {
     SelectContent,
     SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
@@ -19,11 +18,9 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ITicket, User } from '@/types'
 import { EditIcon } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { deleteTicket, refreshTicket} from '@/db/tickets'
 import { toast } from '@/components/ui/use-toast'
-import { getUserByToken } from '@/db/users'
-import { cookies } from 'next/headers'
 import { useRouter } from 'next/navigation'
 
 interface EditTicketProps {
