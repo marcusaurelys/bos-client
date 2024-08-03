@@ -248,6 +248,14 @@ export const seed_tickets_collection = async() => {
     const messages_dict: IMessageDict = {}
     let page_number = 1;
     const chat = await Chat()
+
+    /*
+      Adds an index to the chat collection, if this line
+      executes when the index has already been created
+      does not matter.
+    */
+    chat.createIndex({ chat_id: 1 }, { unique: true })
+
     const chats: IChat[]  = await chat.find({}).toArray()
 
     chats.map((chat) => {

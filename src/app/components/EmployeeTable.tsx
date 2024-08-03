@@ -36,7 +36,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
-
+//import { testDupe } from "@/db/tickets"; temp function for dupe checking
 
 
 interface EmployeeTableProps {
@@ -62,6 +62,13 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
 
     //Updates the client-side ticket with who they want to assign (Does not immediately update the ticket on the server)
     const toggleUser = (user: User) => {
+        
+        /*
+        calling the temporary function
+        let test = testDupe()
+        console.log(test)
+        */
+        
         const userId = user._id;
         const hasUser = ticketToUpdate.userIDs.includes(userId);
 
