@@ -1,13 +1,13 @@
 'use client'
 
 
-import { Command, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command'
+import { Command, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
 import React, { useCallback, useEffect, useState } from 'react'
 import { PlusCircleIcon, CheckIcon } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Separator } from '@/components/ui/separator'
-import { redirect, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const filterChoices =  ["High", "Medium", "Low"]
 

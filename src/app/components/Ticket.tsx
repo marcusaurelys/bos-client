@@ -1,10 +1,9 @@
 
 import {motion} from 'framer-motion'
 import { TagIcon } from '@heroicons/react/16/solid'
-import {User, ITicket} from "../../types"
+import { ITicket} from "../../types"
 import EmployeeTable from './EmployeeTable'
 import Link from 'next/link'
-import { changeStatus } from '@/db/tickets'
 import { UserContext } from '@/contexts/UserContextProvider'
 import { useContext } from 'react'
 interface TicketProps {
