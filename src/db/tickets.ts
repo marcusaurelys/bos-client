@@ -89,18 +89,23 @@ export const getTicketByStatus = async (status : string, filters: string[], sort
  */
 export const getTickets = async () => {
     const tickets = await Tickets()
-    console.log ("TICKETS TYPE:" + typeof tickets)
     
-    const result = await tickets.find({}).toArray()
-
-    const convertedResult: ITicket[] = result.map((ticket: ITicket) => {
+    try{
+        const result = await tickets.find({}).toArray()
+        
+        const convertedResult: ITicket[] = result.map((ticket: ITicket) => {
         return {
           ...ticket,
           _id: ticket._id.toString(),
         };
-      });
+        });
       
-    return convertedResult
+        return convertedResult
+    }
+    catch(error: any){
+        console.log(error)
+        return null
+    }
 }
 
 /**
