@@ -7,6 +7,7 @@ import ClientToast from '@/app/components/ErrorToast'
 import { revalidatePath } from 'next/cache'
 import Listener from '@/app/components/Listener' 
 import { ITicket } from '@/types'
+import AddTicketForm from '../components/AddTicketForm'
 
 /**
  * Parses a string representation of an array into an actual array of strings.
@@ -83,8 +84,8 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
       <div className="w-full flex flex-row">
       <div className="flex justify-center items-start w-full h-full">
       <div className="flex flex-col w-fit justify-center">
-            <div className="z-10 relative my-3" >
-              <Filter/>
+            <div className="z-10 relative my-3 flex flex-row items-center justify-between" >
+              <Filter/> <AddTicketForm/>
             </div>
             <div className="flex gap-12 flex-wrap"> 
               <Column title="Pending" status="pending" tickets={pending}/>

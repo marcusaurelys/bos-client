@@ -2,19 +2,28 @@
 
 import { useDB } from "@/db/mongo"
 import { ObjectId, WithId } from "mongodb"
-import { ITicket} from '@/types'
+import { IMessage, ITicket} from '@/types'
 import ticket from "@/app/(home)/ticket/page"
 import { revalidatePath } from "next/cache"
 import { validateUser } from "./users"
 import { sendMessage } from '@/app/api/listen/server'
 import { redirect } from "next/navigation"
 import { getCache, invalidateCache, setCache } from "./ticketsCache"
+import { getMessages } from "./chat"
 
 const Tickets = async () => {
     const db = await useDB()
     const tickets = db.collection('tickets')
     return tickets
 }
+
+const Chat = async () => {
+    const db = await useDB()
+    const chat = db.collection('chat')
+  
+    return chat
+  
+  }
 
 
 /**
@@ -217,4 +226,59 @@ export const deleteTicket = async (id: string) => {
         console.error(error)
         return false
     }
+}
+
+export const addTicket = async(chat_id: string, name: string, description: string, priority_score: string, tags: String[]) => {
+    
+    try{
+        const user = await validateUser()
+        const tickets = await Tickets()
+        const chat = await Chat()
+
+        if(!user){
+            return {success: false, reason: "You are not logged in"}
+        }
+
+        //check if a ticket with chat_id already exists within the database
+        const findTicket = await tickets.findOne({chat_id : chat_id})
+        console.log(findTicket)
+        if(findTicket){
+            console.log('chat_id is taken')
+            return {success: false, reason: "Ticket with session ID already exists!"}
+        }
+
+        //check if ticket exists in CRISP
+        /*
+        const ticketReal = await getMessages(chat_id)
+        if(!ticketReal){
+            return {success: false, reason: "Ticket is not found in CRISP's database"}
+        }
+        */
+
+    //MOCK DATA!
+    const ticketReal = {data : [{content: "crisp down!!!", from: "user"}]}
+
+    const insertTicket = await tickets.insertOne({
+        name: name, 
+        description: description,
+        priority_score: priority_score,
+        tags: tags,
+        status: 'pending',
+        date_created: new Date().toISOString(),
+        chat_id: chat_id,
+    })
+    const insertChat = await chat.insertOne({
+            chat_id: chat_id,
+            messages: ticketReal.data.map((message: IMessage) => { return {content: message.content, from: message.from}}),
+          }
+    )
+
+    sendMessage()
+    return {success: true, reason: "OK"}
+
+    }catch(e : any){
+        console.log(e)
+        return {success: false, reason: "Failed to Add ticket. Sorry"}
+    }
+
 }

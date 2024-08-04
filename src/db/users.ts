@@ -44,6 +44,7 @@ const Tickets = async () => {
 
 
 
+
 /**
  * Empty function to as a workaround for https://github.com/vercel/next.js/issues/54282
  * 
