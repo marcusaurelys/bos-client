@@ -120,7 +120,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
         
     chat_history = await getChatHistory(ticket_info.chat_id)
     
-    let devchat = await get_dev_chat(ticket_info.id)
+    let devchat = await get_dev_chat(ticket_info._id)
 
     if (devchat === null) {
         console.log("Devchat is null, generating problem statement")
