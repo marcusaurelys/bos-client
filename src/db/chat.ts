@@ -346,13 +346,14 @@ export const seed_tickets_collection = async() => {
     
     const messages_dict: IMessageDict = {}
     const chat = await Chat()
+    const tickets = await Tickets()
 
     /*
       Adds an index to the chat collection, if this line
       executes when the index has already been created
       does not matter.
     */
-    chat.createIndex({ chat_id: 1 }, { unique: true })
+    tickets.createIndex({ chat_id: 1 }, { unique: true })
 
     const chats: IChat[]  = await chat.find({}).toArray()
 
