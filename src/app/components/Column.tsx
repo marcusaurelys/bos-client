@@ -60,7 +60,7 @@ export default function Column({title, status, tickets}: ColumnProps) {
             { 
                 tickets.slice(0, numberOfTickets).map((ticket, index) => {
                   if(index == tickets.length - 1){}
-                   return <Ticket ticket={ticket} key={ticket.id}/>
+                   return <Ticket ticket={ticket} key={ticket._id}/>
                            
                 })
             }
