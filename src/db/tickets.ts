@@ -26,6 +26,41 @@ export const fuckNextTickets = async() => {
     
 }
 
+
+interface ITicketCache {
+    [key: string]: ITicket[]
+}
+
+let ticketCache: ITicketCache = {}
+
+
+/**
+ * Updates the cache object 
+ * @param {string} key - The properties of the cached data.
+ * @param {ITicket[]} data - The tickets data to be store din the cache.
+ */
+const setCache = (key: string, data: ITicket[]) => {
+    ticketCache[key] = data
+}
+
+/**
+ * Returns cached data with properties specified in key
+ * @param params 
+ * @returns {ITicket[] | undefined} The cached data or undefined if no ticket data matches the specified properties.
+ */
+const getCache = (key: string) => {
+    return ticketCache[key]
+}
+
+
+/**
+ * Clears all cached tickets data
+ */
+const invalidateCache = () => {
+    ticketCache = {}
+}
+
+
 /**
  * Fetches tickets by status and filters them based on priority scores.
  * 
@@ -35,6 +70,13 @@ export const fuckNextTickets = async() => {
  */
 export const getTicketByStatus = async (status : string, filters: string[], sort: string[] | undefined) => {
     const tickets = await Tickets()
+
+    const cacheParams = `${status}+${filters.toString()}+${sort?.toString()}`
+    const cache = getCache(cacheParams)
+
+    if (cache != undefined) {
+        return cache
+    }
 
     try{
         let result
@@ -68,7 +110,7 @@ export const getTicketByStatus = async (status : string, filters: string[], sort
               _id: ticket._id.toString(),
             };
           })
-        
+        setCache(cacheParams, convertedResult)
         return convertedResult
     }
     catch(error: any){
@@ -128,6 +170,7 @@ export const getTicket = async(id: string) => {
  * @returns {Promise<boolean>} True if the update was successful, false otherwise.
  */
 export const changeStatus = async (id: string, status: string) => {
+    invalidateCache()
     const tickets = await Tickets()
 
     try{
@@ -156,7 +199,7 @@ export const changeStatus = async (id: string, status: string) => {
  * @returns {Promise<boolean>} True if the update was successful, false otherwise.
  */
 export const refreshTicket = async (id: string, params: {}) => {
-
+    invalidateCache()
     const tickets = await Tickets()
     const user = await validateUser()
     console.log(params)
@@ -187,6 +230,7 @@ export const revalidateTicket = () => {
 }
 
 export const deleteTicket = async (id: string) => {
+    invalidateCache()
     const tickets = await Tickets()
 
     const user = await validateUser()
