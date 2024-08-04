@@ -7,6 +7,7 @@ import { changeStatus } from '@/db/tickets'
 import { ITicket } from '@/types'
 import React from 'react'
 import { useToast } from '@/components/ui/use-toast'
+import { revalidatePath } from 'next/cache'
 
 interface UpdateStatusForm{
     ticketInfo: ITicket
@@ -23,21 +24,20 @@ const UpdateStatusForm = ({ticketInfo}: UpdateStatusForm) => {
             toast({
                 description: 'Nothing to update.'
             })
-            return
         }
 
         try{
-            const response = await changeStatus(ticketInfo.id, status)
+            const response = await changeStatus(ticketInfo._id, status)
             if (response){
                 toast({
-                    description: 'Ticket "' + ticketInfo.title + '"' +  " status updated."
+                    description: 'Ticket "' + ticketInfo.name + '"' +  " status updated."
                   })
                 
             }
             else{
                 toast({
                     variant: "destructive",
-                    description: 'Ticket "' + ticketInfo.title + '"' +  " update failed."
+                    description: 'Ticket "' + ticketInfo.name + '"' +  " update failed."
                   })
             }
         } 
@@ -45,7 +45,7 @@ const UpdateStatusForm = ({ticketInfo}: UpdateStatusForm) => {
             console.error(error)
             toast({
                 variant: "destructive",
-                description: 'Ticket "' + ticketInfo.title + '"' +  " update failed."
+                description: 'Ticket "' + ticketInfo.name + '"' +  " update failed."
               })
         }
     }

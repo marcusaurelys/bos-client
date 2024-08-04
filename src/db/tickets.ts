@@ -98,7 +98,7 @@ export const getTickets = async () => {
     }
     catch(error: any){
         console.log(error)
-        return null
+        return []
     }
 }
 
@@ -111,26 +111,13 @@ export const getTickets = async () => {
 export const getTicket = async(id: string) => {
     const tickets = await Tickets()
 
-    const result = await tickets.findOne({_id: new ObjectId(id)})
-    try {
-        const ticket = {
-            id: result._id.toString(),
-            title: result.name ?? "No title found",
-            description: result.description ?? "No description found",
-            status: result.status ?? "open",
-            priority: result.priority_score ?? "high",
-            userIDs: result.userIDs ?? [],
-            chat_id: result.chat_id,
-            tags: result.tags ?? [],
-            dateCreated: result.date_created.toString() ?? "You should crash at this point"
-        }
-        return ticket
-    } catch (error) {
-        console.log(error)
-        return null
+    try{
+        const result = await tickets.findOne({_id: new ObjectId(id)})
+        return result
     }
-
-    
+    catch(error: any){
+        console.log(error)
+    }
 }
 
 /**

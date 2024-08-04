@@ -52,7 +52,7 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
         e.preventDefault()
         console.log("DELETING")
         try {
-            const res = await deleteTicket(ticket.id)
+            const res = await deleteTicket(ticket._id)
             if(res) {
                 router.push('/')
                 toast({
@@ -80,7 +80,7 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
         const priority = formData.get('priority') as string
 
         try {
-            const response = await refreshTicket(ticket.id, {name: title, description: description, priority_score: priority, tags: tags})
+            const response = await refreshTicket(ticket._id, {name: title, description: description, priority_score: priority, tags: tags})
 
             if (response) {
                 toast({
@@ -172,7 +172,7 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
                             name="title"
                             className="col-span-3"
                             required
-                            defaultValue={ticket?.title}
+                            defaultValue={ticket?.name}
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
@@ -191,9 +191,9 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
                             <Label htmlFor="priority" className="text-right h-full py-4">
                                 Priority
                             </Label>
-                            <Select name="priority" defaultValue={ticket.priority}>
+                            <Select name="priority" defaultValue={ticket.priority_score}>
                                 <SelectTrigger className="w-[180px]" data-test="edit-priority">
-                                    <SelectValue placeholder={ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1)} />
+                                    <SelectValue placeholder={ticket.priority_score.charAt(0).toUpperCase() + ticket.priority_score.slice(1)} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>

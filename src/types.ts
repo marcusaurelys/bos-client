@@ -15,19 +15,7 @@ export interface UserSession {
     role : string,
 }
 
-export interface ITicket {
-    id: string,
-    title: string,
-    description: string,
-    status: string,
-    priority: string,
-    tags: string[],
-    userIDs: string[],
-    dateCreated: string,
-    chat_id: string,
-}
-
-export interface ITicketDocument {
+export interface ITicket{
     _id: string,
     name: string,
     description: string,
