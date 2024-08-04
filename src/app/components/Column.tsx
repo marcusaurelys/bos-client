@@ -61,7 +61,7 @@ export default function Column({title, status, tickets}: ColumnProps) {
                 // Btw, consider moving these functions to a context if this gets refactored 
                 tickets.slice(0, numberOfTickets).map((ticket, index) => {
                  
-                   return <Ticket ticket={ticket} key={ticket.id}/>
+                   return <Ticket ticket={ticket} key={ticket._id}/>
                            
                 })
             }

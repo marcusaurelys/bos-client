@@ -53,13 +53,13 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
         [ticket_info, user] = await Promise.all([getTicket(params.ticketid), validateUser()])
         
         if (ticket_info){
-            if(ticket_info.priority == "high") {
+            if(ticket_info.priority_score == "high") {
                 priorityColor = "bg-red-500"
             }
-            if(ticket_info.priority == "medium") {
+            if(ticket_info.priority_score == "medium") {
                 priorityColor = "bg-yellow-400"
             }
-            if(ticket_info.priority == "low") {
+            if(ticket_info.priority_score == "low") {
                 priorityColor = "bg-green-500"
             }
         }
@@ -194,12 +194,12 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
             <div className="w-1/3 m-2">
                 <Card>
                     <CardHeader className="flex flex-row justify-between">
-                        <CardTitle data-test={`${ticket_info.id}-title`}> {ticket_info.title}</CardTitle>
+                        <CardTitle data-test={`${ticket_info._id}-title`}> {ticket_info.name}</CardTitle>
                         <EditTicket ticket={ticket_info} user={JSON.parse(user)}/>
                     </CardHeader>
                     <div className="flex gap-2 flex-wrap pl-6 pb-6 pr-6">
                         <div className={`flex flex-row rounded-md w-fit text-xs py-1 px-2 items-center gap-2 mb-1 text-white ${priorityColor}`}>
-                            <h1>{ticket_info.priority.charAt(0).toUpperCase() + ticket_info.priority.slice(1)}</h1>
+                            <h1>{ticket_info.priority_score.charAt(0).toUpperCase() + ticket_info.priority_score.slice(1)}</h1>
                         </div>
                         {
                             ticket_info.tags.map((tag: string, index: Key | null | undefined) => (
@@ -210,7 +210,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                             ))
                         }
                     </div>
-                    <CardContent data-test={`${ticket_info.id}-description`}>
+                    <CardContent data-test={`${ticket_info._id}-description`}>
                         {ticket_info.description}
                     </CardContent>
                     <UpdateStatusForm ticketInfo={ticket_info}/>
