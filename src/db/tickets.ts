@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache"
 import { validateUser } from "./users"
 import { sendMessage } from '@/app/api/listen/server'
 import { redirect } from "next/navigation"
+import { getCache, invalidateCache, setCache } from "./ticketsCache"
 
 const Tickets = async () => {
     const db = await useDB()
@@ -27,38 +28,6 @@ export const fuckNextTickets = async() => {
 }
 
 
-interface ITicketCache {
-    [key: string]: ITicket[]
-}
-
-let ticketCache: ITicketCache = {}
-
-
-/**
- * Updates the cache object 
- * @param {string} key - The properties of the cached data.
- * @param {ITicket[]} data - The tickets data to be store din the cache.
- */
-const setCache = (key: string, data: ITicket[]) => {
-    ticketCache[key] = data
-}
-
-/**
- * Returns cached data with properties specified in key
- * @param params 
- * @returns {ITicket[] | undefined} The cached data or undefined if no ticket data matches the specified properties.
- */
-const getCache = (key: string) => {
-    return ticketCache[key]
-}
-
-
-/**
- * Clears all cached tickets data
- */
-const invalidateCache = () => {
-    ticketCache = {}
-}
 
 
 /**
