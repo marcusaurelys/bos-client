@@ -2,16 +2,22 @@
 
 import { useDB } from "@/db/mongo"
 import { ObjectId, WithId } from "mongodb"
-import { ITicket, ITicketDocument } from '@/types'
+import { ITicket} from '@/types'
 import ticket from "@/app/(home)/ticket/page"
 import { revalidatePath } from "next/cache"
 import { validateUser } from "./users"
 import { sendMessage } from '@/app/api/listen/server'
 import { redirect } from "next/navigation"
 
+/**
+ * Fetches the tickets collection from the database
+ * 
+ * @returns {Promise<Collection>}
+ */
 const Tickets = async () => {
     const db = await useDB()
     const tickets = db.collection('tickets')
+
     return tickets
 }
 
@@ -34,12 +40,13 @@ export const fuckNextTickets = async() => {
  * @returns {Promise<ITicket[] | null>} The filtered list of tickets or null if an error occurs.
  */
 export const getTicketByStatus = async (status : string, filters: string[], sort: string[] | undefined) => {
-    let ticketsData : ITicket[] = []
+    
     const tickets = await Tickets()
 
     try{
         let result
         if(sort) {
+            console.log("IN SORT!")
             const priorityOrder = ["low", "medium", "high"]
             const direction = sort[1] == "desc" ? -1 : 1
             
@@ -56,35 +63,19 @@ export const getTicketByStatus = async (status : string, filters: string[], sort
                 s = {$sort: {date_created: -1}}
             }
 
-            result = await tickets.aggregate([m, a, s]).toArray()
-
+            result = await tickets.aggregate([m, a, s]).toArray() as ITicket[]
         }
         else {
-            result = await tickets.find({status : status, priority_score: {$in: filters}}).sort({date_created: -1}).toArray()
+            result = await tickets.find({status : status, priority_score: {$in: filters}}).sort({date_created: -1}).toArray() as ITicket[]
         }
 
-        result.forEach((ticket: ITicketDocument) => {
-            try {
-                ticketsData.push({
-                    id: ticket._id.toString(), 
-                    title: ticket.name,
-                    description: ticket.description,
-                    status: ticket.status,
-                    priority: ticket.priority_score,
-                    userIDs: ticket.userIDs ?? [],
-                    chat_id: ticket.chat_id,
-                    tags: ticket.tags,
-                    dateCreated: ticket.date_created.toString()
-                })
-            }
-            catch(e) {
-                console.log("Invalid ticket")
-                return null
-            }
-            
-        })
-        await getTickets()
-        return ticketsData
+        const convertedResult: ITicket[] = result.map((ticket: ITicket) => {
+            return {
+              ...ticket,
+              _id: ticket._id.toString(),
+            };
+          });
+        return convertedResult
     }
     catch(e){
         return null
@@ -97,41 +88,19 @@ export const getTicketByStatus = async (status : string, filters: string[], sort
  * @returns {Promise<ITicket[]>} The list of all tickets.
  */
 export const getTickets = async () => {
-    let ticketsData: ITicket[] = []
     const tickets = await Tickets()
+    console.log ("TICKETS TYPE:" + typeof tickets)
     
     const result = await tickets.find({}).toArray()
-    
-    result.forEach((ticket: ITicketDocument) => {
-        try {
-            ticketsData.push({
-                id: ticket._id.toString(), 
-                title: ticket.name,
-                description: ticket.description,
-                status: ticket.status,
-                priority: ticket.priority_score,
-                userIDs: ticket.userIDs ?? [],
-                chat_id: ticket.chat_id,
-                tags: ticket.tags,
-                dateCreated: ticket.date_created.toString()
-            })
 
-            if (ticket.status !== 'open' && ticket.status !== 'closed' && ticket.status !== 'pending') {
-                console.log(ticket)
-            }
-
-            if (ticket.priority_score !== 'low' && ticket.priority_score !== 'medium' && ticket.priority_score !== 'high') {
-                console.log(ticket)
-            }
-            
-            
-        }
-        catch(e) {
-            console.log("Invalid ticket")
-        }
-        
-    })
-    return ticketsData
+    const convertedResult: ITicket[] = result.map((ticket: ITicket) => {
+        return {
+          ...ticket,
+          _id: ticket._id.toString(),
+        };
+      });
+      
+    return convertedResult
 }
 
 /**
@@ -143,26 +112,8 @@ export const getTickets = async () => {
 export const getTicket = async(id: string) => {
     const tickets = await Tickets()
 
-    const result = await tickets.findOne({_id: new ObjectId(id)})
-    try {
-        const ticket = {
-            id: result._id.toString(),
-            title: result.name ?? "No title found",
-            description: result.description ?? "No description found",
-            status: result.status ?? "open",
-            priority: result.priority_score ?? "high",
-            userIDs: result.userIDs ?? [],
-            chat_id: result.chat_id,
-            tags: result.tags ?? [],
-            dateCreated: result.date_created.toString() ?? "You should crash at this point"
-        }
-        return ticket
-    } catch (error) {
-        console.log(error)
-        return null
-    }
-
-    
+    const result = await tickets.findOne({_id: new ObjectId(id)}) as ITicket
+    return result 
 }
 
 /**
@@ -170,13 +121,12 @@ export const getTicket = async(id: string) => {
  * 
  * @param {string} id - The ID of the ticket to update.
  * @param {string} status - The new status to set for the ticket.
- * @returns {Promise<boolean>} True if the update was successful, false otherwise.
+ * @returns {Promise<boolean>} - True if the update was successful, false otherwise.
  */
 export const changeStatus = async (id: string, status: string) => {
     const tickets = await Tickets()
 
     try{
-
         let valid = await validateUser()
         if(!JSON.parse(valid)){
             throw new Error('Invalid token!')
@@ -198,7 +148,7 @@ export const changeStatus = async (id: string, status: string) => {
  * 
  * @param {string} id - The ID of the ticket to update.
  * @param {Object} params - The new properties to set for the ticket.
- * @returns {Promise<boolean>} True if the update was successful, false otherwise.
+ * @returns {Promise<boolean>} - True if the update was successful, false otherwise.
  */
 export const refreshTicket = async (id: string, params: {}) => {
 
@@ -231,6 +181,12 @@ export const revalidateTicket = () => {
     revalidatePath('/', 'layout')
 }
 
+/**
+ * Deletes the ticket based on its id
+ * 
+ * @param {string} id - The id of the ticket to delete
+ * @returns {Promise<boolean>} - True if the update was successful, false otherwise.
+ */
 export const deleteTicket = async (id: string) => {
     const tickets = await Tickets()
 
@@ -250,3 +206,24 @@ export const deleteTicket = async (id: string) => {
         return false
     }
 }
+
+/*
+Temporary Function for inserting a duplicate ticket
+used in: EmployeeTable
+
+export const testDupe = async () =>{
+    const tickets = await Tickets()
+
+    try{
+        await tickets.insertOne({chat_id: "DELETE THIS"})
+        return "not dupe"
+    }
+    catch(error:any){
+        if (error.code === 11000) { // Duplicate key error
+            return "dupe"
+          }
+        return "not dupe"
+    }
+}
+
+*/

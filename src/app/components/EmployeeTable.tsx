@@ -36,7 +36,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
-
+//import { testDupe } from "@/db/tickets"; temp function for dupe checking
 
 
 interface EmployeeTableProps {
@@ -62,11 +62,18 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
 
     //Updates the client-side ticket with who they want to assign (Does not immediately update the ticket on the server)
     const toggleUser = (user: User) => {
+        
+        /*
+        calling the temporary function
+        let test = testDupe()
+        console.log(test)
+        */
+        
         const userId = user._id;
         const hasUser = ticketToUpdate.userIDs.includes(userId);
 
         const updatedUserIDs = hasUser
-            ? ticketToUpdate.userIDs.filter((id) => id !== userId) // Remove if already present
+            ? ticketToUpdate.userIDs.filter((_id) => _id !== userId) // Remove if already present
             : [...ticketToUpdate.userIDs, userId]; // Add if not present
 
         updateTicket({ ...ticketToUpdate, userIDs: updatedUserIDs });
@@ -95,10 +102,10 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
 
         if (!isEqual){
             try{
-                const response = await refreshTicket(ticketToUpdate.id, {userIDs: ticketToUpdate.userIDs})
+                const response = await refreshTicket(ticketToUpdate._id, {userIDs: ticketToUpdate.userIDs})
                 if (response) {
                 toast({
-                        description: 'The assignees of ticket "' + ticket.title + '"' +  " has been updated."
+                        description: 'The assignees of ticket "' + ticket.name + '"' +  " has been updated."
                     })
                 } else {
                     toast({
@@ -138,7 +145,7 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
     const fetchData = async () => {
         setLoading(true)
         try{
-            const [ticketNow, tickets, users] = await Promise.all([getTicket(ticket.id), getTickets(), getAllUsers()])
+            const [ticketNow, tickets, users] = await Promise.all([getTicket(ticket._id), getTickets(), getAllUsers()])
             if(ticketNow){
                 updateTicket(ticketNow)
             }
@@ -167,7 +174,7 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
                 :
                 <>
                 <DialogHeader>
-                    <DialogTitle>{ticket.title}</DialogTitle>
+                    <DialogTitle>{ticket.name}</DialogTitle>
                 </DialogHeader>
                 <div className="flex flex-row justify-left items-center">
                     <div>Sort by:</div>
@@ -197,13 +204,13 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
                                         <DropdownMenuContent>
                                             <DropdownMenuLabel>Tickets</DropdownMenuLabel>
                                             <DropdownMenuSeparator />
-                                            {tickets.filter(ticket => ticket.userIDs.includes(user._id)).length > 0 ? (
+                                            {tickets.filter(ticket => ticket.userIDs && ticket.userIDs.includes(user._id)).length > 0 ? (
                                                 tickets
-                                                    .filter(ticket => ticket.userIDs.includes(user._id))
+                                                    .filter(ticket => ticket.userIDs?.includes(user._id))
                                                     .map(ticket => (
-                                                        <DropdownMenuItem key={ticket.id}>
-                                                            <Link href={`ticket/${ticket.id}`}>
-                                                                {ticket.title}
+                                                        <DropdownMenuItem key={ticket._id}>
+                                                            <Link href={`ticket/${ticket._id}`}>
+                                                                {ticket.name}
                                                             </Link>
                                                         </DropdownMenuItem>
                                                     ))

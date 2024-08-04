@@ -64,10 +64,12 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
   console.log(filters)
 
   // What the fuck is this - Boris  
+
   let pending: ITicket[] | null = []
   let open: ITicket[] | null = []
   let closed: ITicket[] | null = []
   let errorMessage: string | null = null;
+  
 
   try {
     [pending, open, closed] = await Promise.all([getTicketByStatus('pending', filters, sortPending), getTicketByStatus('open', filters, sortOpen), getTicketByStatus('closed', filters, sortClosed)]);
