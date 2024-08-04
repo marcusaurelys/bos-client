@@ -142,10 +142,10 @@ export const getConversations = async(page_number: number) => {
 }
 
 /**
- * Fetches a response from a chatbot API based on a given prompt.
+ * Fetches messages from CRISP's database based on a given session_id.
  * 
- * @param {string} prompt - The prompt to send to the chatbot.
- * @returns {Promise<Object>} The response from the chatbot API.
+ * @param {string} session_id - The session_id to query.
+ * @returns {Promise<Object>} The response from CRISP's API, null if the session_id is not valid.
  */
 export const getMessages = async(session_id: string) => {
   try{

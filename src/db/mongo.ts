@@ -1,5 +1,3 @@
-'use server'
-
 import {Db, MongoClient} from 'mongodb'
 
 const client = new MongoClient(process.env.MONGO_URI || '', {socketTimeoutMS: 5000, maxIdleTimeMS: 2000})
