@@ -17,9 +17,9 @@ export default async function ticket() {
     return (
         <>
             {tickets.map((ticket) => (
-                <div key = {ticket.id}>
-                    <h1>{ticket.title}</h1>
-                    <h2>{ticket.id}</h2>
+                <div key = {ticket._id}>
+                    <h1>{ticket.name}</h1>
+                    <h2>{ticket._id}</h2>
                 </div>
             ))}
             <Seed/>
