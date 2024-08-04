@@ -273,6 +273,7 @@ export const addTicket = async(chat_id: string, name: string, description: strin
           }
     )
 
+    invalidateCache()
     sendMessage()
     return {success: true, reason: "OK"}
 
