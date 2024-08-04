@@ -2,7 +2,7 @@
 
 import { useDB } from "@/db/mongo"
 import { ObjectId, WithId } from "mongodb"
-import { ITicket, ITicketDocument } from '@/types'
+import { ITicket} from '@/types'
 import ticket from "@/app/(home)/ticket/page"
 import { revalidatePath } from "next/cache"
 import { validateUser } from "./users"
@@ -34,7 +34,6 @@ export const fuckNextTickets = async() => {
  * @returns {Promise<ITicket[] | null>} The filtered list of tickets or null if an error occurs.
  */
 export const getTicketByStatus = async (status : string, filters: string[], sort: string[] | undefined) => {
-    let ticketsData : ITicket[] = []
     const tickets = await Tickets()
 
     try{
@@ -62,31 +61,18 @@ export const getTicketByStatus = async (status : string, filters: string[], sort
         else {
             result = await tickets.find({status : status, priority_score: {$in: filters}}).sort({date_created: -1}).toArray()
         }
-
-        result.forEach((ticket: ITicketDocument) => {
-            try {
-                ticketsData.push({
-                    id: ticket._id.toString(), 
-                    title: ticket.name,
-                    description: ticket.description,
-                    status: ticket.status,
-                    priority: ticket.priority_score,
-                    userIDs: ticket.userIDs ?? [],
-                    chat_id: ticket.chat_id,
-                    tags: ticket.tags,
-                    dateCreated: ticket.date_created.toString()
-                })
-            }
-            catch(e) {
-                console.log("Invalid ticket")
-                return null
-            }
-            
-        })
-        await getTickets()
-        return ticketsData
+        
+        const convertedResult: ITicket[] = result.map((ticket: ITicket) => {
+            return {
+              ...ticket,
+              _id: ticket._id.toString(),
+            };
+          })
+        
+        return convertedResult
     }
-    catch(e){
+    catch(error: any){
+        console.log(error)
         return null
     }
 }
@@ -97,41 +83,23 @@ export const getTicketByStatus = async (status : string, filters: string[], sort
  * @returns {Promise<ITicket[]>} The list of all tickets.
  */
 export const getTickets = async () => {
-    let ticketsData: ITicket[] = []
+   
     const tickets = await Tickets()
-    
-    const result = await tickets.find({}).toArray()
-    
-    result.forEach((ticket: ITicketDocument) => {
-        try {
-            ticketsData.push({
-                id: ticket._id.toString(), 
-                title: ticket.name,
-                description: ticket.description,
-                status: ticket.status,
-                priority: ticket.priority_score,
-                userIDs: ticket.userIDs ?? [],
-                chat_id: ticket.chat_id,
-                tags: ticket.tags,
-                dateCreated: ticket.date_created.toString()
-            })
-
-            if (ticket.status !== 'open' && ticket.status !== 'closed' && ticket.status !== 'pending') {
-                console.log(ticket)
-            }
-
-            if (ticket.priority_score !== 'low' && ticket.priority_score !== 'medium' && ticket.priority_score !== 'high') {
-                console.log(ticket)
-            }
-            
-            
-        }
-        catch(e) {
-            console.log("Invalid ticket")
-        }
+    try{
+        const result = await tickets.find({}).toArray()
+        const convertedResult: ITicket[] = result.map((ticket: ITicket) => {
+            return {
+              ...ticket,
+              _id: ticket._id.toString(),
+            };
+          })
         
-    })
-    return ticketsData
+        return convertedResult
+    }
+    catch(error: any){
+        console.log(error)
+        return null
+    }
 }
 
 /**
