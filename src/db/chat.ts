@@ -347,6 +347,10 @@ export const seed_tickets_collection = async() => {
     const messages_dict: IMessageDict = {}
     const chat = await Chat()
     const chats: IChat[]  = await chat.find({}).toArray()
+    const tickets = await Tickets()
+
+    //creates index during initial seeding, doesn't matter if it's called again
+    tickets.createIndex({chat_id: 1}, {unique: true})
 
     chats.map((chat) => {
       messages_dict[chat.chat_id] = {
