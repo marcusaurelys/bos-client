@@ -83,7 +83,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
           await add_dev_chat(devchat)
      }
      catch(error: any){
-        add_dev_chat(null)
+        console.log(error)
      }
      
      
