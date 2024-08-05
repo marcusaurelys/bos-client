@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState, memo } from 'react'
 import Ticket from './Ticket'
 import { motion } from 'framer-motion'
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -17,11 +17,14 @@ interface ColumnProps {
 // tickets -> filtered by priority
 // filteredTickets -> filtered by column
 
-export default function Column({title, status, tickets}: ColumnProps) {
+const Column = memo(function Column({title, status, tickets}: ColumnProps) {
   const [topCounter, setTopCounter] = useState(0)
   const [bottomCounter, setBottomCounter] = useState(30)
   const top_observer = useRef<IntersectionObserver>()
   const bottom_observer = useRef<IntersectionObserver>()
+
+  const [numberOfTickets, setNumber] = useState(20)
+  const observer = useRef<IntersectionObserver>()
 
   if(tickets === null) {
     tickets = []
@@ -36,7 +39,7 @@ export default function Column({title, status, tickets}: ColumnProps) {
         }
     })
     if(node) top_observer.current.observe(node)
-  }, [bottomCounter, tickets.length])
+  }, [topCounter, tickets.length])
   
   const bottom_trigger = useCallback((node : HTMLElement | null) => {
     if(bottom_observer.current) bottom_observer.current.disconnect()
@@ -87,4 +90,6 @@ export default function Column({title, status, tickets}: ColumnProps) {
 
     </motion.div>
   )
-}
+})
+
+export default Column

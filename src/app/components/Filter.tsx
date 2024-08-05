@@ -3,7 +3,7 @@
 
 import { Command, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, memo } from 'react'
 import { PlusCircleIcon, CheckIcon } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Separator } from '@/components/ui/separator'
@@ -11,7 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 const filterChoices =  ["High", "Medium", "Low"]
 
-export default function Filter() {
+const Filter = memo(function Filter() {
 
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -64,8 +64,6 @@ export default function Filter() {
             router.push('?' + deleteQueryParam('filters'))
         }
     }, [filters, createQueryString, deleteQueryParam, router])
-
-
 
   return (
     <>
@@ -126,4 +124,6 @@ export default function Filter() {
         </Popover>
     </>
   )
-}
+})
+
+export default Filter

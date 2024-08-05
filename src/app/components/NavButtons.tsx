@@ -2,9 +2,9 @@
 
 import  Link  from "next/link"
 import { usePathname } from "next/navigation"
+import { memo } from 'react'
 
-
-export default function NavButtons(){
+const NavButtons = memo(function NavButtons() {
     const pathName = usePathname()
     return (
         <>
@@ -17,4 +17,6 @@ export default function NavButtons(){
             </Link> 
         </>
     )
-}
+})
+
+export default NavButtons

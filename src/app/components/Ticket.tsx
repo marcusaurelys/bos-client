@@ -1,3 +1,4 @@
+"use client"
 
 import {motion} from 'framer-motion'
 import { TagIcon } from '@heroicons/react/16/solid'
@@ -5,12 +6,12 @@ import { ITicket} from "../../types"
 import EmployeeTable from './EmployeeTable'
 import Link from 'next/link'
 import { UserContext } from '@/contexts/UserContextProvider'
-import { useContext } from 'react'
+import { useContext, memo } from 'react'
 interface TicketProps {
     ticket: ITicket
 }
 
-export default function Ticket({ticket}: TicketProps) {
+const Ticket = memo(function Ticket({ticket}: TicketProps) {
 
     const user = useContext(UserContext)
 
@@ -75,4 +76,6 @@ export default function Ticket({ticket}: TicketProps) {
 
     
   )
-}
+})
+
+export default Ticket
