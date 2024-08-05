@@ -32,6 +32,7 @@ import { getChatHistory, add_dev_chat, get_dev_chat } from '@/db/chat'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { revalidatePath } from 'next/cache'
 import RefreshChatLog from '@/app/components/RefreshChatLog'
+import { redirect } from 'next/navigation'
 
 export default async function Ticket({params}:{params:{ticketid:string}}) {
     
@@ -86,6 +87,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
      }
      catch(error: any){
         console.log(error)
+        redirect(`/oops?error=${error}`)
      }
      
      

@@ -8,6 +8,7 @@ import { getUserByToken } from '@/db/users'
 import { revalidatePath } from 'next/cache'
 import { Db } from 'mongodb'
 import { IChat, IConversation, IMessage, IMessageDict } from '@/types'
+import { redirect } from 'next/navigation'
 
 const CRISP_WEBSITE_ID = process.env.CRISP_WEBSITE_ID
 const CRISP_API_ID = process.env.CRISP_API_ID
@@ -77,6 +78,7 @@ export const getChatHistory = async (id : string) => {
       return chatHistory;
   } catch (e) {
       console.error("Chat history not found", e);
+      redirect(`/oops?error=${e}`)
       return [];
   }
 }
@@ -145,6 +147,7 @@ export const getConversations = async(page_number: number) => {
     const response = await crispRes.json()
     return response
   } catch(error){
+    redirect(`/oops?error=${error}`)
     console.error("getConverstaions error: ",error);
   }
 }
@@ -281,6 +284,7 @@ export const get_chat_history_of_user = async() => {
     return result 
   }catch(error){
     console.error("get_chat_history_of_user",error)
+    redirect(`/oops?error=${error}`)
   }
 }
 
@@ -304,6 +308,7 @@ export const get_chat_history_of_ticket = async(session_id: string) => {
     return result
   }catch(error){
     console.error("get_chat_history_of_ticket",error)
+    redirect(`/oops?error=${error}`)
   }
 }
 
@@ -332,6 +337,7 @@ export const update_chat_history_of_ticket = async(session_id: string, chats: IC
     return result
   } catch (error){
     console.error("update_chat_history_of_ticket",error)
+    redirect(`/oops?error=${error}`)
   }
 }
 
@@ -352,10 +358,14 @@ export const seed_chat = async( session_id: string, messages: IMessage[] ) => {
 export const seed_ticket = async(params: {}) => {
   const tickets = await Tickets()
 
+  try{
   const response = await tickets.insertOne({
     ...params,
     userIDs: [],
-  })
+  }) }
+  catch(error){
+    redirect(`/oops?error=${error}`)
+  }
 }
 /**
  * Fetches a response from a chatbot API based on a given prompt.
@@ -378,6 +388,7 @@ export const get_chatbot_response_old = async(prompt: string) => {
     return output 
   } catch (error){
     console.error("get_chatbot_response error: ",error);
+    redirect(`/oops?error=${error}`)
   }
 } 
 
