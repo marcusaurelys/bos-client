@@ -188,7 +188,8 @@ export const update_chat_messages = async (chat_id: string, new_messages: IMessa
 } 
 
 
-export const refresh_messages = async (chat_id: string, params: {}) => {
+export const refresh_messages = async (chat_id: string, ticket_id: string) => {
+  
   const response = await getMessages(chat_id)
   const new_messages = response.data
   const old_messages = await getChatHistory(chat_id)
@@ -200,6 +201,9 @@ export const refresh_messages = async (chat_id: string, params: {}) => {
 
   update_chat_messages(chat_id, new_messages)
   delete_dev_chat(chat_id)
+
+  revalidatePath("/" + ticket_id)
+
 }
 
 /**
