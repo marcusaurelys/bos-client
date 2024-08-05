@@ -229,11 +229,8 @@ export const logout = async() => {
     console.log("in logout")
     try{
         cookies().delete("session")
-        redirect('/login')
     } catch (error) {
         console.error("logout error: ", error)
-        redirect(`/oops?error=${error}`)
-        redirect('/')
     }
 }
 

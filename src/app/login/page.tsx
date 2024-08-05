@@ -1,3 +1,5 @@
+'use client'
+
 import {
     Card,
     CardContent,
@@ -11,8 +13,24 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { login } from "@/db/users"
-
+import { useToast } from "@/components/ui/use-toast"
+import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
 export default function Page(){
+
+    const { toast } = useToast()
+    const searchParams = useSearchParams()
+    const wrongPassword = searchParams.has('wrongPassword')
+
+    useEffect(() => {
+        if(wrongPassword)
+            setTimeout(() => {
+                toast({
+                    description: "Failed to Login: Please make sure your log in credentials are correct.",
+                    variant: "destructive"
+                })
+            }, 0)
+    }, [])
 
     return (
         <div className="flex w-full h-screen items-center justify-center bg-slate-200">
