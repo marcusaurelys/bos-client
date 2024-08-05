@@ -18,24 +18,36 @@ interface ColumnProps {
 // filteredTickets -> filtered by column
 
 export default function Column({title, status, tickets}: ColumnProps) {
-
-  const [numberOfTickets, setNumber] = useState(20)
-  const observer = useRef<IntersectionObserver>()
+  const [topCounter, setTopCounter] = useState(0)
+  const [bottomCounter, setBottomCounter] = useState(30)
+  const top_observer = useRef<IntersectionObserver>()
+  const bottom_observer = useRef<IntersectionObserver>()
 
   if(tickets === null) {
     tickets = []
   }
-  
-  const trigger = useCallback((node : HTMLElement | null) => {
-    if(observer.current) observer.current.disconnect()
-    observer.current = new IntersectionObserver(entries => {
-        if(numberOfTickets < tickets.length && entries[0].isIntersecting){
-            setNumber(prev => prev+10)
-            console.log('test test test')
+
+  const top_trigger = useCallback((node : HTMLElement | null) => {
+    if(top_observer.current) top_observer.current.disconnect()
+    top_observer.current = new IntersectionObserver(entries => {
+        if(topCounter > 0 && entries[0].isIntersecting){
+          setTopCounter(prev => prev - 10);
+          setBottomCounter(prev => prev - 10);
         }
     })
-    if(node) observer.current.observe(node)
-  }, [numberOfTickets, tickets.length])
+    if(node) top_observer.current.observe(node)
+  }, [bottomCounter, tickets.length])
+  
+  const bottom_trigger = useCallback((node : HTMLElement | null) => {
+    if(bottom_observer.current) bottom_observer.current.disconnect()
+    bottom_observer.current = new IntersectionObserver(entries => {
+        if(bottomCounter < tickets.length && entries[0].isIntersecting){
+            setTopCounter(prev => prev+10)
+            setBottomCounter(prev => prev+10)
+        }
+    })
+    if(node) bottom_observer.current.observe(node)
+  }, [bottomCounter, tickets.length])
 
   return (
     <motion.div layout
@@ -56,17 +68,19 @@ export default function Column({title, status, tickets}: ColumnProps) {
         {/* column body */}
         <ScrollArea data-test={`scrollarea-${title}`}>
         <div className="h-full flex-auto gap-2 flex flex-col" data-test={`header-${title}`}> 
-
+            {
+            <div className="m-2" ref={top_trigger}></div>
+            }
             { 
-                tickets.slice(0, numberOfTickets).map((ticket, index) => {
+                tickets.slice(topCounter, bottomCounter).map((ticket, index) => {
                   if(index == tickets.length - 1){}
                    return <Ticket ticket={ticket} key={ticket._id}/>
                            
                 })
             }
             {
-            numberOfTickets < tickets.length &&
-            <div ref={trigger}> Loading More Tickets... </div>
+            bottomCounter < tickets.length &&
+            <div ref={bottom_trigger}> Loading More Tickets... </div>
             }
         </div>
         </ScrollArea>
