@@ -232,6 +232,7 @@ export const logout = async() => {
         redirect('/login')
     } catch (error) {
         console.error("logout error: ", error)
+        redirect(`/oops?error=${error}`)
         redirect('/')
     }
 }
@@ -249,6 +250,7 @@ export const validateUser = async() => {
         return JSON.stringify(user)
     } catch (error){
         console.error("validateUser error: ", error)
+        redirect(`/oops?error=${error}`)
         redirect('/')
     }
 }
@@ -278,6 +280,7 @@ export const editUser = async (id : string, name : string, email : string, role 
         return user
     } catch (error){
         console.error("editUser error: ",error)
+        redirect(`/oops?error=${error}`)
         redirect('/')
     }
 }
@@ -309,6 +312,7 @@ export const changePasswordForUser = async(id : string, password: string, confir
         return user
     } catch (error) {
         console.error("changePasswordForUser error: ", error)
+        redirect(`/oops?error=${error}`)
         redirect('/')
     }
 }
@@ -341,6 +345,7 @@ export const deleteUser = async(_id : string) => {
         return res
     } catch( error ){
         console.error("delete user errror:", error)
+        redirect(`/oops?error=${error}`)
         redirect('/')
     }
     
