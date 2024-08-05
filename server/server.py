@@ -118,6 +118,97 @@ def summarize_chat_logs(chat_logs):
 
     return response
 
+def summarize_problem(chat_logs):
+    jpegs = "'type': 'image/png'"   
+    pngs = "'type': 'image/jpeg'"
+
+    content = []
+
+    if jpegs in chat_logs or pngs in chat_logs:
+        #pass to chatgpt API; properly format teh images in the chat logs
+        for line in chat_logs.split('\n'):
+            if jpegs in line or pngs in line:
+                url_pattern = r"'url': '([^']+)'"
+
+                # Search for the pattern in the text
+                match = re.search(url_pattern, line)
+                
+                if match:
+                    # Extract the matched substring
+                    image_url = match.group(1)
+                    content.append({
+                        "type": "image_url",
+                        "image_url": {
+                            "url": image_url
+                        }
+                    })
+                else:
+                    content.append({
+                        "type": "text",
+                        "text": line
+                    })
+            else:
+                content.append({
+                    "type": "text",
+                    "text": line
+                })
+        
+    else:
+        #pass to llama 3.1
+        content = []
+        content.append({
+            "type": "text",
+            "text": chat_logs
+        })
+
+
+    response = openAI_client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+            "role": "system",
+            "content": [
+                {
+                "type": "text",
+                "text": "You are an intelligent bot the summarizes the problem that the developer is facing. Your job is to summarize the given chat (that may or may have an image component) to a problem statement (summary of the problem).  Keep the summaries as detailed as possible. Thanks!"
+                }
+            ]
+            },
+            {
+            "role": "user",
+            "content": content
+            }
+        ],
+        temperature=1,
+        max_tokens=512,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
+        tools=[
+            {
+            "type": "function",
+            "function": {
+                "name": "chat_summary",
+                "description": "Summarize the chat to a problem statement. Keep the summaries as detailed as possible which means that Its okay if the response/summary is long. ",
+                "parameters": {
+                "type": "object",
+                "properties": {
+                    "problem_statement": {
+                    "type": "string",
+                    "description": "The problem statement of the chat logs"
+                    },
+                },
+                "required": [
+                    "problem_statement"
+                ]
+                }
+            }
+            }
+        ],
+        tool_choice={"type": "function", "function": {"name": "chat_summary"}},
+    )
+
+    return response
 
 def get_inference(prompt):
 
@@ -164,10 +255,36 @@ def getResponse():
 
     return jsonify(response)
     
-    # Ask llm for the initial response
-    # Ask can you solve this problem given the previous problems and solutions?
-    # Respond to the user if you can, you can also ask for more information. If you can't solve this problem further, respond with CAN'T SOLVE.
-    # If CAN'T SOLVE, ping developer
+@app.route('/api/NewerInference', methods=['POST'])
+def getNewerResponse():
+    
+    chat_logs = request.form.get('chat_logs')
+    response = summarize_problem(chat_logs)
+    reply_content = response.choices[0].message
+    args = reply_content.to_dict()['tool_calls'][0]['function']['arguments']
+    problem_statement = json.loads(args)['problem_statement'] 
+
+    chat_logs = request.form.get('chat_logs')
+    results = collection.query(
+             query_texts=[problem_statement],
+             n_results=3
+    )
+
+    #format results into a prompt that can be fed into the llm
+    prompt = f"""[INST]Your name is Boris and you are a helpful and intelligent assistant that responds to a developer/employee's questions about Hostari (a company where you can rent out servers to play with your friends). I have provided you with related past problems that has been solved by a developer in the company. You may or may not use this to help the developer/employee's craft a response/solve the problem. Thanks![/INST]
+    
+    solved problem 1: {results['documents'][0][0]}
+    solution 1: {results['metadatas'][0][0]['solution_statement']}
+    solved problem 2: {results['documents'][0][1]}
+    solution 2: {results['metadatas'][0][1]['solution_statement']}
+    solved problem 3: {results['documents'][0][2]}
+    solution 3: {results['metadatas'][0][2]['solution_statement']}
+
+    {chat_logs}
+    Assistant:"""
+
+    response = get_inference(prompt)
+    return jsonify(response)
 
 @app.route('/api/betterInference', methods=['POST'])
 def getBetterResponse():
