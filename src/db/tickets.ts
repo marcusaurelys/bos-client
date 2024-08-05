@@ -271,6 +271,7 @@ export const addTicket = async(chat_id: string, name: string, description: strin
         status: 'pending',
         date_created: new Date().toISOString(),
         chat_id: chat_id,
+        userIDs: []
     })
     const insertChat = await chat.insertOne({
             chat_id: chat_id,
