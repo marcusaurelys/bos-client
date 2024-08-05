@@ -30,6 +30,7 @@ import Listener from '@/app/components/Listener'
 import  { TicketSkeleton }  from './loading'
 import { getChatHistory, add_dev_chat, get_dev_chat } from '@/db/chat'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { redirect } from 'next/navigation'
 
 export default async function Ticket({params}:{params:{ticketid:string}}) {
     
@@ -84,6 +85,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
      }
      catch(error: any){
         console.log(error)
+        redirect(`/oops?error=${error}`)
      }
      
      

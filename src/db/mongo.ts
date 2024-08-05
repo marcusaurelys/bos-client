@@ -1,6 +1,6 @@
 import {Db, MongoClient} from 'mongodb'
 
-const client = new MongoClient(process.env.MONGO_URI || '', {socketTimeoutMS: 5000, maxIdleTimeMS: 2000})
+const client = new MongoClient(process.env.MONGO_URI || '')
 let cache: any = null
 
 /**
@@ -16,6 +16,7 @@ export async function useDB() {
   }
 
   console.log('no db cached, making new client')
+
   const db =  client.db('business-os')
   cache = db
   return db
