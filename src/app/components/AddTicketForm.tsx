@@ -17,12 +17,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { EditIcon } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useState, memo } from 'react'
 import { addTicket, refreshTicket } from '@/db/tickets'
 import { toast } from '@/components/ui/use-toast'
 
 
-function AddTicketForm() {
+const AddTicketForm = memo(function AddTicketForm() {
 
     const [isOpen, setIsOpen] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
@@ -190,6 +190,6 @@ function AddTicketForm() {
             </DialogContent>
         </Dialog>
     )
-}
+})
 
 export default AddTicketForm

@@ -1,10 +1,8 @@
 import { Command, CommandItem, CommandList } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import React, { useState } from 'react'
+import React, { useState, memo } from 'react'
 import { ArrowUpDown } from 'lucide-react'
-
-
 
 interface SortProps {
     column: string
@@ -15,7 +13,7 @@ interface SortPreference {
     direction: string
 }
 
-function Sort({column}: SortProps) {
+const Sort = memo(function Sort({column}: SortProps) {
 
     const [sort, setSort] = useState<SortPreference>()
 
@@ -70,6 +68,6 @@ function Sort({column}: SortProps) {
       </Popover>
     </>
   )
-}
+})
 
 export default Sort

@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { get_chatbot_response, update_dev_chat } from '@/db/chat'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import PlaceholderInput from '@/app/components/PlaceholderInput'
 import Loading from '@/app/components/Loading'
 import { IMessage } from '@/types'
 
-export default function Bot({chat_id, ticket_id, devchat}: {chat_id: string, ticket_id: string, devchat: any}) {
+const Bot = memo(function Bot({chat_id, ticket_id, devchat}: {chat_id: string, ticket_id: string, devchat: any}) {
   const [chat, setChat] = useState(devchat.messages)
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -92,4 +92,6 @@ export default function Bot({chat_id, ticket_id, devchat}: {chat_id: string, tic
   )
 
 
-}
+})
+
+export default Bot

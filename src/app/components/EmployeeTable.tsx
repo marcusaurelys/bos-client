@@ -26,7 +26,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { Button } from "@/components/ui/button";
 import { User, ITicket } from '@/types';
 import { getTicket, getTickets, refreshTicket } from "@/db/tickets";
@@ -51,7 +51,7 @@ const CustomDialogContent = styled(DialogContent)`
 `;
 
 
-export default function EmployeeTable({ticket}: EmployeeTableProps) {
+const EmployeeTable = memo(function EmployeeTable({ticket}: EmployeeTableProps) {
 
     const [users, setUsers] = useState<User[]>([]); //users to be assigned on the modal
     const [tickets, setTickets] = useState<ITicket[]>([]); //needed to view what tickets a user is assigned to
@@ -234,7 +234,7 @@ export default function EmployeeTable({ticket}: EmployeeTableProps) {
             </CustomDialogContent>
         </Dialog>
     );
-}
+})
 
 //Skeleton Code
 function Loading() {
@@ -275,3 +275,5 @@ function Loading() {
         </>
     );
 }
+
+export default EmployeeTable

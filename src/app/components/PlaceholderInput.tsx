@@ -2,14 +2,14 @@
 
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from "@/components/ui/button"
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState, memo } from 'react';
 import { SendHorizontal } from 'lucide-react';
 
 interface IInputCompnent {
   send: (string: string) => void
 }
 
-export default function InputComponent({send}: IInputCompnent) {
+const InputComponent = memo(function InputComponent({send}: IInputCompnent) {
   const [input, setInput] = useState('');
 
   const handle_change = (input_event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -37,4 +37,6 @@ export default function InputComponent({send}: IInputCompnent) {
       </Button>
     </div>
   );
-};
+});
+
+export default ImportComponent

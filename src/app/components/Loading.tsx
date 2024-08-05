@@ -1,7 +1,7 @@
-import React from "react";
+import React, { memo } from "react";
 import "./styles.css";
 
-const Loading = () => {
+const Loading = memo(() => {
   return (
     <>
       <div className="align-balls bouncing-loader">
@@ -11,6 +11,6 @@ const Loading = () => {
       </div>
     </>
   );
-};
+});
 
 export default Loading;

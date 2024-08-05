@@ -5,7 +5,7 @@ import { CardFooter } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { changeStatus } from '@/db/tickets'
 import { ITicket } from '@/types'
-import React from 'react'
+import React, { memo } from 'react'
 import { useToast } from '@/components/ui/use-toast'
 import { revalidatePath } from 'next/cache'
 
@@ -13,7 +13,7 @@ interface UpdateStatusForm{
     ticketInfo: ITicket
 }
 
-const UpdateStatusForm = ({ticketInfo}: UpdateStatusForm) => {
+const UpdateStatusForm = memo(({ticketInfo}: UpdateStatusForm) => {
 
     const {toast} = useToast()
 
@@ -69,6 +69,6 @@ const UpdateStatusForm = ({ticketInfo}: UpdateStatusForm) => {
         </CardFooter>
     </form>
 )
-}
+})
 
 export default UpdateStatusForm

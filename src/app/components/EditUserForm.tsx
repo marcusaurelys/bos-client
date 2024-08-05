@@ -32,7 +32,7 @@ interface EditUserFormProps {
     user : User
 }
 
-export default function EditUserForm({ user } : EditUserFormProps){
+const EditUserForm = memo(function EditUserForm({ user } : EditUserFormProps) {
     
     const [isOpen, setOpen] = useState(false)
     const [form, setForm] = useState(false) //false means show edit user, true means change password
@@ -258,4 +258,6 @@ export default function EditUserForm({ user } : EditUserFormProps){
         </Dialog>
         )
     
-}
+})
+
+export default EditUserForm

@@ -18,7 +18,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ITicket, User } from '@/types'
 import { EditIcon } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useState, memo } from 'react'
 import { deleteTicket, refreshTicket} from '@/db/tickets'
 import { toast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
@@ -28,7 +28,7 @@ interface EditTicketProps {
     user: User,
 }
 
-const EditTicket = ({ticket, user}: EditTicketProps) => {
+const EditTicket = memo(({ticket, user}: EditTicketProps) => {
 
     const [isOpen, setIsOpen] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
@@ -238,6 +238,6 @@ const EditTicket = ({ticket, user}: EditTicketProps) => {
         </Dialog>
     )
     }
-}
+})
 
 export default EditTicket

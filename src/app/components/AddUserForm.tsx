@@ -25,12 +25,12 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { register } from '@/db/users'
 import { useToast } from "@/components/ui/use-toast"
 import bcrypt from "bcryptjs"
 
-export default function AddUserForm(){
+export default const AddUserForm = memo(function AddUserForm() {
 
     const [isOpen, setOpen] = useState(false)
     const { toast } = useToast()
@@ -179,4 +179,4 @@ export default function AddUserForm(){
     </DialogContent>
     </Dialog>
     )
-}
+})
