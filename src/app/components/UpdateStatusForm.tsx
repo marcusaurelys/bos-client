@@ -13,7 +13,7 @@ interface UpdateStatusForm{
     ticketInfo: ITicket
 }
 
-const UpdateStatusForm = memo(({ticketInfo}: UpdateStatusForm) => {
+const UpdateStatusForm = memo(function UpdateStatusForm({ticketInfo}: UpdateStatusForm) {
 
     const {toast} = useToast()
 

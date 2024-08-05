@@ -28,7 +28,7 @@ interface EditTicketProps {
     user: User,
 }
 
-const EditTicket = memo(({ticket, user}: EditTicketProps) => {
+const EditTicket = memo(function EditTicket({ticket, user}: EditTicketProps) {
 
     const [isOpen, setIsOpen] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
