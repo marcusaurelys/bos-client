@@ -178,7 +178,7 @@ export const get_chatbot_response = async(chat_logs: string, problem_statement: 
     formData.append('chat_logs', chat_logs)
     formData.append('problem_statement', problem_statement)
     
-    const response = await fetch(`http://localhost:5000/api/betterInference`, {
+    const response = await fetch(`http://localhost:5000/api/NewerInference`, {
         method: 'POST',
         body: formData
     })
