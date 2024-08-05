@@ -15,14 +15,14 @@ import { Label } from "@/components/ui/label"
 import { login } from "@/db/users"
 import { useToast } from "@/components/ui/use-toast"
 import { useSearchParams } from "next/navigation"
-import { useEffect } from "react"
+import { Suspense, useEffect } from "react"
 export default function Page(){
 
     const { toast } = useToast()
-    const searchParams = useSearchParams()
-    const wrongPassword = searchParams.has('wrongPassword')
-
+    
     useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search)
+        const wrongPassword = searchParams.has('wrongPassword')
         if(wrongPassword)
             setTimeout(() => {
                 toast({
@@ -30,7 +30,7 @@ export default function Page(){
                     variant: "destructive"
                 })
             }, 0)
-    }, [])
+    }, [toast])
 
     return (
         <div className="flex w-full h-screen items-center justify-center bg-slate-200">
