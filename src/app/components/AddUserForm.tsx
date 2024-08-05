@@ -30,7 +30,7 @@ import { register } from '@/db/users'
 import { useToast } from "@/components/ui/use-toast"
 import bcrypt from "bcryptjs"
 
-export default const AddUserForm = memo(function AddUserForm() {
+const AddUserForm = memo(function AddUserForm() {
 
     const [isOpen, setOpen] = useState(false)
     const { toast } = useToast()
@@ -180,3 +180,5 @@ export default const AddUserForm = memo(function AddUserForm() {
     </Dialog>
     )
 })
+
+export default AddUserForm

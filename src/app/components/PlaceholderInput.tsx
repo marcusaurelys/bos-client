@@ -39,4 +39,4 @@ const InputComponent = memo(function InputComponent({send}: IInputCompnent) {
   );
 });
 
-export default ImportComponent
+export default InputComponent

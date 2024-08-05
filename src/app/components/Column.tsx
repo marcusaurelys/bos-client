@@ -39,7 +39,7 @@ const Column = memo(function Column({title, status, tickets}: ColumnProps) {
         }
     })
     if(node) top_observer.current.observe(node)
-  }, [topCounter, tickets.length])
+  }, [topCounter])
   
   const bottom_trigger = useCallback((node : HTMLElement | null) => {
     if(bottom_observer.current) bottom_observer.current.disconnect()
