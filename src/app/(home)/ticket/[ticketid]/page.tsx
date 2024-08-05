@@ -1,6 +1,6 @@
 import { fuckNextDB } from '@/db/mongo'
-import { fuckNextTickets } from '@/db/tickets'
-import { fuckNextChat } from '@/db/chat'
+import { fuckNextTickets, refreshTicket } from '@/db/tickets'
+import { fuckNextChat, refresh_messages } from '@/db/chat'
 import { fuckNextUsers } from '@/db/users'
 
 import {
@@ -30,6 +30,8 @@ import Listener from '@/app/components/Listener'
 import  { TicketSkeleton }  from './loading'
 import { getChatHistory, add_dev_chat, get_dev_chat } from '@/db/chat'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { revalidatePath } from 'next/cache'
+import RefreshChatLog from '@/app/components/RefreshChatLog'
 
 export default async function Ticket({params}:{params:{ticketid:string}}) {
     
@@ -137,7 +139,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
             throw new Error("DEVCHAT IS NULL!")
         }  
     }
- 
+
     if (ticket_info == null) {
         return (
             <>
@@ -206,11 +208,10 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
             </>
         )
     }
-   
+
     return (<>
         <div className="flex flex-row m-4">
             <div className="w-2/3 border rounded-lg m-2">
-
                 <Tabs defaultValue="chat" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="chat">Chat History</TabsTrigger>
@@ -261,8 +262,11 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                     </main>
                 </TabsContent>
                 </Tabs>
-
             </div>
+            <div className='mt-2 rounded-lg p-1 cursor-pointer mr-4 border h-fit'>
+                <RefreshChatLog ticket_info={ticket_info}/>
+            </div>
+            
             <div className="w-1/3 m-2">
                 <Card>
                     <CardHeader className="flex flex-row justify-between">
