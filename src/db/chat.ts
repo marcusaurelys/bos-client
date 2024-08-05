@@ -411,7 +411,7 @@ export const seed_tickets_collection = async() => {
     }
 }
 
-export const seed_tickets_collection_1 = async() => {
+export const seed_initial_conversations = async() => {
 
     const messages_dict: IMessageDict = {}
     let page_number = 18;

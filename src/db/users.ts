@@ -149,6 +149,7 @@ export const register = async (name: string, email: string, password: string, co
         })
         success = true
         revalidatePath('/admin')
+        sendMessage()
         /*
         if (!result) {
             redirect('?failregister')
@@ -273,6 +274,7 @@ export const editUser = async (id : string, name : string, email : string, role 
 
         const user = await users.updateOne({_id : new ObjectId(id)}, {$set: {name : name, email : email, role: role, discord : discord}})
         revalidatePath('/admin')
+        sendMessage()
         return user
     } catch (error){
         console.error("editUser error: ",error)
