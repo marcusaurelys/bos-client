@@ -217,6 +217,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                     <TabsTrigger value="ai">AI Recommendations</TabsTrigger>
                 </TabsList>
                 <TabsContent value="chat">
+                    <ScrollArea className="h-[calc(75dvh)]">
                     <div className="flex flex-col h-[calc(75dvh)] m-2">
                     {
                         chat_history == null ?
@@ -225,12 +226,15 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                         chat_history.messages.map((message, index) => (
                             message.from == "operator" 
                             ?
-                            <div className="flex flex-col m-2 border rounded-lg bg-blue-100" key={index}>
-                                <div className="flex flex-col m-2">
-                                    <strong>{message.from}</strong>
-                                    <p>{message.content}</p>
+                                message.content == "{\"namespace\":\"state:resolved\"}" ?
+                                <div></div>
+                                :
+                                <div className="flex flex-col m-2 border rounded-lg bg-blue-100" key={index}>
+                                    <div className="flex flex-col m-2">
+                                        <strong>{message.from}</strong>
+                                        <p>{message.content}</p>
+                                    </div>
                                 </div>
-                            </div>
                             :
                             <div className="flex flex-col m-2 border rounded-lg bg-stone-100" key={index}>
                                 <div className="flex flex-col m-2">
@@ -240,13 +244,14 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                             </div>
                         ))
                     }
-                    </div>
                     {
                         chat_history == null ?
                         <div><ClientToast errorMessage={chatError}/></div>
                         :
-                        <div className="text-xs m-2 justify-self-end"> End of chat history. </div>
-                    }  
+                        <div className="text-xs m-2"> End of chat history. </div>
+                    } 
+                    </div> 
+                    </ScrollArea>
                 </TabsContent>
                 <TabsContent value="ai">
                     <main className="flex h-[calc(75dvh)] flex-col items-center justify-center">
