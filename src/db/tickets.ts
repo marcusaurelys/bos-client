@@ -135,6 +135,9 @@ export const getTicket = async(id: string) => {
 
     try{
         const result = await tickets.findOne({_id: new ObjectId(id)})
+        if (result && result._id) {
+            result._id = result._id.toString();
+        }
         return result
     }
     catch(error: any){
@@ -157,7 +160,7 @@ export const changeStatus = async (id: string, status: string) => {
     try{
 
         let valid = await validateUser()
-        if(!JSON.parse(valid)){
+        if(valid == null){
             throw new Error('Invalid token!')
         }
 
@@ -185,7 +188,7 @@ export const refreshTicket = async (id: string, params: {}) => {
     const user = await validateUser()
     console.log(params)
 
-    if(!user) {
+    if(user == null) {
         return false
     }
 
@@ -215,7 +218,7 @@ export const deleteTicket = async (id: string) => {
     const tickets = await Tickets()
 
     const user = await validateUser()
-    if(!user) {
+    if(user == null) {
         return false
     }
 

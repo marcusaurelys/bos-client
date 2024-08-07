@@ -8,6 +8,10 @@ import { redirect } from 'next/navigation'
 import { ObjectId, UUID } from 'mongodb'
 import { revalidatePath } from "next/cache";
 import { sendMessage } from "@/app/api/listen/server";
+import { User } from "@/types";
+
+/*
+Unused interface
 
 interface UserCookie {
     _id : UUID,
@@ -19,6 +23,7 @@ interface UserCookie {
     token : string
 }
 
+Unused interface
 interface User {
     _id : UUID,
     email : string,
@@ -26,6 +31,7 @@ interface User {
     role : 'admin' | 'user',
     name : string,
 }
+*/
 
 const Users = async () => {
     const db = await useDB()
@@ -64,6 +70,11 @@ export const getUser = async(email : string) => {
     const users = await Users()
     try{
         const result = await users.findOne({email : email});
+
+        if (result && result._id) {
+            result._id = result._id.toString();
+        }
+
         return result;
     }
     catch (error){
@@ -83,6 +94,11 @@ export const getUserByToken = async(token : string) => {
     const users = await Users()
     try {
         const result = await users.findOne({token: token})
+
+        if (result && result._id) {
+            result._id = result._id.toString();
+        }
+
         return result
     } catch (error){
         console.error("getUserByToken error: ",error)
@@ -99,7 +115,15 @@ export const getAllUsers = async() => {
     const users = await Users()
     try{
         const result = await users.find({}).toArray()
-        return JSON.stringify(result)
+
+        const convertedResult: User[] = result.map((user: User) => {
+            return {
+              ...user,
+              _id: user._id.toString(),
+            };
+        })
+
+        return convertedResult
     } catch (error){
         console.error("getAllUsers error: ",error)
         redirect('/')
@@ -122,7 +146,7 @@ export const register = async (name: string, email: string, password: string, co
     let success = false
 
     let valid = await validateUser()
-    if(!JSON.parse(valid)._id){
+    if(valid == null){
         redirect('/login')
     }
 
@@ -243,8 +267,7 @@ export const validateUser = async() => {
     try{
         const token = cookies().get('session')?.value || ''
         const user = await getUserByToken(token)
-    
-        return JSON.stringify(user)
+        return user
     } catch (error){
         console.error("validateUser error: ", error)
         redirect(`/oops?error=${error}`)
@@ -267,7 +290,7 @@ export const editUser = async (id : string, name : string, email : string, role 
     try{
 
         let valid = await validateUser()
-        if(!JSON.parse(valid)){
+        if(valid == null){
             throw new Error('Invalid token!')
         }
 
@@ -300,7 +323,7 @@ export const changePasswordForUser = async(id : string, password: string, confir
     try {
     
         let valid = await validateUser()
-        if(!JSON.parse(valid)){
+        if(valid == null){
             throw new Error('Invalid token!')
         }
 
@@ -326,7 +349,7 @@ export const deleteUser = async(_id : string) => {
     try {
 
         let valid = await validateUser()
-        if(!JSON.parse(valid)){
+        if(valid == null){
             throw new Error('Invalid token!')
         }
 

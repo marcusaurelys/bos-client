@@ -60,7 +60,11 @@ const EmployeeTable = memo(function EmployeeTable({ticket}: EmployeeTableProps) 
     const [loading, setLoading] = useState(false) //renders skeleton component when loading
     const { toast } = useToast()
 
-    //Updates the client-side ticket with who they want to assign (Does not immediately update the ticket on the server)
+    /**
+     * Toggles the assignees of the ticket (Does not automatically update the ticket on the server yet)
+     * 
+     * @param {User} user - The user to be assigned/removed from the ticket 
+     */
     const toggleUser = (user: User) => {
         const userId = user._id;
         const hasUser = ticketToUpdate.userIDs.includes(userId);
@@ -72,14 +76,20 @@ const EmployeeTable = memo(function EmployeeTable({ticket}: EmployeeTableProps) 
         updateTicket({ ...ticketToUpdate, userIDs: updatedUserIDs });
     };
 
-    //Helper function to compare the users of the client and server ticket
+    
+    /**
+     * Helper function to compare whether the two arrays are the same
+     * 
+     * @param {string} a - ObjectId of the users stored in the server
+     * @param {string} b - ObjectId of the users stored in the client
+     * @returns {boolean} - true if they're different, else if otherwise
+     */
     const compareArrays = (a: string[], b: string[]) => {
         const sortedArr1 = a.slice().sort();
         const sortedArr2 = b.slice().sort();
 
         if (sortedArr1.length !== sortedArr2.length) return false
         else {
-          // Comparing each element of your array
           for (var i = 0; i < a.length; i++) {
             if (sortedArr1[i] !== sortedArr2[i]) {
               return false;
@@ -89,7 +99,9 @@ const EmployeeTable = memo(function EmployeeTable({ticket}: EmployeeTableProps) 
         }
       };
     
-    //Updates the ticket with the users on the client-side
+    /**
+     * Updates the users assigned on the ticket in the server with the users on the client
+     */
     const updateUserIDs = async () => {
         const isEqual = compareArrays(ticket.userIDs, ticketToUpdate.userIDs)
 
@@ -122,7 +134,11 @@ const EmployeeTable = memo(function EmployeeTable({ticket}: EmployeeTableProps) 
         
     };
 
-    //Sort users by name or role
+    /**
+     * Sorts users based on the filter
+     * 
+     * @param {string} newFilter - filter to be sorted by
+     */
     const sortUsers = (newFilter: string) => {
         //Shallow copy doesn't really matter too much for functionality, might change if needed
         let sortedUsers = [...users];
@@ -142,8 +158,8 @@ const EmployeeTable = memo(function EmployeeTable({ticket}: EmployeeTableProps) 
             if(ticketNow){
                 updateTicket(ticketNow)
             }
-            setUsers(JSON.parse(users)) //sets the users that can be assigned
-            setFilteredUsers(JSON.parse(users)) //sets the initial filtered users
+            setUsers(users) //sets the users that can be assigned
+            setFilteredUsers(users) //sets the initial filtered users
             setTickets(tickets) //sets tickets
         } catch(e) {
             console.log(e)
