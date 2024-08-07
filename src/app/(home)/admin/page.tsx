@@ -26,8 +26,7 @@ export default async function Page(){
     let users: User[] = []
 
     try{
-        let res = await getAllUsers()
-        users = JSON.parse(res)
+        users = await getAllUsers()
     }
     catch (error: any){
         errorMessage = "An error occurred while fetching users, please reload the page"

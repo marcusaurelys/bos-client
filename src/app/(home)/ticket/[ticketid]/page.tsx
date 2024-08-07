@@ -24,7 +24,7 @@ import Bot from "@/app/components/Bot";
 import UpdateStatusForm from "@/app/components/UpdateStatusForm";
 import EditTicket from "@/app/components/EditTicket";
 import { validateUser } from "@/db/users";
-import { IChat, IMessage, ITicket, IConversation, IDevChat } from '@/types'
+import { IChat, IMessage, ITicket, IConversation, IDevChat, User } from '@/types'
 import ClientToast from '@/app/components/ErrorToast'
 import Listener from '@/app/components/Listener'
 import  { TicketSkeleton }  from './loading'
@@ -85,7 +85,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
      }
      catch(error: any){
         console.log(error)
-        redirect(`/oops?error=${error}`)
+        //redirect(`/oops?error=${error}`)
      }
      
      
@@ -96,7 +96,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
 
     let ticket_info: ITicket | null = null
     let chat_history: IChat
-    let user: string = ""
+    let user: User
     let priorityColor: string = ""
     let errorMessage = ""
     let chatError = "An error occurred while fetching the chat history, please check the TicketID in the url"
@@ -229,7 +229,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                             message.from == "operator" 
                             ?
                                 message.content == "{\"namespace\":\"state:resolved\"}" ?
-                                <div></div>
+                                <div key = {index}></div>
                                 :
                                 <div className="flex flex-col m-2 border rounded-lg bg-blue-100" key={index}>
                                     <div className="flex flex-col m-2">
@@ -269,7 +269,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                 <Card>
                     <CardHeader className="flex flex-row justify-between">
                         <CardTitle data-test={`${ticket_info._id}-title`}> {ticket_info.name}</CardTitle>
-                        <EditTicket ticket={ticket_info} user={JSON.parse(user)}/>
+                        <EditTicket ticket={ticket_info} user={user!}/>
                     </CardHeader>
                     <div className="flex gap-2 flex-wrap pl-6 pb-6 pr-6">
                         <div className={`flex flex-row rounded-md w-fit text-xs py-1 px-2 items-center gap-2 mb-1 text-white ${priorityColor}`}>
