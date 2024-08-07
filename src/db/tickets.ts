@@ -82,14 +82,11 @@ export const getTicketByStatus = async (status : string, filters: string[], sort
             result = await tickets.find({status : status, priority_score: {$in: filters}}).sort({date_created: -1}).toArray()
         }
         
-        const convertedResult: ITicket[] = result.map((ticket: ITicket) => {
-            return {
-              ...ticket,
-              _id: ticket._id.toString(),
-            };
-          })
-        setCache(cacheParams, convertedResult)
-        return convertedResult
+        for (const ticket of result){
+            ticket._id = ticket._id.toString()
+        }
+        setCache(cacheParams, result)
+        return result
     }
     catch(error: any){
         console.log(error)
@@ -107,15 +104,13 @@ export const getTickets = async () => {
    
     const tickets = await Tickets()
     try{
-        const result = await tickets.find({}).toArray()
-        const convertedResult: ITicket[] = result.map((ticket: ITicket) => {
-            return {
-              ...ticket,
-              _id: ticket._id.toString(),
-            };
-          })
+        const result: ITicket[] = await tickets.find({}).toArray()
         
-        return convertedResult
+        for (const ticket of result){
+            ticket._id = ticket._id.toString()
+        }
+
+        return result
     }
     catch(error: any){
         console.log(error)

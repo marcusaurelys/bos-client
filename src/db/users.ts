@@ -116,14 +116,11 @@ export const getAllUsers = async() => {
     try{
         const result = await users.find({}).toArray()
 
-        const convertedResult: User[] = result.map((user: User) => {
-            return {
-              ...user,
-              _id: user._id.toString(),
-            };
-        })
+        for (const user of result){
+            user._id = user._id.toString()
+        }
 
-        return convertedResult
+        return result
     } catch (error){
         console.error("getAllUsers error: ",error)
         redirect('/')
