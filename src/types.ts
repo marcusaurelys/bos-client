@@ -21,7 +21,6 @@ export interface ITicket{
     description: string,
     status: string,
     priority_score: string,
-    chat_id: string,
     userIDs: string[],
     tags: string[],
     date_created: string,
