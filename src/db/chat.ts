@@ -7,8 +7,9 @@ import { useDB } from '@/db/mongo'
 import { getUserByToken } from '@/db/users'
 import { revalidatePath } from 'next/cache'
 import { Db } from 'mongodb'
-import { IChat, IConversation, IMessage, IMessageDict } from '@/types'
 import { redirect } from 'next/navigation'
+import { IChat, IConversation, IMessage, IMessageDict, ITicket } from '@/types'
+import { getTickets } from './tickets'
 
 const CRISP_WEBSITE_ID = process.env.CRISP_WEBSITE_ID
 const CRISP_API_ID = process.env.CRISP_API_ID
@@ -138,10 +139,12 @@ export const getConversations = async(page_number: number) => {
     });
     const response = await crispRes.json()
     return response
+
   } catch(error){
     redirect(`/oops?error=${error}`)
     console.error("getConverstaions error: ",error);
   }
+
 }
 
 /**
@@ -296,8 +299,75 @@ export const update_chat_history_of_ticket = async(session_id: string, chats: IC
     return result
   } catch (error){
     console.error("update_chat_history_of_ticket",error)
-    redirect(`/oops?error=${error}`)
   }
+}
+
+export const add_ticket_from_conversation = async(conversation: any, ticket_status: string) => {
+
+  const session_id = conversation.session_id
+  const messages_response = await getMessages(session_id)
+  const messages = messages_response.data.map((msg: IMessage) => ({
+    content: msg.content,
+    from: msg.from,
+  }))
+
+  await seed_chat(conversation.session_id, messages)
+
+  const input = ticket_generation_prompt + JSON.stringify(messages)
+  const response = await get_chatbot_response_old(input)
+  const response_json = await response.json()
+
+  try {
+    const ticket = JSON.parse(response_json['response']);
+    ticket['status'] = ticket_status;  
+    ticket['date_created'] = new Date().toISOString();
+    ticket['chatID'] = session_id;
+
+    console.log(`Creating new ticket:`, ticket);
+
+    await seed_ticket(ticket);
+  } catch (error) {
+    console.error(`Error parsing ticket response:`, error);
+    console.log(`Printing string: ${response_json['response']}`)
+  }
+
+  console.log(messages)
+  console.log("adding", conversation)
+}
+
+export const find_new_conversations = async() => {
+  try {
+    const tickets = await getTickets()
+    const ticketChatIDs = tickets.map((ticket: ITicket) => ticket.chat_id)
+
+    let page_number = 1
+    let tickets_added = 0
+    while (true) {
+      const conversations = (await getConversations(page_number)).data
+
+      if(conversations.length === 0) {
+        break;
+      }
+
+      // console.log(page_number, conversations)
+
+      for (const conversation of conversations) {
+        if (!ticketChatIDs.includes(conversation.session_id)) {
+          add_ticket_from_conversation(conversation, 'pending')
+          tickets_added++
+        }
+      }
+      page_number++
+    }
+    return tickets_added
+  }
+  catch (error) {
+    console.error("find_new_conversations: ", error)
+    return -1
+  }
+  
+
+
 }
 
 // TBD: Define initial ticket generation here
@@ -318,13 +388,33 @@ export const seed_ticket = async(params: {}) => {
   const tickets = await Tickets()
 
   try{
-  const response = await tickets.insertOne({
-    ...params,
-    userIDs: [],
-  }) }
+  const fail = await Fail()
+  const required_fields = ["name", "description", "priority_score", "tags", "status", "date_created", "chat_id"]
+
+  let hallucinated = false
+  for (const field of required_fields) {
+    if (!params.hasOwnProperty(field)) {
+      hallucinated = true
+      break
+    }
+  }
+
+  if (hallucinated) {
+    const response = await fail.insertOne({
+      ...params,
+      userIDs: [],
+    })
+  }
+  else {
+    const response = await tickets.insertOne({
+      ...params,
+      userIDs: [],
+    }) }
+  }
   catch(error){
     redirect(`/oops?error=${error}`)
   }
+  
 }
 /**
  * Fetches a response from a chatbot API based on a given prompt.
@@ -432,9 +522,9 @@ export const seed_initial_conversations = async() => {
       const conversations = conversations_response.data
       console.log(conversations)
 
-      if (conversations.length === 0) {
-        break;
-      }
+    if (conversations.length === 0) {
+      break;
+    }
 
       for (const conversation of conversations) {
         const session_id = conversation.session_id

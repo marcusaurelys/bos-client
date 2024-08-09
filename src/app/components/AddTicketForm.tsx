@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { EditIcon } from 'lucide-react'
+import { EditIcon, Plus } from 'lucide-react'
 import React, { useState, memo } from 'react'
 import { addTicket, refreshTicket } from '@/db/tickets'
 import { toast } from '@/components/ui/use-toast'
@@ -84,7 +84,7 @@ const AddTicketForm = memo(function AddTicketForm() {
     return (
         <Dialog open={isOpen} onOpenChange={openChange}>
             <DialogTrigger asChild data-test="edit-ticket-button">
-                   <Button className="h-8 b-gray-50 outline-dashed outline-gray-400 outline-1 font-sans" variant="ghost">Add Ticket </Button> 
+                   <Button className="h-8 b-gray-50 outline outline-gray-400 outline-1 font-sans" variant="ghost"><Plus className='h-4' />Add Ticket </Button> 
             </DialogTrigger>
             <DialogContent aria-describedby={undefined} data-test="edit-ticket-dialog">
                 <DialogHeader>
