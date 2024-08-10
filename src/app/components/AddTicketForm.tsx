@@ -84,7 +84,7 @@ const AddTicketForm = memo(function AddTicketForm() {
     return (
         <Dialog open={isOpen} onOpenChange={openChange}>
             <DialogTrigger asChild data-test="edit-ticket-button">
-                   <Button className="h-8 b-gray-50 outline-dashed outline-gray-400 outline-1 font-sans" variant="ghost">Add Ticket </Button> 
+                   <Button className="h-8 b-gray-50 outline-dashed outline-gray-400 outline-1 font-sans ml-auto mr-2" variant="ghost">Add Ticket </Button> 
             </DialogTrigger>
             <DialogContent aria-describedby={undefined} data-test="edit-ticket-dialog">
                 <DialogHeader>
