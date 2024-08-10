@@ -21,7 +21,6 @@
             ps.openai
           ]))
           nodejs
-          cloudflared
         ];
 
         shellHook = ''

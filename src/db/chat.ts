@@ -414,8 +414,6 @@ export const seed_tickets_collection = async() => {
     const ticket_fails = {}
     
     for (const [session_id, conversation] of Object.entries(messages_dict)) {
-    //  console.log(session_id)
-    //  console.log(conversation)
 
       conversation.messages.forEach(message => {
         message['from'] = typeof message['from'] === 'object' ? JSON.stringify(message['from']) : message['from']                    
@@ -465,10 +463,15 @@ export const seed_tickets_collection = async() => {
 
 export const seed_initial_conversations = async() => {
 
-    const messages_dict: IMessageDict = {}
-    let page_number = 18;
+    return 
 
-    while (page_number === 18) {
+    const chat = await Chat()
+    chat.createIndex({chat_id: 1}, {unique: true})
+    
+    const messages_dict: IMessageDict = {}
+    let page_number = 1;
+
+    while (true) {
       const conversations_response = await getConversations(page_number)
       const conversations = conversations_response.data
       console.log(conversations)

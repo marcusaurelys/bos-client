@@ -63,7 +63,7 @@ const Ticket = memo(function Ticket({ticket}: TicketProps) {
         {/* ticket footer */}
         <div className="flex flex-row mt-auto">
             {user?.role === 'admin' && <EmployeeTable ticket={ticket}/>}
-            <h1 className="text-xs text-primary/75 ml-auto">{ticket.date_created.slice(4,15)}</h1>
+            <h1 className="text-xs text-primary/75 ml-auto">{ticket.date_created.slice(0,10)}</h1>
         </div>
 
 
