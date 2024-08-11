@@ -15,12 +15,22 @@ interface SortPreference {
 
 const Sort = memo(function Sort({column}: SortProps) {
 
-    const [sort, setSort] = useState<SortPreference>()
-
-    const router = useRouter()
     const searchParams = useSearchParams()
-    const pathname = usePathname()
+    const param = 'sort' + `${column}`
+    const sortParam = searchParams.get(param)
+    let init = {}
+    
+    if (sortParam) {
+      const split = sortParam.split(' ') 
+      init = {
+        property: split[0],
+        direction: split[1]
+      }
+    }
 
+    const [sort, setSort] = useState<SortPreference>(sortParam ? init : null)
+    const router = useRouter()
+    const pathname = usePathname()
 
     function handleSelectSort (property: string, direction: string) {
       setSort({property: property, direction: direction})
@@ -42,7 +52,7 @@ const Sort = memo(function Sort({column}: SortProps) {
             <PopoverTrigger>
                 <div className="flex flex-row items-center">
                     <ArrowUpDown className="h-4 stroke-[1px]"/>
-                    <h1 className="text-sm">{(sort?  `${sort.property.charAt(0).toUpperCase() + sort.property.slice(1)}: ${sort.direction}` : 'Sort By')}</h1>
+                    <h1 className="text-sm">{(sort ? `${sort.property.charAt(0).toUpperCase() + sort.property.slice(1)}: ${sort.direction}` : 'Sort By')}</h1>
                 </div>
             </PopoverTrigger>
             <PopoverContent align="end">

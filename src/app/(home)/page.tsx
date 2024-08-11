@@ -62,9 +62,6 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
   sortClosed = searchParams?.sortClosed?.split(' ')
 
 
-  console.log(sortPending, sortOpen, sortClosed)
-  console.log(filters)
-
   // What the fuck is this - Boris  
   let pending: ITicket[] | null = []
   let open: ITicket[] | null = []
@@ -80,13 +77,15 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
     console.error(error.message);
   }
 
+  filters = filters.map(filter => {return filter.charAt(0).toUpperCase() + filter.slice(1)})
+
   return (
     <main className="w-full h-[calc(100vh-3rem)] flex justify-center">
       <div className="w-full flex flex-row">
       <div className="flex justify-center items-start w-full h-full">
       <div className="flex flex-col w-fit justify-center">
             <div className="z-10 relative my-3 flex flex-row items-center justify-between" >
-              <Filter/> <AddTicketForm/> <RefreshTickets/>
+              <Filter params={filters}/> <AddTicketForm/> <RefreshTickets/>
             </div>
             <div className="flex gap-12 flex-wrap"> 
               <Column title="Pending" status="pending" tickets={pending}/>

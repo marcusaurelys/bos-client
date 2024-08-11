@@ -9,15 +9,12 @@ export const updateObject = {
 
 export function addClient(id: string, writer: WritableStreamDefaultWriter) {
   clients.push({ id, writer })
-  console.log("added client: " + id)
-  console.log(clients)
 }
 
 export function removeClient(id: string) {
   const index = clients.findIndex(client => client.id === id)
   if (index != -1) {
     clients.splice(index, 1)
-    console.log("removed client: " + id)
   }
 
 }

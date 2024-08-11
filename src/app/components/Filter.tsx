@@ -11,59 +11,72 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 const filterChoices =  ["High", "Medium", "Low"]
 
-const Filter = memo(function Filter() {
+interface FilterProps {
+    params: string[]
+}
+
+const Filter = memo(function Filter({params}: FilterProps) {
 
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    const [filters, setFilters] = useState<string[]>([])
+    const [filters, setFilters] = useState<string[]>(params)
+    console.log("filters")
+    console.log(params)
 
     const addFilter = (filter : string) => {
-        setFilters((filters) => [...filters, filter])
+        setFilters((prevFilters) => {
+            const updatedFilters = [...prevFilters, filter]
+            updatedFilters.sort()
+            updateURL(updatedFilters)
+            return updatedFilters 
+        })
     }
 
     const removeFilter = (filter : string) => {
-        setFilters(filters.filter((i : string) => i != filter))
+        setFilters((prevFilters) => {
+            const updatedFilters = prevFilters.filter(f => f != filter)
+            updatedFilters.sort()
+            updateURL(updatedFilters)
+            return updatedFilters
+        })
     }
 
     const clearFilters = () => {
         setFilters([])
     }
+
+    
     const selectedFilters = [...filters]
 
-    const createQueryString = useCallback(
-        (name: string, value: string) => {
-            const params = new URLSearchParams(searchParams.toString())
-            console.log(params.toString())
-            params.set(name, value)
-            params.sort()
-            return params.toString()
-        }, [searchParams])
+    const createQueryString = (name: string, value: string) => {
+        let params = new URLSearchParams(searchParams.toString())
+        params.set(name, value)
+        params.sort()
+        return params.toString()
+    }
 
-    const deleteQueryParam = useCallback(
-        (name: string) => {
+    const deleteQueryParam = (name: string) => {
         const params = new URLSearchParams(searchParams.toString())
         params.delete(name)
-        console.log('clearing')
+        return params.toString()        
+    }
 
-        return params.toString()
-    }, [searchParams])
+    const updateURL = (filters: string[]) => {
 
-    useEffect(() => {
-        console.log("FILTER USE EFFECT")
-        if(filters.length > 0){
+        if (filters.length > 0) {
             let stringified = ''
             const temp = filters.map(filter => filter)
             const sortedFilters = temp.sort()
             sortedFilters.forEach((filter : string) => {stringified = stringified += `"${filter.toLowerCase()}",`})
             router.push('?' + createQueryString('filters',`[${stringified.slice(0, -1)}]`))
         }
-        else{
-            
-
+        
+        else {
             router.push('?' + deleteQueryParam('filters'))
         }
-    }, [filters, createQueryString, deleteQueryParam, router])
+    }
+        
 
   return (
     <>
