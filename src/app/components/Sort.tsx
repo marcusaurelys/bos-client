@@ -18,7 +18,7 @@ const Sort = memo(function Sort({column}: SortProps) {
     const searchParams = useSearchParams()
     const param = 'sort' + `${column}`
     const sortParam = searchParams.get(param)
-    let init = {}
+    let init = null
     
     if (sortParam) {
       const split = sortParam.split(' ') 
@@ -28,7 +28,7 @@ const Sort = memo(function Sort({column}: SortProps) {
       }
     }
 
-    const [sort, setSort] = useState<SortPreference>(sortParam ? init : null)
+    const [sort, setSort] = useState<SortPreference | null>(sortParam ? init : null)
     const router = useRouter()
     const pathname = usePathname()
 
