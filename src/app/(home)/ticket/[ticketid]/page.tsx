@@ -265,7 +265,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                 </TabsContent>
                 </Tabs>
             </div>
-            <div className='mt-2 rounded-lg p-1 cursor-pointer mr-4 border h-fit'>
+            <div className='mt-2 rounded-lg p-1 cursor-pointer mr-4 border h-fit z-50'>
                 <RefreshChatLog ticket_info={ticket_info}/>
             </div>
             
