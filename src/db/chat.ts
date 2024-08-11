@@ -5,7 +5,6 @@ import { Base64 } from 'js-base64'
 import { cookies } from 'next/headers'
 import { useDB } from '@/db/mongo'
 import { getUserByToken } from '@/db/users'
-import { Db } from 'mongodb'
 import { IChat, IConversation, IMessage, IMessageDict } from '@/types'
 import { redirect } from 'next/navigation'
 import { sendMessage } from '@/app/api/listen/server'
@@ -83,6 +82,11 @@ export const getChatHistory = async (id : string) => {
   }
 }
 
+/**
+ * Inserts a chat into the database
+ * 
+ * @param params 
+ */
 export const add_dev_chat = async(params: any) => {
   const devchat = await DevChat()
   const response = await devchat.insertOne({
@@ -148,7 +152,7 @@ export const getConversations = async(page_number: number) => {
     return response
   } catch(error){
     redirect(`/oops?error=${error}`)
-    console.error("getConverstaions error: ",error);
+    console.error("getConversations error: ",error);
   }
 }
 

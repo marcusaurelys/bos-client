@@ -30,24 +30,36 @@ interface EditTicketProps {
 
 const EditTicket = memo(function EditTicket({ticket, user}: EditTicketProps) {
 
-    const [isOpen, setIsOpen] = useState(false)
-    const [confirmDelete, setConfirmDelete] = useState(false)
-    const [tags, setTags] = useState(ticket.tags)
+    const [isOpen, setIsOpen] = useState(false)//true means open, false means closed
+    const [confirmDelete, setConfirmDelete] = useState(false) //extra confirmation for safety
+    const [tags, setTags] = useState(ticket.tags) //ticket tags
 
     const router = useRouter()
 
-    // check for unnecessary renders
-    // console.log("render called")
-    
+    /**
+     * Automatically assigns the tags when the modal is opened
+     * 
+     * @param {boolean} open - boolean that checks whether the modal is open or not
+     */
     const openChange = (open: boolean) => {
         setIsOpen(open)
         setTags(ticket.tags)
     }
 
+    /**
+     * Removes a specific tag
+     * 
+     * @param {string} tag - tag to be removed 
+     */
     const removeTag = (tag: string) => {
         setTags(t => t.filter((t) => t !== tag))
     } 
 
+    /**
+     * Deletes the ticket
+     * 
+     * @param {React.MouseEvent<HTMLButtonElement, MouseEvent>} e - event listener
+     */
     const handleDelete = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
         console.log("DELETING")
@@ -74,6 +86,11 @@ const EditTicket = memo(function EditTicket({ticket, user}: EditTicketProps) {
         }
     }
     
+    /**
+     * Updates the ticket with the new form data
+     * 
+     * @param {FormData} formData - data of the updated ticket 
+     */
     const handleSave = async (formData: FormData) => {
         const title = formData.get('title') as string
         const description = formData.get('description') as string
@@ -103,6 +120,11 @@ const EditTicket = memo(function EditTicket({ticket, user}: EditTicketProps) {
         }
     }
 
+    /**
+     * Adds a tag to the ticket to be created
+     * 
+     * @param {React.KeyboardEvent<HTMLInputElement>} event - listener for enter key
+     */
     const checkEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
             const target = event.target as  HTMLTextAreaElement

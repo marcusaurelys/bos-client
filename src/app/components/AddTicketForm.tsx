@@ -72,7 +72,7 @@ const AddTicketForm = memo(function AddTicketForm() {
     /**
      * Adds a tag to the ticket to be created
      * 
-     * @param {React.KeyboardEvent<HTMLInputElement>} event - function gets called when Enter key is typed
+     * @param {React.KeyboardEvent<HTMLInputElement>} event - listener for enter key
      */
     const checkEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {

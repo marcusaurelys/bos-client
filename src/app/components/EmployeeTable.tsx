@@ -26,7 +26,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { useEffect, useState, memo } from 'react';
+import { useState, memo } from 'react';
 import { Button } from "@/components/ui/button";
 import { User, ITicket } from '@/types';
 import { getTicket, getTickets, refreshTicket } from "@/db/tickets";

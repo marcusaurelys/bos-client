@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, memo } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { refreshTickets } from '@/db/tickets'
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
@@ -8,6 +8,9 @@ export default function RefreshTickets() {
 
   const [loading, setLoading] = useState<boolean>(false)
   
+  /**
+   * Refreshes tickets
+   */
   async function handleClick() {
     setLoading(true)
     await refreshTickets()

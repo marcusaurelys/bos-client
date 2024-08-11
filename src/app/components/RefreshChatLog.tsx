@@ -4,8 +4,6 @@ import { Button } from '@/components/ui/button'
 import { refresh_messages } from '@/db/chat'
 import { ITicket } from '@/types'
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
-import { RotateCcw } from 'lucide-react'
-import { revalidatePath } from 'next/cache'
 import React, { useState } from 'react'
 
 interface Params {

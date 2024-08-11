@@ -1,4 +1,4 @@
-import {Db, MongoClient} from 'mongodb'
+import {MongoClient} from 'mongodb'
 
 const client = new MongoClient(process.env.MONGO_URI || '')
 let cache: any = null

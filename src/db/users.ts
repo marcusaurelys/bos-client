@@ -2,36 +2,11 @@
 
 import { useDB } from "@/db/mongo"
 import bcrypt from "bcryptjs"
-import { UserSession } from '@/types'
 import { cookies } from "next/headers";
 import { redirect } from 'next/navigation'
-import { ObjectId, UUID } from 'mongodb'
+import { ObjectId } from 'mongodb'
 import { revalidatePath } from "next/cache";
 import { sendMessage } from "@/app/api/listen/server";
-import { User } from "@/types";
-
-/*
-Unused interface
-
-interface UserCookie {
-    _id : UUID,
-    email : string,
-    password : string,
-    role : 'admin' | 'user',
-    name : string,
-    tokenExpiry : Date 
-    token : string
-}
-
-Unused interface
-interface User {
-    _id : UUID,
-    email : string,
-    password : string,
-    role : 'admin' | 'user',
-    name : string,
-}
-*/
 
 const Users = async () => {
     const db = await useDB()
@@ -46,10 +21,6 @@ const Tickets = async () => {
 
     return tickets
 }
-
-
-
-
 
 /**
  * Empty function to as a workaround for https://github.com/vercel/next.js/issues/54282
