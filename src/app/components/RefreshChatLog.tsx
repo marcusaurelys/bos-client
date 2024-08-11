@@ -16,6 +16,9 @@ function RefreshChatLog({ticket_info}: Params) {
 
     const [loading, setLoading] = useState<boolean>(false)
 
+    /**
+     * Refreshes chat logs
+     */
     async function handleRefresh() {
         setLoading(true)
         await refresh_messages(ticket_info.chat_id, ticket_info._id)
@@ -24,17 +27,15 @@ function RefreshChatLog({ticket_info}: Params) {
 
   if (!loading){
       return (
-        <Button onClick={handleRefresh} className="h-8 font-sans" variant="outline">
+        <Button onClick={handleRefresh} className="h-8 w-full font-sans" variant="outline">
            <ArrowPathIcon className="h-4 mr-2"/>         
-           Refresh 
+           Refresh Chat Log
         </Button>
       )
   } 
 
   return (
-    <Button disabled className="h-8 font-sans" variant="outline">
-      Please wait
-    </Button>
+    <Button className="h-8 w-full font-sans" variant="outline">Please Wait</Button>
   )
 }
 
