@@ -213,11 +213,15 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
 
     return (<>
         <div className="flex flex-row m-4">
-            <div className="w-2/3 border rounded-lg m-2">
+            <div className = "flex flex-col w-2/3 m-2">
+
+            
+            <div className="border rounded-lg">
                 <Tabs defaultValue="chat" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="chat">Chat History</TabsTrigger>
                     <TabsTrigger value="ai">AI Recommendations</TabsTrigger>
+                    
                 </TabsList>
                 <TabsContent value="chat">
                     <ScrollArea className="h-[calc(75dvh)]">
@@ -265,10 +269,10 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
                 </TabsContent>
                 </Tabs>
             </div>
-            <div className='mt-2 rounded-lg p-1 cursor-pointer mr-4 border h-fit z-50'>
+            <div className='mt-2 rounded-lg p-1 cursor-pointer border z-50 w-1/6'>
                 <RefreshChatLog ticket_info={ticket_info}/>
             </div>
-            
+            </div>
             <div className="w-1/3 m-2">
                 <Card>
                     <CardHeader className="flex flex-row justify-between">
