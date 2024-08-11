@@ -33,7 +33,9 @@ function RefreshChatLog({ticket_info}: Params) {
   } 
 
   return (
-    <Button className="h-8 w-full font-sans" variant="outline">Please Wait</Button>
+    <Button disabled className="h-8 font-sans" variant="outline">
+      Please wait
+    </Button>
   )
 }
 
