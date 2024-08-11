@@ -71,7 +71,6 @@ const Filter = memo(function Filter({params}: FilterProps) {
             sortedFilters.forEach((filter : string) => {stringified = stringified += `"${filter.toLowerCase()}",`})
             router.push('?' + createQueryString('filters',`[${stringified.slice(0, -1)}]`))
         }
-        
         else {
             router.push('?' + deleteQueryParam('filters'))
         }
