@@ -25,14 +25,12 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState, memo } from 'react'
+import { memo } from 'react'
 import { register } from '@/db/users'
 import { useToast } from "@/components/ui/use-toast"
-import bcrypt from "bcryptjs"
 
 const AddUserForm = memo(function AddUserForm() {
 
-    const [isOpen, setOpen] = useState(false)
     const { toast } = useToast()
 
     /**
@@ -56,11 +54,9 @@ const AddUserForm = memo(function AddUserForm() {
                 toast({
                     description: "Successfully registered " +  name + " as " + role
                   })
-                setOpen(false)
             }
 
             else{
-                setOpen(false)
                 toast({
                     variant: "destructive",
                     description: "Failed to register"
@@ -78,7 +74,7 @@ const AddUserForm = memo(function AddUserForm() {
 
     return (
         
-    <Dialog open={isOpen} onOpenChange={setOpen}>
+    <Dialog>
     <DialogTrigger asChild>
         <Button variant="default">Add User</Button>
     </DialogTrigger>
@@ -173,7 +169,9 @@ const AddUserForm = memo(function AddUserForm() {
         </div>
     
         <DialogFooter>
-            <Button type="submit">Add User</Button>
+            <DialogClose asChild>
+                <Button type="submit">Add User</Button>
+            </DialogClose>
         </DialogFooter>
     </form>
     </DialogContent>
