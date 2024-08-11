@@ -14,12 +14,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { login } from "@/db/users"
 import { useToast } from "@/components/ui/use-toast"
-import { useSearchParams } from "next/navigation"
-import { Suspense, useEffect } from "react"
+import { useEffect } from "react"
 export default function Page(){
 
     const { toast } = useToast()
     
+    /**
+     * Handling log-ins
+     */
     useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search)
         const wrongPassword = searchParams.has('wrongPassword')

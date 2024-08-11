@@ -1,15 +1,13 @@
 'use server'
 
 import { useDB } from "@/db/mongo"
-import { ObjectId, WithId } from "mongodb"
+import { ObjectId } from "mongodb"
 import { IMessage, ITicket} from '@/types'
-import ticket from "@/app/(home)/ticket/page"
 import { revalidatePath } from "next/cache"
 import { validateUser } from "./users"
 import { sendMessage } from '@/app/api/listen/server'
 import { redirect } from "next/navigation"
 import { getCache, invalidateCache, setCache } from "./ticketsCache"
-import { getMessages } from "./chat"
 import { seed_initial_conversations, seed_tickets_collection } from '@/db/chat'
 
 const Tickets = async () => {

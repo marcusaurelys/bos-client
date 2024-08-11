@@ -1,6 +1,6 @@
 import { fuckNextDB } from '@/db/mongo'
-import { fuckNextTickets, refreshTicket } from '@/db/tickets'
-import { fuckNextChat, refresh_messages } from '@/db/chat'
+import { fuckNextTickets } from '@/db/tickets'
+import { fuckNextChat } from '@/db/chat'
 import { fuckNextUsers } from '@/db/users'
 
 import {
@@ -24,15 +24,13 @@ import Bot from "@/app/components/Bot";
 import UpdateStatusForm from "@/app/components/UpdateStatusForm";
 import EditTicket from "@/app/components/EditTicket";
 import { validateUser } from "@/db/users";
-import { IChat, IMessage, ITicket, IConversation, IDevChat, User } from '@/types'
+import { IChat, ITicket, IConversation, User } from '@/types'
 import ClientToast from '@/app/components/ErrorToast'
 import Listener from '@/app/components/Listener'
 import  { TicketSkeleton }  from './loading'
 import { getChatHistory, add_dev_chat, get_dev_chat } from '@/db/chat'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { revalidatePath } from 'next/cache'
 import RefreshChatLog from '@/app/components/RefreshChatLog'
-import { redirect } from 'next/navigation'
 
 export default async function Ticket({params}:{params:{ticketid:string}}) {
     

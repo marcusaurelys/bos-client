@@ -7,7 +7,6 @@ import { changeStatus } from '@/db/tickets'
 import { ITicket } from '@/types'
 import React, { memo } from 'react'
 import { useToast } from '@/components/ui/use-toast'
-import { revalidatePath } from 'next/cache'
 
 interface UpdateStatusForm{
     ticketInfo: ITicket
@@ -17,6 +16,11 @@ const UpdateStatusForm = memo(function UpdateStatusForm({ticketInfo}: UpdateStat
 
     const {toast} = useToast()
 
+    /**
+     * Updates ticket status based on form data
+     * 
+     * @param {FormData} formData -  status of ticket to be updated 
+     */
     async function setStatus(formData : FormData){
         const status = (formData.get('status') as string).toLowerCase()
         

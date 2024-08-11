@@ -5,7 +5,6 @@ import Ticket from './Ticket'
 import { motion } from 'framer-motion'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ITicket } from '../../types'
-
 import Sort from './Sort'
 interface ColumnProps {
     title: string,
@@ -31,6 +30,11 @@ const Column = memo(function Column({title, status, tickets}: ColumnProps) {
     tickets = []
   }
 
+  /**
+   *  Renders the top 10 tickets when the node intersects with the listener
+   * 
+   *  @param {HTMLElement | null} node - current index being checked
+   */
   const top_trigger = useCallback((node : HTMLElement | null) => {
     if(top_observer.current) top_observer.current.disconnect()
     top_observer.current = new IntersectionObserver(entries => {
@@ -42,6 +46,11 @@ const Column = memo(function Column({title, status, tickets}: ColumnProps) {
     if(node) top_observer.current.observe(node)
   }, [topCounter])
   
+  /**
+   * Renders the bottom 10 tickets when the node intersects with the listener
+   * 
+   * @param {HTMLElement | null} node - current index being checked
+   */
   const bottom_trigger = useCallback((node : HTMLElement | null) => {
     if(bottom_observer.current) bottom_observer.current.disconnect()
     bottom_observer.current = new IntersectionObserver(entries => {

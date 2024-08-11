@@ -9,6 +9,9 @@ export default function Page(){
     
     const { toast } = useToast()
 
+    /**
+     * Handling db errors
+     */
     useEffect( () => {
         const searchParams = new URLSearchParams(window.location.search)
         const search = searchParams.get('error')

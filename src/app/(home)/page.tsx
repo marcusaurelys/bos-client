@@ -61,8 +61,6 @@ export default async function Home({ searchParams } : { searchParams?: { [key: s
   sortOpen = searchParams?.sortOpen?.split(' ')
   sortClosed = searchParams?.sortClosed?.split(' ')
 
-
-  // What the fuck is this - Boris  
   let pending: ITicket[] | null = []
   let open: ITicket[] | null = []
   let closed: ITicket[] | null = []

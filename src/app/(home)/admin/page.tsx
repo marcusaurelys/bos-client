@@ -1,9 +1,7 @@
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
-    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
@@ -17,7 +15,6 @@ import { fuckNextDB } from '@/db/mongo'
 import { User } from '@/types'
 import EditUserForm from "@/app/components/EditUserForm"
 import { cookies } from "next/headers"
-import { redirect } from "next/navigation"
 import ClientToast from "@/app/components/ErrorToast"
 
 export default async function Page(){
