@@ -5,10 +5,10 @@ import { Base64 } from 'js-base64'
 import { cookies } from 'next/headers'
 import { useDB } from '@/db/mongo'
 import { getUserByToken } from '@/db/users'
-import { revalidatePath } from 'next/cache'
 import { Db } from 'mongodb'
 import { IChat, IConversation, IMessage, IMessageDict } from '@/types'
 import { redirect } from 'next/navigation'
+import { sendMessage } from '@/app/api/listen/server'
 
 const CRISP_WEBSITE_ID = process.env.CRISP_WEBSITE_ID
 const CRISP_API_ID = process.env.CRISP_API_ID
@@ -205,7 +205,7 @@ export const refresh_messages = async (chat_id: string, ticket_id: string) => {
   update_chat_messages(chat_id, new_messages)
   delete_dev_chat(chat_id)
 
-  revalidatePath("/" + ticket_id)
+  sendMessage()
 
 }
 
