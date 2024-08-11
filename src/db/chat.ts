@@ -91,6 +91,14 @@ export const add_dev_chat = async(params: any) => {
   
 }
 
+export const delete_dev_chat = async(chat_id: any) => {
+  const devchat = await DevChat()
+  const response = await devchat.deleteOne({
+    chat_id: chat_id
+  })
+  
+}
+
 export const get_dev_chat = async(chat_id: string) => {
   const devchat = await DevChat()
   const response = await devchat.findOne({
@@ -166,6 +174,39 @@ export const getMessages = async(session_id: string) => {
   } catch(error){
     console.error("getMessages error: ",error);
   }
+}
+
+
+export const update_chat_messages = async (chat_id: string, new_messages: IMessage[]) => {
+    try {const chat = await Chat()
+    const response = await chat.updateOne(
+      { chat_id: chat_id},
+      { $set: { messages: new_messages } }
+    )
+
+    return response
+  } catch (error) {
+    console.error("update_chat_messages error:", error)
+  }
+} 
+
+
+export const refresh_messages = async (chat_id: string, ticket_id: string) => {
+  
+  const response = await getMessages(chat_id)
+  const new_messages = response.data
+  const old_messages = await getChatHistory(chat_id)
+
+  // return if no new messages
+  if (new_messages.length == old_messages.length) {
+    return
+  }
+
+  update_chat_messages(chat_id, new_messages)
+  delete_dev_chat(chat_id)
+
+  revalidatePath("/" + ticket_id)
+
 }
 
 /**
