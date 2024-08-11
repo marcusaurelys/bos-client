@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { TagIcon, XMarkIcon } from '@heroicons/react/16/solid'
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
 import {
     Select,
@@ -16,30 +16,29 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { EditIcon } from 'lucide-react'
 import React, { useState, memo } from 'react'
-import { addTicket, refreshTicket } from '@/db/tickets'
+import { addTicket} from '@/db/tickets'
 import { toast } from '@/components/ui/use-toast'
 
 
 const AddTicketForm = memo(function AddTicketForm() {
 
-    const [isOpen, setIsOpen] = useState(false)
-    const [confirmDelete, setConfirmDelete] = useState(false)
-    const [tags, setTags] = useState<string[]>([])
-
-    // check for unnecessary renders
-    // console.log("render called")
+    const [tags, setTags] = useState<string[]>([])//state that holds the tags to be added to the new ticket
     
-    const openChange = (open: boolean) => {
-        setIsOpen(open)
-    }
-
+    /**
+     * Removes a tag from the current state
+     * 
+     * @param {string} tag - tag to be removed
+     */
     const removeTag = (tag: string) => {
         setTags(t => t.filter((t) => t !== tag))
     } 
 
-    
+    /**
+     * Adds a manually created ticket to the database
+     * 
+     * @param {FormData} formData - Ticket details
+     */
     const handleSave = async (formData: FormData) => {
         const title = formData.get('title') as string
         const description = formData.get('description') as string
@@ -70,6 +69,11 @@ const AddTicketForm = memo(function AddTicketForm() {
         }
     }
 
+    /**
+     * Adds a tag to the ticket to be created
+     * 
+     * @param {React.KeyboardEvent<HTMLInputElement>} event - function gets called when Enter key is typed
+     */
     const checkEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
             const target = event.target as  HTMLTextAreaElement
@@ -82,7 +86,7 @@ const AddTicketForm = memo(function AddTicketForm() {
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={openChange}>
+        <Dialog>
             <DialogTrigger asChild data-test="edit-ticket-button">
                    <Button className="h-8 b-gray-50 outline-dashed outline-gray-400 outline-1 font-sans ml-auto mr-2" variant="ghost">Add Ticket </Button> 
             </DialogTrigger>
@@ -182,9 +186,10 @@ const AddTicketForm = memo(function AddTicketForm() {
                         </div>
                     </div>
                 
-
                 <DialogFooter>
-                    <Button data-test="save-edit-button" variant="default" type="submit" onClick={(e) => {setIsOpen(false)}}>Save</Button>   
+                    <DialogClose asChild>
+                        <Button data-test="save-edit-button" variant="default" type="submit">Save</Button> 
+                    </DialogClose>
                 </DialogFooter>
                 </form>
             </DialogContent>
