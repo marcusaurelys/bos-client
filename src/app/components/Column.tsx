@@ -22,7 +22,6 @@ const Column = memo(function Column({title, status, tickets}: ColumnProps) {
   const top_observer = useRef<IntersectionObserver>()
   const bottom_observer = useRef<IntersectionObserver>()
 
-
   const [numberOfTickets, setNumber] = useState(20)
   const observer = useRef<IntersectionObserver>()
 
