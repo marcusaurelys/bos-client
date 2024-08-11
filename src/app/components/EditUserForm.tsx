@@ -27,6 +27,7 @@ import { useState, memo } from 'react'
 import { changePasswordForUser, deleteUser, editUser } from '@/db/users'
 import { useToast } from "@/components/ui/use-toast"
 import { User } from "@/types"
+import { DialogClose } from "@radix-ui/react-dialog"
 
 interface EditUserFormProps {
     user : User
@@ -34,10 +35,14 @@ interface EditUserFormProps {
 
 const EditUserForm = memo(function EditUserForm({ user } : EditUserFormProps) {
     
-    const [isOpen, setOpen] = useState(false)
     const [form, setForm] = useState(false) //false means show edit user, true means change password
     const { toast } = useToast()
 
+    /**
+     * Updates the user details based on the form data
+     * 
+     * @param {FormData} formData - updated user data 
+     */
     const handleEdit = async(formData : FormData) => {
         const name = formData.get('name') as string
         const email = formData.get('email') as string
@@ -45,24 +50,20 @@ const EditUserForm = memo(function EditUserForm({ user } : EditUserFormProps) {
         const discord = formData.get('discord') as string
 
         if(name == user.name && email == user.email && role == user.role && discord == user.discord){
-            setOpen(false)
             toast({
                 description: `Nothing to update.`
             })
-            return
         }
         
         const res = await editUser(user._id, name, email, role, discord)
 
         if (res){
-            setOpen(false)
             toast({
                 description: `Successfully edited ${user.name}`
               })
         }
 
         else {
-            setOpen(false)
             toast({
                 variant: 'destructive',
                 description: 'Failed to update User' 
@@ -70,6 +71,12 @@ const EditUserForm = memo(function EditUserForm({ user } : EditUserFormProps) {
         }
     }
 
+    /**
+     * Updates the user password based on the form data
+     * 
+     * @param {FormData} formData - updated password 
+     * 
+     */
     const handleChangePassword = async(formData : FormData) => {
         const password = formData.get('password') as string
         const confirm = formData.get('confirm-pass') as string
@@ -80,7 +87,6 @@ const EditUserForm = memo(function EditUserForm({ user } : EditUserFormProps) {
             toast({
                 description: res
             })
-            return
         }
 
         if(res){
@@ -97,6 +103,11 @@ const EditUserForm = memo(function EditUserForm({ user } : EditUserFormProps) {
 
     }
 
+    /**
+     * Deletes the specified user
+     * 
+     * @param {User} user - user to delete 
+     */
     const handleDelete = async(user : User) => {
         const res = await deleteUser(user._id)
 
@@ -110,11 +121,10 @@ const EditUserForm = memo(function EditUserForm({ user } : EditUserFormProps) {
                 description: 'failed to delete user.'
             })
         }
-        setOpen(false)
     }
 
     return(
-        <Dialog open={isOpen} onOpenChange={setOpen}>
+        <Dialog>
         <DialogTrigger asChild>
             <Button variant="default">Edit</Button>
         </DialogTrigger>
@@ -191,9 +201,13 @@ const EditUserForm = memo(function EditUserForm({ user } : EditUserFormProps) {
                     
                     </div>
                 <DialogFooter className="pt-4">
-                    <Button type="button" variant="destructive" onClick={(e) => handleDelete(user)}> Delete User </Button>
+                    <DialogClose asChild>
+                        <Button type="button" variant="destructive" onClick={(e) => handleDelete(user)}> Delete User </Button>
+                    </DialogClose>
                     <Button type="button" onClick={(e) => {setForm(true)}}> Change Password </Button>
-                    <Button type="submit" onClick={(e) => {setOpen(false)}}>Save Changes</Button>
+                    <DialogClose asChild>
+                        <Button type="submit">Save Changes</Button>
+                    </DialogClose>
                 </DialogFooter>
             </form>
             </>
