@@ -109,7 +109,7 @@ export default async function Ticket({params}:{params:{ticketid:string,chatid:st
     const user = JSON.parse(userString)
     
     try{
-        [ticket_info, chat_history, devchat] = await Promise.all([getTicket(params.ticketid), getChatHistory(params.chatid), get_dev_chat(params.ticketid)])
+        [ticket_info, chat_history, devchat] = await Promise.all([getTicket(params.ticketid), getChatHistory(params.chatid), get_dev_chat(params.chatid)])
         if (ticket_info){
             if(ticket_info.priority_score == "high") {
                 priorityColor = "bg-red-500"
