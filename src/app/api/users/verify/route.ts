@@ -1,6 +1,10 @@
 import { cookies } from 'next/headers'
 import { getUserByToken } from '@/db/users'
 
+
+// This is a workaroud for Next.js not supporting Node.js runtimes in the middleware. We therefore create a route handler for validating requests that the middleware can then call.
+// See https://github.com/vercel/next.js/discussions/46722
+
 export async function GET() {
   const token = cookies().get('session')
   if (!token) {

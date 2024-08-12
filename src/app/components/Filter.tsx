@@ -27,7 +27,7 @@ const Filter = memo(function Filter({params}: FilterProps) {
     const addFilter = (filter : string) => {
         setFilters((prevFilters) => {
             const updatedFilters = [...prevFilters, filter]
-            updatedFilters.sort()
+            updatedFilters.sort() // We sort since Next.js caches based on the URL.
             updateURL(updatedFilters)
             return updatedFilters 
         })
@@ -36,19 +36,23 @@ const Filter = memo(function Filter({params}: FilterProps) {
     const removeFilter = (filter : string) => {
         setFilters((prevFilters) => {
             const updatedFilters = prevFilters.filter(f => f != filter)
-            updatedFilters.sort()
+            updatedFilters.sort() // We sort since Next.js caches based on the URL.
             updateURL(updatedFilters)
             return updatedFilters
         })
     }
 
     const clearFilters = () => {
-        setFilters([])
+        setFilters(() => {
+            updateURL([])
+            return []
+        })
     }
 
     
     const selectedFilters = [...filters]
 
+    // Function for formatting the filters to a valid URL string
     const createQueryString = (name: string, value: string) => {
         let params = new URLSearchParams(searchParams.toString())
         params.set(name, value)
@@ -56,6 +60,7 @@ const Filter = memo(function Filter({params}: FilterProps) {
         return params.toString()
     }
 
+    // Function for deleting a filter in the URL
     const deleteQueryParam = (name: string) => {
         const params = new URLSearchParams(searchParams.toString())
         params.delete(name)
@@ -64,14 +69,14 @@ const Filter = memo(function Filter({params}: FilterProps) {
 
     const updateURL = (filters: string[]) => {
 
+        // By default, all filters are selected. If there is a selected filter, we push the filters state to the URL
         if (filters.length > 0) {
             let stringified = ''
             const temp = filters.map(filter => filter)
             const sortedFilters = temp.sort()
             sortedFilters.forEach((filter : string) => {stringified = stringified += `"${filter.toLowerCase()}",`})
             router.push('?' + createQueryString('filters',`[${stringified.slice(0, -1)}]`))
-        
-        } else {
+        } else { // Otherwise, we remove the filter parameter
             router.push('?' + deleteQueryParam('filters'))
         }
     }

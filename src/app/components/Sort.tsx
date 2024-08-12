@@ -15,6 +15,8 @@ interface SortPreference {
 
 const Sort = memo(function Sort({column}: SortProps) {
 
+
+    // We load the state of the sort from the URL params
     const searchParams = useSearchParams()
     const param = 'sort' + `${column}`
     const sortParam = searchParams.get(param)
@@ -25,6 +27,7 @@ const Sort = memo(function Sort({column}: SortProps) {
       init = {
         property: split[0],
         direction: split[1]
+        
       }
     }
     const pathname = usePathname()
@@ -33,9 +36,32 @@ const Sort = memo(function Sort({column}: SortProps) {
     const router = useRouter()
     const pathname = usePathname()
 
+    
     function handleSelectSort (property: string, direction: string) {
+      // If no sort is selected, sort the tickets
+      if (!sort) {                
+        setSort({property: property, direction: direction})
+        router.push(pathname + '?' + createQueryString(`sort${column}`, `${property} ${direction}`))
+        return
+      }
+
+      // If the sort selected is the same, we remove the sort
+      if (sort.property === property && sort.direction === direction) {                
+        setSort(() => {
+          const url = new URLSearchParams(searchParams.toString())
+          console.log(url.toString())
+          url.delete(param)
+          console.log(url.toString())
+          router.push('?' + url.toString())
+          return null
+        })
+        return
+      }
+
+      // There is a current sort and we clicked on another sort option
       setSort({property: property, direction: direction})
       router.push(pathname + '?' + createQueryString(`sort${column}`, `${property} ${direction}`))
+      
     }
 
     const createQueryString = (name: string, value: string) => {

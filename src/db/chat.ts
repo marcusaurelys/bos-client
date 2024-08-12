@@ -41,7 +41,21 @@ const DevChat = async() => {
   return devchat
 }
 
+
 /*
+Chat Object - the customer chats in crisp
+  {
+    id_: ObjectID // irrelevant in this case
+    chat_id: string // 'session_id' of conversation in Crisp
+    messages: [{
+      sender: string
+      message: string
+    }]
+  }
+*/
+
+/*
+DevChat Object - the conversation of the developer and the chatbot
   {
     ticket_id: 
     messages: [
@@ -83,9 +97,7 @@ export const getChatHistory = async (id : string) => {
 }
 
 /**
- * Inserts a chat into the database
- * 
- * @param params 
+ * Inserts a dev chat into the database 
  */
 export const add_dev_chat = async(params: any) => {
   const devchat = await DevChat()
@@ -95,6 +107,10 @@ export const add_dev_chat = async(params: any) => {
   
 }
 
+
+/**
+ * Deletes a dev chat from the database 
+ */
 export const delete_dev_chat = async(chat_id: any) => {
   const devchat = await DevChat()
   const response = await devchat.deleteOne({
@@ -103,6 +119,10 @@ export const delete_dev_chat = async(chat_id: any) => {
   
 }
 
+
+/**
+ * Gets a dev chat from the database 
+ */
 export const get_dev_chat = async(chat_id: string) => {
   const devchat = await DevChat()
   const response = await devchat.findOne({
@@ -116,6 +136,10 @@ export const get_dev_chat = async(chat_id: string) => {
   return response
 }
 
+
+/**
+ * Replaces the messages array of a dev chat with an updated one
+ */
 export const update_dev_chat = async(dev: any) => {
   const devchat = await DevChat()
   const response = await devchat.updateOne(
@@ -181,6 +205,9 @@ export const getMessages = async(session_id: string) => {
 }
 
 
+/**
+ * Updates customer chat messages that we got from Crisp using the session_id 
+ */
 export const update_chat_messages = async (chat_id: string, new_messages: IMessage[]) => {
     try {const chat = await Chat()
     const response = await chat.updateOne(
@@ -195,6 +222,9 @@ export const update_chat_messages = async (chat_id: string, new_messages: IMessa
 } 
 
 
+/**
+ * Queries Crisp for the customer conversation and updates the database with the new updated customer chats 
+ */
 export const refresh_messages = async (chat_id: string, ticket_id: string) => {
   
   const response = await getMessages(chat_id)
@@ -208,12 +238,13 @@ export const refresh_messages = async (chat_id: string, ticket_id: string) => {
 
   update_chat_messages(chat_id, new_messages)
   delete_dev_chat(chat_id)
-
   sendMessage()
 
 }
 
 /**
+ * Combines the chatlogs and the problem statement for better inference
+ *
  * Fetches a response from a chatbot API based on a given prompt.
  * 
  * @param {string} prompt - The prompt to send to the chatbot.
@@ -238,6 +269,15 @@ export const get_chatbot_response = async(chat_logs: string, problem_statement: 
   }
 } 
 
+
+/**
+ * Handler for querying the model for generating tickets
+ *
+ * Fetches a response from a chatbot API based on a given prompt.
+ * 
+ * @param {string} prompt - The prompt to send to the chatbot.
+ * @returns {Promise<Object>} The response from the chatbot API.
+ */
 export const get_chatbot_response_custom = async(chat_logs: string) => {
   try {
 
@@ -256,122 +296,13 @@ export const get_chatbot_response_custom = async(chat_logs: string) => {
     console.error("get_chatbot_response_custom error: ",error);
   }
 } 
-/*
-Chat Object
-  {
-    id_: ObjectID // irrelevant in this case
-    chat_id: string // 'session_id' of conversation in Crisp
-    messages: [{
-      sender: string
-      message: string
-    }]
-  }
-*/
 
-/**
- * Fetches the chat history of the current user.
- * 
- * @returns {Promise<Object>} The chat history of the user.
- */
-export const get_chat_history_of_user = async() => {
-  const chat = await Chat()
-
-  try{
-    const token = cookies().get('session')
-    const user = await getUserByToken(token? token.value : '')
-
-    // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
-    const user_id = user._id
-
-    const response = await chat.find({user_id: user_id})
-    const result = await response.json()
-    return result 
-  }catch(error){
-    console.error("get_chat_history_of_user",error)
-    redirect(`/oops?error=${error}`)
-  }
-}
-
-/**
- * Fetches the chat history of a specific ticket for the current user.
- * 
- * @param {string} session_id - The session ID of the chat ticket.
- * @returns {Promise<Object>} The chat history of the ticket.
- */
-export const get_chat_history_of_ticket = async(session_id: string) => {
-  const chat = await Chat()
-  try{
-    const token = cookies().get('session')
-    const user = await getUserByToken(token? token.value : '')
-  
-    // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
-    const user_id = user._id
-    
-    const response = await chat.findOne({user_id: user_id, session_id: session_id})
-    const result = await response.json()
-    return result
-  }catch(error){
-    console.error("get_chat_history_of_ticket",error)
-    redirect(`/oops?error=${error}`)
-  }
-}
-
-/**
- * Updates the chat history of a specific ticket for the current user.
- * 
- * @param {string} session_id - The session ID of the chat ticket.
- * @param {Chat[]} chats - An array of chat objects to update.
- * @returns {Promise<Object>} The result of the update operation.
- */
-export const update_chat_history_of_ticket = async(session_id: string, chats: IChat) => {
-  const chat = await Chat()
-  try{
-    const token = cookies().get('session')
-    const user = await getUserByToken(token? token.value : '')
-
-    // No need to verify for user validity since the middleware should prevent this request from running if the token is invalid
-    const user_id = user._id
-
-    const response = await chat.updateOne({user_id: user_id, session_id: session_id}, {
-      $set: {
-        chats: chats
-      }
-    })
-    const result = await response.json()
-    return result
-  } catch (error){
-    console.error("update_chat_history_of_ticket",error)
-    redirect(`/oops?error=${error}`)
-  }
-}
 
 // TBD: Define initial ticket generation here
 
-export const seed_chat = async( session_id: string, messages: IMessage[] ) => {
-  const chat = await Chat()
-
-  const response = await chat.insertOne({
-    chat_id: session_id,
-    messages: messages,
-  })
-
-  return 'success'
- 
-}
-
-export const seed_ticket = async(params: {}) => {
-  const tickets = await Tickets()
-
-  try{
-  const response = await tickets.insertOne({
-    ...params,
-    userIDs: [],
-  }) }
-  catch(error){
-    redirect(`/oops?error=${error}`)
-  }
-}
 /**
+ * DEPRECATED: LLAMA2 MODEL. The models are now located in server/server.py
+ *
  * Fetches a response from a chatbot API based on a given prompt.
  * 
  * @param {string} prompt - The prompt to send to the chatbot.
@@ -396,6 +327,36 @@ export const get_chatbot_response_old = async(prompt: string) => {
   }
 } 
 
+
+// Function for inserting customer chat to the database
+export const seed_chat = async( session_id: string, messages: IMessage[] ) => {
+  const chat = await Chat()
+
+  const response = await chat.insertOne({
+    chat_id: session_id,
+    messages: messages,
+  })
+
+  return 'success'
+ 
+}
+
+// Function for inserting a ticket to the database
+export const seed_ticket = async(params: {}) => {
+  const tickets = await Tickets()
+
+  try{
+  const response = await tickets.insertOne({
+    ...params,
+    userIDs: [],
+  }) }
+  catch(error){
+    redirect(`/oops?error=${error}`)
+  }
+}
+
+
+// Function called for generating initial tickets
 export const seed_tickets_collection = async() => {
 
     return
@@ -465,6 +426,7 @@ export const seed_tickets_collection = async() => {
     }
 }
 
+// Function for getting the conversations from Crisp
 export const seed_initial_conversations = async() => {
 
     return 
