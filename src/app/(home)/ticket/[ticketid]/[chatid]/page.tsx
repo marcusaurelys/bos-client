@@ -32,14 +32,14 @@ import { getChatHistory, add_dev_chat, get_dev_chat } from '@/db/chat'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import RefreshChatLog from '@/app/components/RefreshChatLog'
 
-export default async function Ticket({params}:{params:{ticketid:string}}) {
+export default async function Ticket({params}:{params:{ticketid:string,chatid:string}}) {
     
     fuckNextDB()
     fuckNextTickets()
     fuckNextChat()
     fuckNextUsers()
 
-  const generate_problem_statement = async(chat_history: IConversation) => {
+  const generate_problem_statement = async(chat_history: IConversation | null) => {
      
      if (chat_history === null) {
        throw new Error('BRUH THE CHATS ARE NULL')
@@ -91,11 +91,9 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
      
   }
 
-    const layout = cookies().get("react-resizable-panels:layout");
-    const defaultLayout = layout ? JSON.parse(layout.value) : undefined;
-
     let ticket_info: ITicket | null = null
-    let chat_history: IChat
+    let chat_history: IChat | null = null
+    let devchat
     let user: User
     let priorityColor: string = ""
     let errorMessage = ""
@@ -103,8 +101,7 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
     let chatAndTicketError = "An error occurred while fetching the ticket and chat history, please check the TicketID in the url"
     
     try{
-        [ticket_info, user] = await Promise.all([getTicket(params.ticketid), validateUser()])
-        
+        [ticket_info, user, chat_history, devchat] = await Promise.all([getTicket(params.ticketid), validateUser(), getChatHistory(params.chatid), get_dev_chat(params.ticketid)])
         if (ticket_info){
             if(ticket_info.priority_score == "high") {
                 priorityColor = "bg-red-500"
@@ -125,10 +122,6 @@ export default async function Ticket({params}:{params:{ticketid:string}}) {
     if (!ticket_info) 
         throw new Error("Ticket does not exist")
         
-    chat_history = await getChatHistory(ticket_info.chat_id)
-    
-    let devchat = await get_dev_chat(ticket_info._id)
-
     if (devchat === null) {
         console.log("Devchat is null, generating problem statement")
         await generate_problem_statement(chat_history)

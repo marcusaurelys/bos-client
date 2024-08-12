@@ -47,7 +47,7 @@ const Ticket = memo(function Ticket({ticket}: TicketProps) {
 
         </div>
         
-        <Link href={`ticket/${ticket._id}`} data-test={`ticket-${ticket._id}`}>
+        <Link href={`ticket/${ticket._id}/${ticket.chat_id}`} data-test={`ticket-${ticket._id}`}>
             {/* ticket description */}
         <div className="font-semibold">
                 <h1>{ticket.name}</h1>
