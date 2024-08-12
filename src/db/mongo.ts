@@ -1,6 +1,7 @@
 import {MongoClient} from 'mongodb'
 
-const client = new MongoClient(process.env.MONGO_URI || '')
+const MONGO_URI = process.env.NODE_ENV === 'production' ? process.env.MONGO_URI_PRODUCTION : process.env.MONGO_URI 
+const client = new MongoClient(MONGO_URI || '')
 let cache: any = null
 
 /**

@@ -18,7 +18,7 @@ jobs:
 
       - name: Build the Next.js app
         run: |
-          docker build --build-arg MONGO_URI=${{secrets.MONGO_URI}} --build-arg HOST=${{secrets.HOST}}:3000 --build-arg CRISP_WEBSITE_ID=${{secrets.CRISP_WEBSITE_ID}} --build-arg CRISP_API_ID=${{secrets.CRISP_API_ID}} --build-arg CRISP_API_KEY=${{secrets.CRISP_API_KEY}} --build-arg CHATBOT_URL=${{secrets.CHATBOT_URL}} --build-arg CHATBOT_API_KEY=${{ secrets.CHATBOT_API_KEY}} . --tag ghcr.io/marcusaurelys/bos-next:latest
+          docker build --build-arg MONGO_URI=${{secrets.MONGO_URI}} --build-arg MONGO_URI_PRODUCTION="mongodb://mongo:27017" --build-arg HOST=${{secrets.HOST}}:3000 --build-arg CRISP_WEBSITE_ID=${{secrets.CRISP_WEBSITE_ID}} --build-arg CRISP_API_ID=${{secrets.CRISP_API_ID}} --build-arg CRISP_API_KEY=${{secrets.CRISP_API_KEY}} --build-arg CHATBOT_URL=${{secrets.CHATBOT_URL}} --build-arg CHATBOT_API_KEY=${{ secrets.CHATBOT_API_KEY}} . --tag ghcr.io/marcusaurelys/bos-next:latest
           docker push ghcr.io/marcusaurelys/bos-next:latest  
       
       - name: Build the Flask app
