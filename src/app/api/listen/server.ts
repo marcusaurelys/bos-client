@@ -2,15 +2,17 @@ import { IClient } from "@/types"
 
 const clients: IClient[] = []
 
-// It needs to be an object singleton so we can keep it in memory across exports
+// The number of updates done by the server. This gets compared to the client-side update object.
 export const updateObject = {
   update: 0,  
 } 
 
+// Add a connection to the array
 export function addClient(id: string, writer: WritableStreamDefaultWriter) {
   clients.push({ id, writer })
 }
 
+// Remove a connection from the array
 export function removeClient(id: string) {
   const index = clients.findIndex(client => client.id === id)
   if (index != -1) {
@@ -19,6 +21,7 @@ export function removeClient(id: string) {
 
 }
 
+// This gets called from invalidating server actions. This makes all listening clients refresh their data
 export function sendMessage() {
   const encoder = new TextEncoder()
 
