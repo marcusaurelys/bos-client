@@ -31,6 +31,7 @@ import  { TicketSkeleton }  from './loading'
 import { getChatHistory, add_dev_chat, get_dev_chat } from '@/db/chat'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import RefreshChatLog from '@/app/components/RefreshChatLog'
+import { redirect } from 'next/navigation'
 
 export default async function Ticket({params}:{params:{ticketid:string,chatid:string}}) {
     
@@ -94,14 +95,21 @@ export default async function Ticket({params}:{params:{ticketid:string,chatid:st
     let ticket_info: ITicket | null = null
     let chat_history: IChat | null = null
     let devchat
-    let user: User
     let priorityColor: string = ""
     let errorMessage = ""
     let chatError = "An error occurred while fetching the chat history, please check the TicketID in the url"
     let chatAndTicketError = "An error occurred while fetching the ticket and chat history, please check the TicketID in the url"
+
+    const userString = cookies().get('user')?.value
+
+    if (!userString) {
+        redirect('/login')
+    }
+
+    const user = JSON.parse(userString)
     
     try{
-        [ticket_info, user, chat_history, devchat] = await Promise.all([getTicket(params.ticketid), validateUser(), getChatHistory(params.chatid), get_dev_chat(params.ticketid)])
+        [ticket_info, chat_history, devchat] = await Promise.all([getTicket(params.ticketid), getChatHistory(params.chatid), get_dev_chat(params.ticketid)])
         if (ticket_info){
             if(ticket_info.priority_score == "high") {
                 priorityColor = "bg-red-500"

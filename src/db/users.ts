@@ -208,6 +208,20 @@ export const login = async(formData : FormData) => {
         maxAge: 60 * 60 * 24 * 21,
     })
 
+    const usertoken = {
+        name: user.name,
+        email: user.email,
+        role: user.role
+    }
+    
+    cookies().set('user', JSON.stringify(usertoken), {
+        path: '/',
+        httpOnly: true,
+        sameSite: 'strict',
+        secure: false, // set to when we begin using process.env.NODE_ENV === 'production',
+        maxAge: 60 * 60 * 24 * 21,
+    })
+
     redirect('/')
 
 }
@@ -221,7 +235,7 @@ export const logout = async() => {
     console.log("in logout")
     try{
         cookies().delete("session")
-        redirect('/')
+        redirect('/login')
     } catch (error) {
         console.error("logout error: ", error)
     }

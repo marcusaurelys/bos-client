@@ -36,12 +36,7 @@ export default async function middleware(request : any) {
 
 export const config = {
   matcher: [
-   '/',
-   '/admin',
-   '/bot',
-   '/chat',
-   '/ticket',
-   '/ticket/:path*',
+    '/((?!api|_next/static|_next/image|favicon.ico|login).*)', 
   ]
 }
 

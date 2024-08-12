@@ -16,25 +16,18 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   
-
-  const res = await getUserByToken(cookies().get('session')?.value || '')
-  if(!res){
-    redirect('/login')
+  const userString = cookies().get('user')?.value
+  if (!userString) {
+      redirect('/login')
   }
 
-  const user = {
-    name : res.name,
-    email : res.email,
-    role : res.role,
-  }
+  const user = JSON.parse(userString)
 
   return ( 
-  <>
     <UserContextProvider user={user}>
     <NavBar/>
       {children}
-    </UserContextProvider>
-  </>
-  );
+    </UserContextProvider> 
+   );
   
 }

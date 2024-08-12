@@ -4,29 +4,22 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { getUserByToken, logout } from '@/db/users'
 import { cookies } from "next/headers"
-
-import { headers } from 'next/headers'
 import NavButtons from "./NavButtons"
 import { redirect } from "next/navigation"
 
-export default async function NavBar({}) {
+export default async function NavBar() {
 
-  const pathname = headers().get('url')
-  console.log('url: ', headers().get('url'))
-  
-  const response = await getUserByToken(cookies().get('session')?.value || '')
-  if(!response){
-    redirect('/login')
+  const userString = cookies().get('user')?.value
+
+  if (!userString) {
+      redirect('/login')
   }
-  const user = {
-    name: response?.name,
-    email: response?.email,
-    role: response?.role
-  }
+
+  const user = JSON.parse(userString)
 
   return (
     <header className="flex items-center justify-between px-16 h-12 text-primary border-b ">
-      <Link href="/" className="flex items-center" prefetch={false}>
+      <Link href="/" className="flex items-center" prefetch={true}>
         <span className="text-lg font-bold text-primary">business</span>
         <span className="text-lg font-bold text-sky-600">OS</span>
       </Link>
@@ -51,11 +44,6 @@ export default async function NavBar({}) {
                     <p className="text-md text-primary/50">{user?.email}</p>
                   </div>
                 </DropdownMenuLabel>
-                {/* <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <Link href="/profile"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
-                  <Link href="/settings"><DropdownMenuItem>Settings</DropdownMenuItem></Link>
-                </DropdownMenuGroup> */}
                 <DropdownMenuSeparator />
                 
                 <DropdownMenuItem className="text-red-600">
@@ -70,7 +58,7 @@ export default async function NavBar({}) {
               </DropdownMenuContent>
           </DropdownMenu>
           : 
-          <Link href="/login" className={`text-sm font-medium hover:underline`} prefetch={false}>
+          <Link href="/login" className={`text-sm font-medium hover:underline`} prefetch={true}>
             Login
           </Link> 
 

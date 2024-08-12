@@ -15,6 +15,7 @@ import { fuckNextDB } from '@/db/mongo'
 import { User } from '@/types'
 import EditUserForm from "@/app/components/EditUserForm"
 import { cookies } from "next/headers"
+import { redirect } from 'next/navigation'
 import ClientToast from "@/app/components/ErrorToast"
 
 export default async function Page(){
@@ -34,10 +35,15 @@ export default async function Page(){
     fuckNextUsers()
     fuckNextTickets()
 
+    const userString = cookies().get('user')?.value
 
-    const currUser = await getUserByToken(cookies().get('session')?.value || '')
+    if (!userString) {
+      redirect('/login')
+    }
 
-        return (
+    const currUser = JSON.parse(userString)
+
+       return (
             <div className='h-full pt-3 px-10'>
                 <h1 className="text-3xl font-bold text-center pb-3">Your Current team</h1>
                 

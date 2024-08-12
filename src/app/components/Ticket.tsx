@@ -1,8 +1,9 @@
 "use client"
 
 import {motion} from 'framer-motion'
+import {cookies} from 'next/headers'
 import { TagIcon } from '@heroicons/react/16/solid'
-import { ITicket} from "../../types"
+import { ITicket } from "../../types"
 import EmployeeTable from './EmployeeTable'
 import Link from 'next/link'
 import { UserContext } from '@/contexts/UserContextProvider'
@@ -14,7 +15,7 @@ interface TicketProps {
 const Ticket = memo(function Ticket({ticket}: TicketProps) {
 
     const user = useContext(UserContext)
-
+    
     let priorityColor
     if(ticket.priority_score.toLowerCase() === "high") {
         priorityColor = "bg-red-500"
