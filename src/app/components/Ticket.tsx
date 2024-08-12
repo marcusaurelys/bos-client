@@ -29,7 +29,7 @@ const Ticket = memo(function Ticket({ticket}: TicketProps) {
     
   return ( <>
 
-    <motion.div layout layoutId={ticket._id.toString()} 
+    <div 
         className={`flex flex-col bg-card rounded-sm p-3 text-sm h-fit gap-1`}
         >
         {/* ticket tags */}
@@ -68,7 +68,7 @@ const Ticket = memo(function Ticket({ticket}: TicketProps) {
         </div>
 
 
-    </motion.div>
+    </div>
 
     
 

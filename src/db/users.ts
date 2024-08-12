@@ -233,11 +233,13 @@ export const login = async(formData : FormData) => {
  */
 export const logout = async() => {
     console.log("in logout")
-    try{
+    try {
         cookies().delete("session")
-        redirect('/login')
+        
     } catch (error) {
         console.error("logout error: ", error)
+    } finally {
+        redirect('/login')
     }
 }
 
@@ -316,7 +318,6 @@ export const changePasswordForUser = async(id : string, password: string, confir
     } catch (error) {
         console.error("changePasswordForUser error: ", error)
         redirect(`/oops?error=${error}`)
-        redirect('/')
     }
 }
 
@@ -344,12 +345,11 @@ export const deleteUser = async(_id : string) => {
         )
 
         sendMessage()
-        revalidatePath('/admin')
         return res
     } catch( error ){
-        console.error("delete user errror:", error)
+        console.error("delete user error:", error)
+    } finally {
         redirect(`/oops?error=${error}`)
-        redirect('/')
     }
     
 }

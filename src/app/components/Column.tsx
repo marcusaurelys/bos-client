@@ -62,12 +62,12 @@ const Column = memo(function Column({title, status, tickets}: ColumnProps) {
   }, [bottomCounter, tickets.length])
 
   return (
-    <motion.div layout
+    <div
         id={`#column-${title}`}
        className={`z-0 relative shadow-sm flex flex-col h-[calc(100vh-12rem)] bg-muted w-96 rounded-md p-3`}>
       
         {/* column header*/}
-        <motion.div layout className="flex flex-row gap-2 items-center my-1 h-7">
+        <div className="flex flex-row gap-2 items-center my-1 h-7">
             <h1 className="font-semibold">{title}</h1>
             <p className="text-primary/50 text-sm">{tickets.length}</p>
             <div className="ml-auto">
@@ -75,7 +75,7 @@ const Column = memo(function Column({title, status, tickets}: ColumnProps) {
             </div>
             
             
-        </motion.div>
+        </div>
 
         {/* column body */}
         <ScrollArea data-test={`scrollarea-${title}`}>
@@ -97,7 +97,7 @@ const Column = memo(function Column({title, status, tickets}: ColumnProps) {
         </div>
         </ScrollArea>
 
-    </motion.div>
+    </div>
   )
 })
 
