@@ -30,7 +30,6 @@ const Sort = memo(function Sort({column}: SortProps) {
         
       }
     }
-    const pathname = usePathname()
 
     const [sort, setSort] = useState<SortPreference | null>(sortParam ? init : null)
     const router = useRouter()
