@@ -90,7 +90,6 @@ export const getChatHistory = async (id : string) => {
   } catch (e) {
       console.error("Chat history not found", e);
       redirect(`/oops?error=${e}`)
-      return [];
   }
 }
 
@@ -174,7 +173,6 @@ export const getConversations = async(page_number: number) => {
     return response
   } catch(error){
     redirect(`/oops?error=${error}`)
-    console.error("getConversations error: ",error);
   }
 }
 

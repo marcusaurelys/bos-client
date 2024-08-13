@@ -90,7 +90,6 @@ export const getTicketByStatus = async (status : string, filters: string[], sort
     catch(error: any){
         
         redirect(`/oops?error=${error}`)
-        return null
     }
 }
 
@@ -114,7 +113,6 @@ export const getTickets = async () => {
     catch(error: any){
         
         redirect(`/oops?error=${error}`)
-        return []
     }
 }
 
@@ -225,8 +223,6 @@ export const deleteTicket = async (id: string) => {
     } catch (error) {
 
         redirect(`/oops?error=${error}`)
-        console.error(error)
-        return false
     }
 }
 
@@ -283,8 +279,6 @@ export const addTicket = async(chat_id: string, name: string, description: strin
     }catch(e : any){
         
         redirect(`/oops?error=${e}`)
-        return {success: false, reason: "Failed to Add ticket. Sorry"}
-        
     }
 
 }

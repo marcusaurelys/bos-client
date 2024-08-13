@@ -254,7 +254,6 @@ export const validateUser = async() => {
     } catch (error){
         console.error("validateUser error: ", error)
         redirect(`/oops?error=${error}`)
-        redirect('/')
     }
 }
 
@@ -284,7 +283,6 @@ export const editUser = async (id : string, name : string, email : string, role 
     } catch (error){
         console.error("editUser error: ",error)
         redirect(`/oops?error=${error}`)
-        redirect('/')
     }
 }
 
@@ -316,7 +314,6 @@ export const changePasswordForUser = async(id : string, password: string, confir
     } catch (error) {
         console.error("changePasswordForUser error: ", error)
         redirect(`/oops?error=${error}`)
-        redirect('/')
     }
 }
 
@@ -349,7 +346,6 @@ export const deleteUser = async(_id : string) => {
     } catch( error ){
         console.error("delete user errror:", error)
         redirect(`/oops?error=${error}`)
-        redirect('/')
     }
     
 }
