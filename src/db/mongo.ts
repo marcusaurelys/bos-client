@@ -12,11 +12,11 @@ let cache: any = null
 export async function useDB() {
   
   if (cache) {
-    console.log('db cached!')
+    
     return cache
   }
 
-  console.log('no db cached, making new client')
+  
 
   const db =  client.db('business-os')
   cache = db

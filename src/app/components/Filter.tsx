@@ -3,7 +3,7 @@
 
 import { Command, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
-import React, { useCallback, useEffect, useState, memo } from 'react'
+import React, { useState, memo } from 'react'
 import { PlusCircleIcon, CheckIcon } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Separator } from '@/components/ui/separator'
@@ -21,8 +21,8 @@ const Filter = memo(function Filter({params}: FilterProps) {
     const searchParams = useSearchParams()
 
     const [filters, setFilters] = useState<string[]>(params)
-    console.log("filters")
-    console.log(params)
+    
+    
 
     const addFilter = (filter : string) => {
         setFilters((prevFilters) => {

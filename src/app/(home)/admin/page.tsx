@@ -28,7 +28,7 @@ export default async function Page(){
     }
     catch (error: any){
         errorMessage = "An error occurred while fetching users, please reload the page"
-        console.log(errorMessage)
+        
     }
     
     fuckNextDB()

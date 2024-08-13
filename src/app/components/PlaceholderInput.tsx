@@ -17,7 +17,7 @@ const InputComponent = memo(function InputComponent({send}: IInputCompnent) {
   };
 
   const submit = () => {
-    console.log(input);
+    
     send(input);
     setInput(" ");
   };

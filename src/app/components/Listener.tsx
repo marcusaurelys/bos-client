@@ -12,12 +12,12 @@ export default function Listener() {
   
   useEffect(() => {
     const eventSource = new EventSource(`/api/listen`)
-    console.log("connected to listener")
-    console.log("updateObject client: " + updateObject.update)
+    
+    
 
     eventSource.onmessage = (event) => {
       const data = event.data && JSON.parse(event.data)
-      console.log("received event from server")
+      
 
       if (firstLoad.current === true) {
         updateObject.update = data.update 
@@ -25,7 +25,7 @@ export default function Listener() {
       }
       
       if (data.update != updateObject.update) {
-        console.log("revalidating")
+        
         updateObject.update = data.update
 
         // Clear the Server-side Full Route Cache and the Client-side Router Cache

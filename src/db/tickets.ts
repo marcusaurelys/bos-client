@@ -88,7 +88,7 @@ export const getTicketByStatus = async (status : string, filters: string[], sort
         return result
     }
     catch(error: any){
-        console.log(error)
+        
         redirect(`/oops?error=${error}`)
         return null
     }
@@ -112,7 +112,7 @@ export const getTickets = async () => {
         return result
     }
     catch(error: any){
-        console.log(error)
+        
         redirect(`/oops?error=${error}`)
         return []
     }
@@ -135,7 +135,7 @@ export const getTicket = async(id: string) => {
         return result
     }
     catch(error: any){
-        console.log(error)
+        
         redirect(`/oops?error=${error}`)
     }
 }
@@ -159,12 +159,12 @@ export const changeStatus = async (id: string, status: string) => {
         }
 
         await tickets.updateOne({_id: new ObjectId(id)}, {$set: {status: status}})
-        console.log("change ticket status")
+        
         sendMessage()
         return true
     }
     catch(error){
-        console.log(error)
+        
         return false
     }
 }
@@ -180,7 +180,7 @@ export const refreshTicket = async (id: string, params: {}) => {
     invalidateCache()
     const tickets = await Tickets()
     const user = await validateUser()
-    console.log(params)
+    
 
     if(user == null) {
         return false
@@ -191,7 +191,7 @@ export const refreshTicket = async (id: string, params: {}) => {
           { _id: new ObjectId(id) },
           { $set: { ...params } }
         )
-        console.log("refresh ticket")
+        
         sendMessage()
         return true;
       } catch (error) {
@@ -243,9 +243,9 @@ export const addTicket = async(chat_id: string, name: string, description: strin
 
         //check if a ticket with chat_id already exists within the database
         const findTicket = await tickets.findOne({chat_id : chat_id})
-        console.log(findTicket)
+        
         if(findTicket){
-            console.log('chat_id is taken')
+            
             return {success: false, reason: "Ticket with session ID already exists!"}
         }
 
@@ -281,7 +281,7 @@ export const addTicket = async(chat_id: string, name: string, description: strin
     return {success: true, reason: "OK"}
 
     }catch(e : any){
-        console.log(e)
+        
         redirect(`/oops?error=${e}`)
         return {success: false, reason: "Failed to Add ticket. Sorry"}
         

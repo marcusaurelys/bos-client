@@ -62,7 +62,7 @@ const EditTicket = memo(function EditTicket({ticket, user}: EditTicketProps) {
      */
     const handleDelete = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
-        console.log("DELETING")
+        
         try {
             const res = await deleteTicket(ticket._id)
             if(res) {
@@ -112,7 +112,7 @@ const EditTicket = memo(function EditTicket({ticket, user}: EditTicketProps) {
             }
         }
         catch (error){
-            console.log(error)
+            
             toast({
                 variant: "destructive",
                 description: "Failed to edit ticket"

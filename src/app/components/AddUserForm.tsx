@@ -64,7 +64,7 @@ const AddUserForm = memo(function AddUserForm() {
             }
         }
         catch (error){
-            console.log(error)
+            
             toast({
                 variant: "destructive",
                 description: "Failed to register"

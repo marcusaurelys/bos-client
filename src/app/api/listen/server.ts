@@ -32,7 +32,7 @@ export function sendMessage() {
     client.writer.write(encoder.encode(`data: ${JSON.stringify({update: updateObject.update})}\n\n`))
   })
 
-  console.log("update pushed to clients")
+  
   
 }
 

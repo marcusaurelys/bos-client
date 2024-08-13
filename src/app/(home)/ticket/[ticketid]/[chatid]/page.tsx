@@ -23,7 +23,6 @@ import { cookies } from "next/headers";
 import Bot from "@/app/components/Bot";
 import UpdateStatusForm from "@/app/components/UpdateStatusForm";
 import EditTicket from "@/app/components/EditTicket";
-import { validateUser } from "@/db/users";
 import { IChat, ITicket, IConversation, User } from '@/types'
 import ClientToast from '@/app/components/ErrorToast'
 import Listener from '@/app/components/Listener'
@@ -62,7 +61,7 @@ export default async function Ticket({params}:{params:{ticketid:string,chatid:st
       
      }
 
-     console.log(chat_logs)
+     
      
      const formData = new FormData()
      formData.append('chat_logs', chat_logs)
@@ -85,7 +84,7 @@ export default async function Ticket({params}:{params:{ticketid:string,chatid:st
           await add_dev_chat(devchat)
      }
      catch(error: any){
-        console.log(error)
+        
         //redirect(`/oops?error=${error}`)
      }
      
@@ -124,17 +123,17 @@ export default async function Ticket({params}:{params:{ticketid:string,chatid:st
     }
     catch(error: any){
         errorMessage = "An error occurred while fetching the ticket, please check the TicketID in the url"
-        console.log(errorMessage)
+        
     }
 
     if (!ticket_info) 
         throw new Error("Ticket does not exist")
         
     if (devchat === null) {
-        console.log("Devchat is null, generating problem statement")
+        
         await generate_problem_statement(chat_history)
         devchat = await get_dev_chat(ticket_info.chat_id)
-        console.log(devchat)
+        
 
         if (devchat === null) {
             throw new Error("DEVCHAT IS NULL!")
