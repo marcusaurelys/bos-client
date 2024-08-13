@@ -1,8 +1,6 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { useToast } from '@/components/ui/use-toast'
-import Link from 'next/link'
 import { useEffect } from 'react'
 
 export default function Page(){
@@ -15,7 +13,7 @@ export default function Page(){
     useEffect( () => {
         const searchParams = new URLSearchParams(window.location.search)
         const search = searchParams.get('error')
-        console.log(searchParams)
+        
         if(search){
             const timeout = setTimeout(() => {
                 toast({

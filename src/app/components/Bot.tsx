@@ -32,7 +32,7 @@ const Bot = memo(function Bot({chat_id, ticket_id, devchat}: {chat_id: string, t
 
     chat_logs += "User: " + prompt + "\n"
     const response = await get_chatbot_response(chat_logs, devchat.problem_statement)
-    console.log(response)
+    
 
     output = [{"from": "user", "content": `${prompt}`}, {"from": "assistant", "content": `${response['response']}`}]
 

@@ -149,7 +149,7 @@ export const register = async (name: string, email: string, password: string, co
             */
     }
     catch (error){
-        console.log("error in register users")
+        
         success = false
         redirect('?failregister')
     }
@@ -199,7 +199,7 @@ export const login = async(formData : FormData) => {
     if (!response) {
         redirect('fail')
     }
-    console.log("setting cookie")
+    
     cookies().set('session', token, {
         path: '/',
         httpOnly: true,
@@ -232,7 +232,7 @@ export const login = async(formData : FormData) => {
  * @returns {Promise<void>}
  */
 export const logout = async() => {
-    console.log("in logout")
+    
     try{
         cookies().delete("session")
         redirect('/login')

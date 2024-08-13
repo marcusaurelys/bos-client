@@ -61,7 +61,7 @@ const AddTicketForm = memo(function AddTicketForm() {
             }
         }
         catch (error){
-            console.log(error)
+            
             toast({
                 variant: "destructive",
                 description: "Failed to add ticket"

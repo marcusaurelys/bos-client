@@ -2,9 +2,7 @@
 
 import { ObjectId } from 'mongodb'
 import { Base64 } from 'js-base64'  
-import { cookies } from 'next/headers'
 import { useDB } from '@/db/mongo'
-import { getUserByToken } from '@/db/users'
 import { IChat, IConversation, IMessage, IMessageDict } from '@/types'
 import { redirect } from 'next/navigation'
 import { sendMessage } from '@/app/api/listen/server'
@@ -385,7 +383,7 @@ export const seed_tickets_collection = async() => {
         message['content'] = typeof message['content'] === 'object' ? JSON.stringify(message['content']) : message['content']
       })
 
-      console.log("waiting")
+      
       await new Promise(resolve => setTimeout(resolve, 5000))
 
       let chat_logs = ""
@@ -414,10 +412,10 @@ export const seed_tickets_collection = async() => {
         ticket['date_created'] = new Date().toISOString()
         ticket['chat_id'] = session_id
 
-        console.log(`Printing valid JSON:`, ticket)
+        
         await seed_ticket(ticket)
       } catch (error) {
-          console.log(`Printing string: ${output}`)
+          
           const fail = await Fail()
           await fail.insertOne({session_id: session_id, response: response['response']})
       } 
@@ -440,7 +438,7 @@ export const seed_initial_conversations = async() => {
     while (true) {
       const conversations_response = await getConversations(page_number)
       const conversations = conversations_response.data
-      console.log(conversations)
+      
 
       if (conversations.length === 0) {
         break;
@@ -450,7 +448,7 @@ export const seed_initial_conversations = async() => {
         const session_id = conversation.session_id
         const messages_response = await getMessages(session_id)
         const messages = messages_response.data
-        console.log(messages)
+        
         
         // Note that we are specifically using bracket notation for a JSON object to maintain portability with the Flask server
         messages_dict[session_id] = { 
@@ -461,12 +459,12 @@ export const seed_initial_conversations = async() => {
       }
 
       page_number++
-      console.log("page_number: " + page_number)
+      
     }
 
     Object.entries(messages_dict).map(async([session_id, conversation]: [string, IConversation]) => {
-      console.log(session_id)
-      console.log(conversation)
+      
+      
 
       conversation.messages.forEach((message: IMessage) => {
         message['from'] = typeof message['from'] === 'object' ? JSON.stringify(message['from']) : message['from']                    

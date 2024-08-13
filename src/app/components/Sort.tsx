@@ -48,9 +48,9 @@ const Sort = memo(function Sort({column}: SortProps) {
       if (sort.property === property && sort.direction === direction) {                
         setSort(() => {
           const url = new URLSearchParams(searchParams.toString())
-          console.log(url.toString())
+          
           url.delete(param)
-          console.log(url.toString())
+          
           router.push('?' + url.toString())
           return null
         })
@@ -65,7 +65,7 @@ const Sort = memo(function Sort({column}: SortProps) {
 
     const createQueryString = (name: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString())
-      console.log(params.toString())
+      
       params.set(name, value)
       params.sort()
       return params.toString()

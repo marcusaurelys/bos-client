@@ -162,7 +162,7 @@ const EmployeeTable = memo(function EmployeeTable({ticket}: EmployeeTableProps) 
             setFilteredUsers(users) //sets the initial filtered users
             setTickets(tickets) //sets tickets
         } catch(e) {
-            console.log(e)
+            
             window.location.reload()
             toast({
                 variant: "destructive",

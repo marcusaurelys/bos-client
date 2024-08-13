@@ -31,7 +31,7 @@ export default async function middleware(request : any) {
      return NextResponse.next() 
   }
   
-  console.log("MAY MALING NANGYARI IF NANDITO")
+  
 }
 
 export const config = {
