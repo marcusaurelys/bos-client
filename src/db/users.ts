@@ -235,10 +235,10 @@ export const logout = async() => {
     
     try{
         cookies().delete("session")
-        redirect('/login')
     } catch (error) {
         console.error("logout error: ", error)
     }
+    redirect('/login')
 }
 
 /**
