@@ -1,20 +1,17 @@
 services:
-    cloudflared:
-        image: cloudflare/cloudflared:latest
-        container_name: cloudflared
-        restart: always
-        command: tunnel run --token ${TUNNEL_TOKEN}
-        networks:
-            - chat
     next-app:
         build:
             context: .
+            args:
+                - MONGO_URI_PRODUCTION=mongodb://localhost:27017
         container_name: next-app
         restart: always
+        depends_on: 
+            - mongo
         ports: 
             - 3000:3000
-        networks:
-            - chat
+        network_mode: 'host'
+        env_file: '.env'
     flask-app:
         build:
             context: ./server
@@ -26,8 +23,9 @@ services:
             - chromadb
         networks:
             - chat
+        env_file: './server/.env'
     chromadb:
-        image: chromadb/chroma:latest
+        image: chromadb/chroma:0.5.4
         container_name: chromadb
         volumes:
             - ./chromadb:/chroma/chroma
@@ -38,7 +36,25 @@ services:
             - 8000:8000
         networks:
             - chat
-
+    mongo:
+        image: mongo
+        container_name: mongo
+        restart: always
+        volumes:
+            - ./mongodb:/data/db
+        ports: 
+            - 27017:27017
+        networks: 
+            - chat
+    mongo-express:
+        image: mongo-express
+        container_name: mongo-express
+        restart: always
+        ports:
+            - 8081:8081
+        networks:
+            - chat  
+    
 networks:
     chat:
         driver: bridge

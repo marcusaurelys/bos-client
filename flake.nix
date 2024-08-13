@@ -13,7 +13,6 @@
         packages = with pkgs; [
           (python3.withPackages (ps: [
             ps.python-dotenv
-            ps.streamlit
             ps.requests
             ps.pymongo
             ps.chromadb
